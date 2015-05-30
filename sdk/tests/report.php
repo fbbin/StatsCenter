@@ -83,6 +83,7 @@ for($i = 0; $i< $n; $i++)
 for($i = 0; $i < $n; $i++)
 {
     $stat = StatsCenter::tick($ifs[$tid]['id'], 1000255);
+    
     $ms = rand($ifs[$tid]['use_min'], $ifs[$tid]['use_max']);
     usleep($ms); //120ms
     if ($ms > $ifs[$tid]['fail_ms'])
@@ -96,7 +97,10 @@ for($i = 0; $i < $n; $i++)
         $ret_code = rand(2001,2006);
     }   
     $ip_i = array_rand($ifs[$tid]['server_ip']);
+    
     $stat->report($succ, $ret_code, $ifs[$tid]['server_ip'][$ip_i]);
-    unset($stat);
+    
+    
+    //unset($stat);
 }
 
