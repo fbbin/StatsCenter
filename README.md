@@ -14,19 +14,19 @@ Web平台地址：[http://stats.duowan.com/](http://stats.duowan.com/)
 一、接口调用次数、失败次数、成功率、平均耗时、失败请求耗时
 
 
-![p1](static/p1.jpg)
+![p1](sdk/static/p1.jpg)
 
 二、历史数据对比，可以看到与前N天的数据对比
-![p2](static/p2.jpg)
+![p2](sdk/static/p2.jpg)
 
 三、错误码统计、错误被调ServerIP分布
-![p3](static/p3.jpg)
+![p3](sdk/static/p3.jpg)
 
 四、 时段调用视图，可以清楚看到某个时间段内接口调用的变化
-![p4](static/p4.jpg)
+![p4](sdk/static/p4.jpg)
 
 五、 主调IP，被调IP分 布视图，可以清楚的看到每一台机器调用的数量，失败次数等信息
-![p5](static/p5.jpg)
+![p5](sdk/static/p5.jpg)
 
 六、失败率报警、数据波动报警（正在开发中）
 
