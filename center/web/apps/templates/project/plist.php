@@ -51,13 +51,13 @@
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
-                                                        <input type="text" name="id" id="id" value="<?= $_GET['id'] ?>" placeholder="项目ID">
+                                                        <input type="text" name="id" id="id" value="<?= $this->value($_GET, 'id') ?>" placeholder="项目ID">
                                                 </div>
                                             </div>
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
-                                                        <input type="text" name="name" id="name" value="<?= $_GET['name'] ?>" placeholder="项目名称">
+                                                        <input type="text" name="name" id="name" value="<?= $this->value($_GET, 'name') ?>" placeholder="项目名称">
                                                 </div>
                                             </div>
                                             <div class='form-group' style="padding-left: 100px">

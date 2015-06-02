@@ -51,19 +51,19 @@
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
-                                                        <input type="text" name="uid" id="uid" value="<?= $_GET['uid'] ?>" placeholder="UID">
+                                                        <input type="text" name="uid" id="uid" value="<?= $this->value($_GET, 'uid') ?>" placeholder="UID">
                                                 </div>
                                             </div>
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
-                                                        <input type="text" name="username" id="username" value="<?= $_GET['username'] ?>" placeholder="用户名">
+                                                        <input type="text" name="username" id="username" value="<?= $this->value($_GET, 'username') ?>" placeholder="用户名">
                                                 </div>
                                             </div>
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
-                                                        <input type="text" name="realname" id="realname" value="<?= $_GET['realname'] ?>" placeholder="真实姓名">
+                                                        <input type="text" name="realname" id="realname" value="<?=  $this->value($_GET, 'realname')  ?>" placeholder="真实姓名">
                                                 </div>
                                             </div>
                                             <div class='form-group' style="padding-left: 100px">

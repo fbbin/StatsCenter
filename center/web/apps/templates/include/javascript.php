@@ -33,8 +33,6 @@
 <script src="<?=WEBROOT?>/static/js/esl.js"></script>
 <script src="<?=WEBROOT?>/static/js/charts.js"></script>
 <script src="<?=WEBROOT?>/static/js/php.js" type="text/javascript"></script>
-<script src="<?=WEBROOT?>/static/app/js/stats.js" type="text/javascript"></script>
-<script src="<?=WEBROOT?>/static/app/js/list.js" type="text/javascript"></script>
 
 <!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)-->
 <script data-pace-options='{ "restartOnRequestAfter": true }' src="/static/smartadmin/js/plugin/pace/pace.min.js"></script>

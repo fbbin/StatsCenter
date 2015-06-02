@@ -2,8 +2,6 @@
 namespace App\Controller;
 use Swoole;
 
-require_once APPSPATH.'/include/dwUDB.php';
-
 class Page extends Swoole\Controller
 {
     function index()
@@ -11,12 +9,12 @@ class Page extends Swoole\Controller
         //https
         if ($_SERVER['SERVER_PORT'] != 80)
         {
-            $this->swoole->http->redirect($this->swoole->config['login']['login_url']);
+            $this->swoole->http->redirect($this->swoole->config['user']['login_url']);
         }
         $this->swoole->session->start();
         if (!empty($_SESSION['isLogin']))
         {
-            $this->swoole->http->redirect($this->swoole->config['login']['home_url']);
+            $this->swoole->http->redirect($this->swoole->config['user']['home_url']);
         }
         else
         {
@@ -35,74 +33,37 @@ class Page extends Swoole\Controller
 
     function logout()
     {
-        $this->swoole->session->start();
-        Swoole\Cookie::delete('username');
-        Swoole\Cookie::delete('password');
-        Swoole\Cookie::delete('osinfo');
-        Swoole\Cookie::delete('oauthCookie');
-        unset($_SESSION['userinfo'], $_SESSION['isLogin']);
-        $this->swoole->http->redirect($this->swoole->config['login']['login_url']);
+        $this->user->logout();
+        $this->swoole->http->redirect($this->swoole->config['user']['login_url']);
     }
 
     function login()
     {
-        $this->swoole->session->start();
-        if (!empty($_SESSION['isLogin']))
+        $this->session->start();
+        if (!empty($_GET['refer']))
         {
-            home:
-                if (!empty($_GET['refer']))
-                {
-                    $refer = base64_decode($_GET['refer']);
-                    $url = WEBROOT.$refer;
-                }
-                else
-                {
-                    $url = $this->swoole->config['login']['home_url'];
-                }
-                $this->swoole->http->redirect($url);
+            $refer = '?refer='.$_GET['refer'];
         }
         else
         {
-            if (!empty($_GET['refer']))
-            {
-                $refer = '?refer='.$_GET['refer'];
-            }
-            else
-            {
-                $refer = '';
-            }
-            $login = new \dwUDB;
-            $result = $login->isLogin();
-            if (empty($result))
-            {
-                $this->swoole->http->redirect($this->swoole->config['login']['login_url'].$refer);
-            }
-            else
-            {
-                //$this->collect_user();
-                $uid = $_COOKIE['yyuid'];
-                $gets = array();
-                $gets['uid'] = $uid;
-                $gets['where'][] = "project_id !=''";
-                if (!table('user')->exists(array('uid' => $uid)))
-                {
-                    $this->collect_user();
-                    $this->display("page/tip.php");
-                    exit;
-                }
-                elseif (!table('user')->exists($gets))
-                {
-                    $this->display("page/tip.php");
-                    exit;
-                }
-                else
-                {
-                    $_SESSION['userinfo'] = $result;
-                    $_SESSION['isLogin'] = true;
-                    $_SESSION['realname'] = urldecode($_COOKIE['sysop_privilege_nick_name']);
-                    goto home;
-                }
-            }
+            $refer = '';
+        }
+
+        $this->db->debug = true;
+        if ($this->user->isLogin())
+        {
+            home:
+            $this->swoole->http->redirect($this->swoole->config['user']['home_url'] . $refer);
+        }
+        elseif ($this->user->login($_POST['username'], $_POST['password']))
+        {
+            $_SESSION['userinfo'] = $this->user->getUserInfo();
+            $_SESSION['realname'] = urldecode($_COOKIE['sysop_privilege_nick_name']);
+            goto home;
+        }
+        else
+        {
+            Swoole\JS::js_back("用户名或密码错误");
         }
     }
 

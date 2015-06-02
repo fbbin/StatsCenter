@@ -25,8 +25,8 @@ class Stats extends \App\LoginController
     {
         //\Swoole\Error::dbd();
         //获取用户项目
-        $uid = $_SESSION['userinfo']['yyuid'];
-        $user = table('user')->get($uid,'uid')->get();
+        $uid = $this->uid;
+        $user = table('user')->get($uid)->get();
         $project_ids = $user['project_id'];
 
         $gets['select'] = 'id,name';

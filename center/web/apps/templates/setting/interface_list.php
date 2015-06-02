@@ -1,27 +1,56 @@
-<?php include __DIR__.'/../include/header.php'; ?>
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <title><?= Swoole::$php->config['common']['site_name'] ?></title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <?php include __DIR__ . '/../include/css.php'; ?>
+</head>
+<body class="">
+<header style="background: #E4E4E4;color: #22201F" id="header">
+    <span><img style="vertical-align:top;padding: 8px" width="80"
+               src="https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superplus/img/logo_white_ee663702.png"/></span>
+    <span id="logo" style="margin-left: 0px"><strong
+            style="font-size: 18px;"><?= Swoole::$php->config['common']['site_name'] ?></strong></span>
+    <span style="float: right;padding: 15px 5px;font-weight: bolder">
+        <span style="text-transform: none;">
+                    <a style="text-decoration: none" href="/user/edit">用户：<?= $_COOKIE['username'] ?>
+        </span>
+        <span style="text-transform: none;padding: 15px 5px;">
+                    <a style="text-decoration: none;font-weight: bolder" href="/page/logout/">退出</a>
+        </span>
+    </span>
+</header>
+<aside id="left-panel">
+    <!--            --><?php //include __DIR__.'/../include/login_info.php'; ?>
+    <?php include __DIR__ . '/../include/leftmenu.php'; ?>
+    <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
+</aside>
 <!-- END NAVIGATION -->
 
 <!-- MAIN PANEL -->
 <div id="main" role="main">
 
-<!-- RIBBON -->
-<div id="ribbon">
+    <!-- RIBBON -->
+    <div id="ribbon">
 
     <span class="ribbon-button-alignment">
         <span id="refresh" class="btn btn-ribbon" data-title="refresh" rel="tooltip"
-                                                 data-placement="bottom"
-                                                 data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
-                                                 data-html="true"><i class="fa fa-refresh"></i></span> </span>
+              data-placement="bottom"
+              data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
+              data-html="true"><i class="fa fa-refresh"></i></span> </span>
 
-    <!-- breadcrumb -->
-    <ol class="breadcrumb">
-        <li>Home</li>
-        <li>Dashboard</li>
-    </ol>
+        <!-- breadcrumb -->
+        <ol class="breadcrumb">
+            <li>Home</li>
+            <li>Dashboard</li>
+        </ol>
 
-</div>
+    </div>
 
-<div id="content">
+    <div id="content">
         <!-- row -->
         <div class="row">
 
@@ -31,6 +60,7 @@
                      data-widget-editbutton="false" role="widget" style="">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+
                         <h2>接口列表</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div role="content">
@@ -51,87 +81,92 @@
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
-                                                        <input type="text" name="id" id="id" value="<?= $_GET['id'] ?>" placeholder="接口ID">
+                                                        <input type="text" name="id" id="id" value="<?= $this->value($_GET, 'id') ?>"
+                                                               placeholder="接口ID">
                                                 </div>
                                             </div>
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
-                                                        <input type="text" name="name" id="name" value="<?= $_GET['name'] ?>" placeholder="接口名称">
+                                                        <input type="text" name="name" id="name"
+                                                               value="<?= $this->value($_GET, 'name') ?>" placeholder="接口名称">
                                                 </div>
                                             </div>
                                             <div class='form-group' style="padding-left: 100px">
-                                                <a id='submit' class='btn btn-success' style='padding:6px 12px' href='javascript:void(0)'>提交查询</a>
+                                                <a id='submit' class='btn btn-success' style='padding:6px 12px'
+                                                   href='javascript:void(0)'>提交查询</a>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
 
-                                    <table id="data_table_stats" class="table table-hover table-bordered table-striped">
-                                        <thead>
-                                        <tr>
-                                            <th style="width: 240px; overflow-x: hidden;">接口ID</th>
-                                            <th style="width: 240px; overflow-x: hidden;">接口名称</th>
-                                            <th style="width: 100px; overflow-x: hidden;">接口别名</th>
-                                            <th>成功率阀值</th>
-                                            <th>调用量波动阀值</th>
-                                            <th style="width: 200px; overflow-x: hidden;">负责人</th>
-                                            <th>添加时间</th>
-                                            <th>操作</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="data_table_body">
-                                            <?php
-                                                foreach ($data as $d)
-                                                {
-                                            ?>
-                                                    <tr height="32">
-                                                        <td class=" "><?=$d['id']?></td>
-                                                        <td class=" "><?=$d['name']?></td>
-                                                        <td class=" "><?=$d['alias']?></td>
-                                                        <td class=" "><?=$d['succ_hold']?></td>
-                                                        <td class=" "><?=$d['wave_hold']?></td>
-                                                        <td class=" "><?=$d['owner_uid_name']?></td>
-                                                        <td class=" "><?=$d['addtime']?></td>
-                                                        <td class=" ">
-                                                            <a href="/setting/add_interface/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
-                                                            &nbsp;&nbsp;&nbsp;&nbsp;
-                                                            <a value="<?=$d['id']?>" onclick="deleteItem(this)" href="javascript:void(0)" class="btn btn-danger btn-xs">删除</a>
-                                                        </td>
-                                                    </tr>
-                                            <?php
-                                                }
-                                            ?>
-                                        </tbody>
-                                    </table>
-                            </div>
+                            <table id="data_table_stats" class="table table-hover table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th style="width: 240px; overflow-x: hidden;">接口ID</th>
+                                    <th style="width: 240px; overflow-x: hidden;">接口名称</th>
+                                    <th style="width: 100px; overflow-x: hidden;">接口别名</th>
+                                    <th>成功率阀值</th>
+                                    <th>调用量波动阀值</th>
+                                    <th style="width: 200px; overflow-x: hidden;">负责人</th>
+                                    <th>添加时间</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody id="data_table_body">
+                                <?php
+                                foreach ($data as $d)
+                                {
+                                    ?>
+                                    <tr height="32">
+                                        <td class=" "><?= $d['id'] ?></td>
+                                        <td class=" "><?= $d['name'] ?></td>
+                                        <td class=" "><?= $d['alias'] ?></td>
+                                        <td class=" "><?= $d['succ_hold'] ?></td>
+                                        <td class=" "><?= $d['wave_hold'] ?></td>
+                                        <td class=" "><?= $d['owner_uid_name'] ?></td>
+                                        <td class=" "><?= $d['addtime'] ?></td>
+                                        <td class=" ">
+                                            <a href="/setting/add_interface/?id=<?= $d['id'] ?>"
+                                               class="btn btn-info btn-xs">修改</a>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <a value="<?= $d['id'] ?>" onclick="deleteItem(this)"
+                                               href="javascript:void(0)" class="btn btn-danger btn-xs">删除</a>
+                                        </td>
+                                    </tr>
+                                <?php
+                                }
+                                ?>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="pager-box">
-                            <?php echo $pager['render'];?>
+                            <?php echo $pager['render']; ?>
                         </div>
-                        </div>
-                        <!-- end widget content -->
-
                     </div>
-                    <!-- end widget div -->
+                    <!-- end widget content -->
 
                 </div>
-                <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1"
-                     data-widget-editbutton="false" role="widget" style="">
+                <!-- end widget div -->
 
-
-                </div>
-                <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-2"
-                     data-widget-editbutton="false" role="widget" style="">
-
-                </div>
-                <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-3"
-                     data-widget-editbutton="false" role="widget" style="">
-
-                </div>
-            </article>
-            <!-- WIDGET END -->
         </div>
+        <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1"
+             data-widget-editbutton="false" role="widget" style="">
+
+
+        </div>
+        <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-2"
+             data-widget-editbutton="false" role="widget" style="">
+
+        </div>
+        <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-3"
+             data-widget-editbutton="false" role="widget" style="">
+
+        </div>
+        </article>
+        <!-- WIDGET END -->
+    </div>
 </div>
 <!-- END MAIN CONTENT -->
 
@@ -172,12 +207,12 @@ you can add as many as you like
         </li>
     </ul>
 </div>
-<?php include dirname(__DIR__).'/include/javascript.php'; ?>
+<?php include dirname(__DIR__) . '/include/javascript.php'; ?>
 <script>
-    $(function() {
+    $(function () {
         pageSetUp();
 //        ListsG.getListsData();
-        $("#submit").click(function(){
+        $("#submit").click(function () {
             $("#form").submit();
         });
     });

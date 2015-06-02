@@ -24,34 +24,40 @@ class Setting extends \App\LoginController
         $mobile = array();
         foreach ($tmp as $t)
         {
-            $name = !empty($t['realname'])?$t['realname']:'';
-            $user[$t['uid']] = $name.$t['username'];
+            $name = !empty($t['realname']) ? $t['realname'] : '';
+            $user[$t['uid']] = $name . $t['username'];
             if (!empty($t['mobile']))
-                $mobile[$t['mobile']] = $name.$t['mobile'];
+            {
+                $mobile[$t['mobile']] = $name . $t['mobile'];
+            }
         }
         //\Swoole\Error::dbd();
         //新增操作
         if (empty($_GET['id']) and empty($_POST))
         {
             $params['title'] = '新增接口';
+            $params['data'] = array();
             $m_params['select'] = 'id,name';
-            $module = table('module')->getMap($m_params,'name');
-            $form['module_id'] = \Swoole\Form::select('module_id',$module,'',null,array('class'=>'select2 select2-offscreen','style'=>"width:100%"));
-            $form['alert_uids'] = \Swoole\Form::muti_select('alert_uids[]',$user,array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
-            $form['owner_uid'] = \Swoole\Form::select('owner_uid',$user,'',null,array('class'=>'select2 select2-offscreen','style'=>"width:100%"));
-            $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]',$user,array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
+            $module = table('module')->getMap($m_params, 'name');
+            $form['module_id'] = \Swoole\Form::select('module_id', $module, '', null, array('class' => 'select2 select2-offscreen', 'style' => "width:100%"));
+            $form['alert_uids'] = \Swoole\Form::muti_select('alert_uids[]', $user, array(), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+            $form['owner_uid'] = \Swoole\Form::select('owner_uid', $user, '', null, array('class' => 'select2 select2-offscreen', 'style' => "width:100%"));
+            $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]', $user, array(), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
             $this->assign('user', $user);
             $this->assign('form', $form);
             $this->assign('data', $params);
-        } elseif (!empty($_GET['id']) and empty($_POST)) { //修改页面
+        }
+        elseif (!empty($_GET['id']) and empty($_POST))
+        {
+            //修改页面
             $id = (int)$_GET['id'];
             $data = table('interface')->get($id)->get();
             $m_params['select'] = 'id,name';
-            $module = table('module')->getMap($m_params,'name');
-            $form['module_id'] = \Swoole\Form::select('module_id',$module,$data['module_id'],null,array('class'=>'select2 select2-offscreen','style'=>"width:100%"));
-            $form['alert_uids'] = \Swoole\Form::muti_select('alert_uids[]',$user,!empty($data['alert_uids'])?explode(',',$data['alert_uids']):array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
-            $form['owner_uid'] = \Swoole\Form::select('owner_uid',$user,$data['owner_uid'],null,array('class'=>'select2 select2-offscreen','style'=>"width:100%" ),false);
-            $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]',$user,!empty($data['backup_uids'])?explode(',',$data['backup_uids']):array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
+            $module = table('module')->getMap($m_params, 'name');
+            $form['module_id'] = \Swoole\Form::select('module_id', $module, $data['module_id'], null, array('class' => 'select2 select2-offscreen', 'style' => "width:100%"));
+            $form['alert_uids'] = \Swoole\Form::muti_select('alert_uids[]', $user, !empty($data['alert_uids']) ? explode(',', $data['alert_uids']) : array(), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+            $form['owner_uid'] = \Swoole\Form::select('owner_uid', $user, $data['owner_uid'], null, array('class' => 'select2 select2-offscreen', 'style' => "width:100%"), false);
+            $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]', $user, !empty($data['backup_uids']) ? explode(',', $data['backup_uids']) : array(), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
             $this->assign('form', $form);
             $params['title'] = '修改接口';
             if (empty($data))
@@ -64,7 +70,10 @@ class Setting extends \App\LoginController
                 $params['data'] = $data;
             }
             $this->assign('data', $params);
-        } elseif (!empty($_POST)) { //入库操作
+        }
+        elseif (!empty($_POST))
+        {
+            //入库操作
             if (empty($_POST['id'])) //新增
             {
                 $params['title'] = '新增接口';
@@ -80,14 +89,14 @@ class Setting extends \App\LoginController
                 $alert_uids = '';
                 if (!empty($_POST['alert_uids']))
                 {
-                    $alert_uids = implode(',',$_POST['alert_uids']);
+                    $alert_uids = implode(',', $_POST['alert_uids']);
                 }
                 $in['alert_uids'] = $alert_uids;
 
                 $alert_types = '';
                 if (!empty($_POST['$alert_types']))
                 {
-                    $alert_types = implode('|',$_POST['$alert_types']);
+                    $alert_types = implode('|', $_POST['$alert_types']);
                 }
                 $in['alert_types'] = $alert_types;
 
@@ -96,35 +105,37 @@ class Setting extends \App\LoginController
                 $backup_uids = '';
                 if (!empty($_POST['backup_uids']))
                 {
-                    $backup_uids = implode(',',$_POST['backup_uids']);
+                    $backup_uids = implode(',', $_POST['backup_uids']);
                 }
                 $in['backup_uids'] = $backup_uids;
                 $in['intro'] = trim($_POST['intro']);
                 $in['owner_uid'] = $_SESSION['userinfo']['yyuid'];
-                $c = table('interface')->count(array('name' => $in['name'],'module_id' => $in['module_id']));
+                $c = table('interface')->count(array('name' => $in['name'], 'module_id' => $in['module_id']));
                 if ($c > 0)
                 {
-                    \Swoole\JS::js_goto("操作失败,该模块下已经存在{$in['name']}接口",'/setting/add_interface/');
+                    \Swoole\JS::js_goto("操作失败,该模块下已经存在{$in['name']}接口", '/setting/add_interface/');
                 }
                 else
                 {
                     $insert_id = table('interface')->put($in);
-                    if ( $insert_id )
+                    if ($insert_id)
                     {
                         //更新redis 通知报警server
-                            $this->_save_interface($insert_id,$in);
+                        $this->_save_interface($insert_id, $in);
                         //
                         $params['data'] = $in;
-                        \Swoole\JS::js_goto("操作成功","/setting/add_interface/?id={$insert_id}");
-                        \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} add new interface {$insert_id} ".print_r($in,1));
+                        \Swoole\JS::js_goto("操作成功", "/setting/add_interface/?id={$insert_id}");
+                        \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} add new interface {$insert_id} " . print_r($in, 1));
                     }
                     else
                     {
-                        \Swoole\JS::js_goto("操作失败","/setting/add_interface");
+                        \Swoole\JS::js_goto("操作失败", "/setting/add_interface");
                     }
                 }
                 $this->assign('data', $params);
-            } else { //修改
+            }
+            else
+            { //修改
                 $params['title'] = '修改接口';
                 $id = (int)$_POST['id'];
                 $in['name'] = trim($_POST['name']);
@@ -138,14 +149,14 @@ class Setting extends \App\LoginController
                 $alert_uids = '';
                 if (!empty($_POST['alert_uids']))
                 {
-                    $alert_uids = implode(',',$_POST['alert_uids']);
+                    $alert_uids = implode(',', $_POST['alert_uids']);
                 }
                 $in['alert_uids'] = $alert_uids;
 
                 $alert_types = '';
                 if (!empty($_POST['alert_types']))
                 {
-                    $alert_types = implode('|',$_POST['alert_types']);
+                    $alert_types = implode('|', $_POST['alert_types']);
                 }
                 $in['alert_types'] = $alert_types;
 
@@ -154,7 +165,7 @@ class Setting extends \App\LoginController
                 $backup_uids = '';
                 if (!empty($_POST['backup_uids']))
                 {
-                    $backup_uids = implode(',',$_POST['backup_uids']);
+                    $backup_uids = implode(',', $_POST['backup_uids']);
                 }
                 $in['backup_uids'] = $backup_uids;
 
@@ -165,16 +176,20 @@ class Setting extends \App\LoginController
                 $c = table('interface')->count($condition);
                 if ($c > 0)
                 {
-                    \Swoole\JS::js_goto("操作失败,该模块下已经存在{$in['name']}接口","/setting/add_interface/?id={$id}");
-                } else {
-                    $res = table('interface')->set($id,$in);
+                    \Swoole\JS::js_goto("操作失败,该模块下已经存在{$in['name']}接口", "/setting/add_interface/?id={$id}");
+                }
+                else
+                {
+                    $res = table('interface')->set($id, $in);
                     if ($res)
                     {
-                        \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} modified interface {$id} with ".print_r($in,1));
-                        $this->_save_interface($id,$in);
-                        \Swoole\JS::js_goto("操作成功","/setting/add_interface/?id={$id}");
-                    } else {
-                        \Swoole\JS::js_goto("操作失败","/setting/add_interface/?id={$id}");
+                        \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} modified interface {$id} with " . print_r($in, 1));
+                        $this->_save_interface($id, $in);
+                        \Swoole\JS::js_goto("操作成功", "/setting/add_interface/?id={$id}");
+                    }
+                    else
+                    {
+                        \Swoole\JS::js_goto("操作失败", "/setting/add_interface/?id={$id}");
                     }
                 }
                 $this->assign('data', $params);

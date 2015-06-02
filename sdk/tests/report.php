@@ -56,7 +56,7 @@ $ifs = array(
     ),
 );
 
-//StatsCenter::setServerIp('127.0.0.1');
+StatsCenter::setServerIp('127.0.0.1');
 /*
 for($i = 0; $i< $n; $i++)
 {
