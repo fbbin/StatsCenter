@@ -7,19 +7,23 @@ class User extends \App\LoginController
     function edit()
     {
         //\Swoole\Error::dbd();
-        $id = $_COOKIE['yyuid'];
+        $id = $this->uid;
         if (empty($id))
         {
             \Swoole\JS::js_back("操作不合法");
         }
 
-        $user_info = table("user")->get($id,'uid')->get();
+        $user_info = table("user")->get($id)->get();
         if (!empty($_POST))
         {
             //编辑
             $id = $_POST['id'];
             unset($_POST['id']);
-            $res = table("user")->set($id,$_POST);
+            if (!empty($_POST['password']))
+            {
+                $_POST['password'] = Swoole\Auth::mkpasswd($user_info['username'], trim($_POST['password']));
+            }
+            $res = table("user")->set($id, $_POST);
             if ($res)
             {
                 \Swoole\JS::js_goto("更新成功",'/user/edit_self');
@@ -32,9 +36,9 @@ class User extends \App\LoginController
         else
         {
             //展示
-            $form['id'] = \Swoole\Form::hidden('id',$user_info['id']);
-            $form['mobile'] = \Swoole\Form::input('mobile',$user_info['mobile']);
-            $form['realname'] = \Swoole\Form::input('realname',$user_info['realname'],array('type'=>'tel'));
+            $form['id'] = \Swoole\Form::hidden('id', $user_info['id']);
+            $form['mobile'] = \Swoole\Form::input('mobile', $user_info['mobile']);
+            $form['realname'] = \Swoole\Form::input('realname', $user_info['realname'], array('type' => 'tel'));
         }
         $this->assign('form', $form);
         $this->display();
@@ -101,10 +105,12 @@ class User extends \App\LoginController
         else
         {
             $inserts['realname'] = $_POST['realname'];
-            $inserts['username'] = $_POST['username'];
+            $inserts['username'] = trim($_POST['username']);
             $inserts['uid'] = (int)$_POST['uid'];
             $inserts['project_id'] = implode(',',$_POST['project_id']);
             $inserts['mobile'] = $_POST['mobile'];
+            //默认密码
+            $inserts['password'] = Swoole\Auth::mkpasswd($inserts['username'], '123456');
 
             $res = table("user")->put($inserts);
             if ($res)
@@ -116,6 +122,44 @@ class User extends \App\LoginController
                 \Swoole\JS::js_goto("添加失败",'/user/ulist/');
             }
         }
+    }
+
+    function passwd()
+    {
+        if (!empty($_POST['old_password']))
+        {
+            if (empty($_POST['new_password']) or empty($_POST['new_password2']))
+            {
+                $msg['message'] = '新密码不能为空';
+                $msg['code'] = 200;
+            }
+            elseif ($_POST['new_password'] == $_POST['old_password'])
+            {
+                $msg['message'] = '新密码与旧密码不能相同';
+                $msg['code'] = 201;
+            }
+            elseif ($_POST['new_password'] != $_POST['new_password2'])
+            {
+                $msg['message'] = '密码前后输入不一致';
+                $msg['code'] = 201;
+            }
+            else
+            {
+                $ret = $this->user->changePassword($this->uid, $_POST['old_password'], $_POST['new_password']);
+                if ($ret)
+                {
+                    $msg['message'] = '密码修改成功';
+                    $msg['code'] = 0;
+                }
+                else
+                {
+                    $msg['message'] = $this->user->errMessage;
+                    $msg['code'] = $this->user->errCode;
+                }
+            }
+            $this->assign('msg', $msg);
+        }
+        $this->display();
     }
 
     function ulist()

@@ -1,13 +1,12 @@
 <nav>
 <ul>
     <li class="active">
-        <a href="/stats/home/" title="Dashboard"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Dashboard</span></a>
+        <a href="/stats/home/" title="Dashboard"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">系统首页</span></a>
     </li>
     <li>
         <a href="/stats/index/" id="stats_index_link"><i class="fa fa-lg fa-fw fa-table"></i> <span class="menu-item-parent">统计数据</span></a>
     </li>
     <li>
-        <a href="/logs/index/" id="logs_index_link"><i class="fa fa-lg fa-fw fa-archive"></i> <span class="menu-item-parent">日志信息</span></a>
     </li>
     <li>
         <a href="/setting/add_interface/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">新增接口</span></a>
@@ -26,6 +25,9 @@
     </li>
     <li>
         <a href="/user/ulist/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">用户列表</span></a>
+    </li>
+    <li>
+        <a href="/user/passwd/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">修改密码</span></a>
     </li>
     <li>
         <a href="/project/edit/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">新增项目</span></a>

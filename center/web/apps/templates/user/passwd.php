@@ -26,7 +26,6 @@
     <?php include __DIR__.'/../include/leftmenu.php'; ?>
     <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
 </aside>
-<!-- END NAVIGATION -->
 
 <!-- MAIN PANEL -->
 <div id="main" role="main">
@@ -58,7 +57,7 @@
                         <ul class="nav nav-tabs pull-left in">
                             <li class="active">
                                 <a><i class="fa fa-clock-o"></i>
-                                    <span class="hidden-mobile hidden-tablet">新增用户</span>
+                                    <span class="hidden-mobile hidden-tablet">编辑用户</span>
                                 </a>
                             </li>
                         </ul>
@@ -69,56 +68,33 @@
                     <div class="no-padding" role="content">
                         <div class="widget-body">
                             <form class="smart-form" method="post">
-                                <?=$this->value($form, 'id')?>
+                                <?php include dirname(__DIR__) . '/include/msg.php'; ?>
                                 <fieldset>
                                     <section>
-                                        <label class="label">用户名</label>
-                                        <label class="input"><i class="icon-prepend fa fa-user"></i>
-                                            <?=$form['username']?>
+                                        <label class="label">原密码</label>
+                                        <label class="input">
+                                            <input type="password" name="old_password"  />
                                         </label>
                                     </section>
-                                </fieldset>
-                                <fieldset>
                                     <section>
-                                        <label class="label">真实姓名</label>
-                                        <label class="input"><i class="icon-prepend fa fa-user"></i>
-                                            <?=$form['realname']?>
+                                        <label class="label">新密码</label>
+                                        <label class="input">
+                                            <input type="password" name="new_password"  />
                                         </label>
                                     </section>
-                                </fieldset>
-                                <fieldset>
                                     <section>
-                                        <label class="label">UID</label>
-                                        <label class="input"><i class="icon-prepend fa fa-user"></i>
-                                            <?=$form['uid']?>
+                                        <label class="label">再次输入</label>
+                                        <label class="input">
+                                            <input type="password" name="new_password2"  />
                                         </label>
-                                    </section>
-                                </fieldset>
-                                <fieldset>
-                                    <section>
-                                        <label class="label">可参与项目</label>
-                                        <label class="input"> <i class="icon-prepend fa fa-phone"></i>
-                                            <?=$form['project_id']?>
-                                        </label>
-                                    </section>
-                                </fieldset>
-                                <fieldset>
-                                    <section>
-                                        <label class="label">手机号码</label>
-                                        <label class="input"> <i class="icon-prepend fa fa-phone"></i>
-                                            <?=$form['mobile']?>
-                                        </label>
-                                        <div class="note">
-                                            报警绑定手机号
-                                        </div>
                                     </section>
                                 </fieldset>
                                 <footer>
                                     <button type="submit" class="btn btn-primary">
-                                        提交
+                                        Submit
                                     </button>
                                     <button type="button" class="btn btn-default" onclick="window.history.back();">
-                                        返回
+                                        Back
                                     </button>
                                 </footer>
                             </form>

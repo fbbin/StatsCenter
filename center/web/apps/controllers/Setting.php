@@ -44,7 +44,6 @@ class Setting extends \App\LoginController
             $form['owner_uid'] = \Swoole\Form::select('owner_uid', $user, '', null, array('class' => 'select2 select2-offscreen', 'style' => "width:100%"));
             $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]', $user, array(), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
             $this->assign('user', $user);
-            $this->assign('form', $form);
             $this->assign('data', $params);
         }
         elseif (!empty($_GET['id']) and empty($_POST))
@@ -84,7 +83,11 @@ class Setting extends \App\LoginController
                 $in['succ_hold'] = trim($_POST['succ_hold']);
                 $in['wave_hold'] = trim($_POST['wave_hold']);
                 $in['alert_int'] = trim($_POST['alert_int']);
-                $in['enable_alert'] = trim($_POST['enable_alert']);
+
+                if (!empty($_POST['enable_alert']))
+                {
+                    $in['enable_alert'] = trim($_POST['enable_alert']);
+                }
 
                 $alert_uids = '';
                 if (!empty($_POST['alert_uids']))
@@ -109,7 +112,7 @@ class Setting extends \App\LoginController
                 }
                 $in['backup_uids'] = $backup_uids;
                 $in['intro'] = trim($_POST['intro']);
-                $in['owner_uid'] = $_SESSION['userinfo']['yyuid'];
+                $in['owner_uid'] = $this->uid;
                 $c = table('interface')->count(array('name' => $in['name'], 'module_id' => $in['module_id']));
                 if ($c > 0)
                 {
@@ -124,12 +127,15 @@ class Setting extends \App\LoginController
                         $this->_save_interface($insert_id, $in);
                         //
                         $params['data'] = $in;
-                        \Swoole\JS::js_goto("操作成功", "/setting/add_interface/?id={$insert_id}");
-                        \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} add new interface {$insert_id} " . print_r($in, 1));
+                        $msg['code'] = 0;
+                        $msg['message'] = "操作成功";
+                        $this->assign('msg', $msg);
                     }
                     else
                     {
-                        \Swoole\JS::js_goto("操作失败", "/setting/add_interface");
+                        $msg['code'] = $this->db->errno;
+                        $msg['message'] = "操作成功";
+                        $this->assign('msg', $msg);
                     }
                 }
                 $this->assign('data', $params);
@@ -195,6 +201,7 @@ class Setting extends \App\LoginController
                 $this->assign('data', $params);
             }
         }
+        $this->assign('form', $form);
         $this->display();
     }
 

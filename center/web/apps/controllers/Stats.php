@@ -91,7 +91,6 @@ class Stats extends \App\LoginController
 
     function detail_data()
     {
-        //\Swoole\Error::dbd();
         if (empty($_GET['interface_id']) or empty($_GET['module_id']) or empty($_GET['type']))
         {
             return "需要interface_id/module_id参数";

@@ -116,11 +116,13 @@
                                     <section>
                                         <label class="label">报警策略</label>
                                         <label class="radio state-success" style="display: inline-block">
-                                            <input type="radio" name="enable_alert" value="1" <?php echo $this->value($data['data'], 'enable_alert')==1?'checked':'' ;?>>
+                                            <input type="radio" name="enable_alert"
+                                                   value="1" <?php echo $this->value($data['data'], 'enable_alert') == 1 ? 'checked' : ''; ?>>
                                             <i></i>开启
                                         </label>
                                         <label class="radio state-error" style="display: inline-block">
-                                            <input type="radio" name="enable_alert" value="2" <?php echo $this->value($data['data'], 'enable_alert')==2?'checked':'' ;?>>
+                                            <input type="radio" name="enable_alert"
+                                                   value="2" <?php echo $this->value($data['data'], 'enable_alert') == 2 ? 'checked' : ''; ?>>
                                             <i></i>关闭
                                         </label>
                                         <label class="label">报警间隔时间(分钟)</label>

@@ -129,7 +129,8 @@
     </ul>
 </div>
 <?php include dirname(__DIR__) . '/include/javascript.php'; ?>
-
+    <script src="<?=WEBROOT?>/apps/static/js/stats.js" type="text/javascript"></script>
+    <script src="<?=WEBROOT?>/apps/static/js/list.js" type="text/javascript"></script>
 <script>
     var ret_code = <?=json_encode($ret_code, JSON_NUMERIC_CHECK)?>;
     var fail_server = <?=json_encode($fail_server, JSON_NUMERIC_CHECK)?>;

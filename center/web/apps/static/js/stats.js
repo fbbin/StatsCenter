@@ -255,9 +255,15 @@ StatsG.appendToTable = function (interface_id, _data, option) {
     line += '<td>';
     if (!option.no_detail) {
         line += '<a href="javascript: StatsG.showDetail(' + interface_id + ')">查看明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;';
-        line += '<a href="/stats/history/?module_id='+_data['module_id']+'&interface_id=' + interface_id + '">历史数据对比</a>&nbsp;&nbsp;|&nbsp;&nbsp;';
-        line += '<a href="/stats/client/?module_id='+_data['module_id']+'&interface_id=' + interface_id + '">主调明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;';
-        line += '<a href="/stats/server/?module_id='+_data['module_id']+'&interface_id=' + interface_id + '">被调明细</a>';
+        line += '<a href="/stats/history/?module_id=' + _data['module_id'] + '&interface_id=' + interface_id + '&date_key=' +
+        StatsG.filter.date_key
+        + '">历史数据对比</a>&nbsp;&nbsp;|&nbsp;&nbsp;';
+        line += '<a href="/stats/client/?module_id=' + _data['module_id'] + '&interface_id=' + interface_id + '&date_key=' +
+        StatsG.filter.date_key
+        + '">主调明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;';
+        line += '<a href="/stats/server/?module_id=' + _data['module_id'] + '&interface_id=' + interface_id + '&date_key=' +
+        StatsG.filter.date_key
+        + '">被调明细</a>';
     }
     line += '</td>';
 

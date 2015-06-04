@@ -6,11 +6,6 @@ class Page extends Swoole\Controller
 {
     function index()
     {
-        //https
-        if ($_SERVER['SERVER_PORT'] != 80)
-        {
-            $this->swoole->http->redirect($this->swoole->config['user']['login_url']);
-        }
         $this->swoole->session->start();
         if (!empty($_SESSION['isLogin']))
         {
@@ -49,7 +44,7 @@ class Page extends Swoole\Controller
             $refer = '';
         }
 
-        $this->db->debug = true;
+        //$this->db->debug = true;
         if ($this->user->isLogin())
         {
             home:

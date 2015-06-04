@@ -87,15 +87,14 @@
                             <!-- content -->
                             <div id="myTabContent" class="tab-content">
                                 <div class="tab-pane fade active in padding-10 no-padding-bottom" id="s1">
-                                    <p>联系人：韩天峰/魏文唅/石光启 </p>
+                                    <p>联系人：韩天峰 </p>
 
                                     <p>
-                                        SDK下载：<a href="http://code.yy.com/duowan_base_tech/module_stats_sdk">
-                                            http://code.yy.com/duowan_base_tech/module_stats_sdk
+                                        SDK下载：<a href="http://192.168.0.2/svn/eclicks/web/StatsCenter/sdk/">
+                                            http://192.168.0.2/svn/eclicks/web/StatsCenter/sdk/
                                         </a>
                                     </p>
 
-                                    <p>C++ SDK：联系 饶超勋</p>
                                 </div>
                                 <!-- end s1 tab pane -->
 
