@@ -1,6 +1,6 @@
 <?php
 $log = array(
     'type' => 'FileLog',
-    'file' => '/data/webroot/stats.duowan.com/web/web_op.log',
+    'file' => '/data/logs/swoole/web.log',
 );
 return $log;

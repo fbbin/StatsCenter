@@ -4,6 +4,8 @@ namespace App;
 class LoginController extends \Swoole\Controller
 {
     protected $uid;
+    protected $userinfo;
+
     function __construct(\Swoole $swoole)
     {
         parent::__construct($swoole);
@@ -23,6 +25,7 @@ class LoginController extends \Swoole\Controller
         else
         {
             $this->uid = $this->user->getUid();
+            $this->userinfo = $_SESSION['userinfo'];
         }
     }
 }

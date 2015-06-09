@@ -26,11 +26,11 @@ class User extends \App\LoginController
             $res = table("user")->set($id, $_POST);
             if ($res)
             {
-                \Swoole\JS::js_goto("更新成功",'/user/edit_self');
+                \Swoole\JS::js_goto("更新成功",'/user/edit/');
             }
             else
             {
-                \Swoole\JS::js_goto("更新失败",'/user/edit_self');
+                \Swoole\JS::js_goto("更新失败",'/user/edit/');
             }
         }
         else
@@ -46,6 +46,11 @@ class User extends \App\LoginController
 
     function add()
     {
+        //不是超级用户不能查看修改用户
+        if ($this->userinfo['usertype'] != 0)
+        {
+            return "access deny";
+        }
         //\Swoole::$php->db->debug = true;
         if (empty($_GET) and empty($_POST))
         {
@@ -60,6 +65,7 @@ class User extends \App\LoginController
             $form['mobile'] = \Swoole\Form::input('mobile');
             $form['realname'] = \Swoole\Form::input('realname');
             $form['username'] = \Swoole\Form::input('username');
+            $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], null, null, array('class' => 'select2'));
             $this->assign('form', $form);
             $this->display();
         }
@@ -164,6 +170,11 @@ class User extends \App\LoginController
 
     function ulist()
     {
+        //不是超级用户不能查看修改用户
+        if ($this->userinfo['usertype'] != 0)
+        {
+            return "access deny";
+        }
         $gets = array();
         if (!empty($_POST['uid']))
         {

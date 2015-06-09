@@ -18,14 +18,14 @@ class Setting extends \App\LoginController
 
     function add_interface()
     {
-        $gets['select'] = 'uid,username,realname,mobile';
+        $gets['select'] = 'id,username,realname,mobile';
         $tmp = table('user')->gets($gets);
         $user = array();
         $mobile = array();
         foreach ($tmp as $t)
         {
             $name = !empty($t['realname']) ? $t['realname'] : '';
-            $user[$t['uid']] = $name . $t['username'];
+            $user[$t['id']] = "{$name} [{$t['username']}]";
             if (!empty($t['mobile']))
             {
                 $mobile[$t['mobile']] = $name . $t['mobile'];
@@ -269,13 +269,13 @@ class Setting extends \App\LoginController
             $gets['where'][] = "name like '%{$name}%'";
             $_GET['name'] = $name;
         }
-        $users['select'] = 'uid,username,realname';
+        $users['select'] = 'id,username,realname';
         $tmp = table('user')->gets($users);
         $user = array();
         foreach ($tmp as $t)
         {
             $name = !empty($t['realname'])?$t['realname']:'';
-            $user[$t['uid']] = $name.$t['username'];
+            $user[$t['id']] = "{$name} [{$t['username']}]";
         }
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
@@ -313,13 +313,13 @@ class Setting extends \App\LoginController
         //\Swoole\Error::dbd();
         if (empty($_GET['id']) and empty($_POST))
         {
-            $gets['select'] = 'uid,username,realname';
+            $gets['select'] = 'id,username,realname';
             $tmp = table('user')->gets($gets);
             $user = array();
             foreach ($tmp as $t)
             {
                 $name = !empty($t['realname'])?$t['realname']:'';
-                $user[$t['uid']] = $name.$t['username'];
+                $user[$t['id']] = "{$name} [{$t['username']}]";
             }
             $form['name'] = \Swoole\Form::input('name');
             $form['intro'] = \Swoole\Form::text('intro');
@@ -346,7 +346,7 @@ class Setting extends \App\LoginController
             foreach ($tmp as $t)
             {
                 $name = !empty($t['realname'])?$t['realname']:'';
-                $user[$t['uid']] = $name.$t['username'];
+                $user[$t['id']] = "{$name} [{$t['username']}]";
             }
             $form['id'] = \Swoole\Form::hidden('id',$module['id']);
             $form['name'] = \Swoole\Form::input('name',$module['name']);
@@ -444,14 +444,16 @@ class Setting extends \App\LoginController
             and  (!empty($interface['alert_uids']) and $interface['alert_int'] > 0 )
             )
         {
-            $gets['select'] = 'uid,mobile';
+            $gets['select'] = 'id,mobile';
             $gets['where'][] = 'uid in ('.$interface['alert_uids'].')';
             $tmp = table('user')->gets($gets);
             $user = array();
             foreach ($tmp as $t)
             {
                 if (!empty($t['mobile']))
-                    $user[$t['uid']] = $t['mobile'];
+                {
+                    $user[$t['id']] = $t['mobile'];
+                }
             }
 
             $params['module_id'] = $interface['module_id'];
@@ -493,8 +495,8 @@ class Setting extends \App\LoginController
         $user = array();
         foreach ($tmp as $t)
         {
-            $name = !empty($t['realname'])?$t['realname']:'';
-            $user[$t['uid']] = $name.$t['username'];
+            $name = !empty($t['realname']) ? $t['realname'] : '';
+            $user[$t['id']] = "{$name} [{$t['username']}]";
         }
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;

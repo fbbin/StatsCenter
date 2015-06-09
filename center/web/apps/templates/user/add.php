@@ -84,25 +84,22 @@
                                         <label class="input"><i class="icon-prepend fa fa-user"></i>
                                             <?=$form['realname']?>
                                         </label>
+                                        <div class="note">
+                                            默认密码为123456
+                                        </div>
                                     </section>
-                                </fieldset>
-                                <fieldset>
                                     <section>
-                                        <label class="label">UID</label>
-                                        <label class="input"><i class="icon-prepend fa fa-user"></i>
-                                            <?=$form['uid']?>
+                                        <label class="label">用户类型</label>
+                                        <label class="input">
+                                            <?=$form['usertype']?>
                                         </label>
                                     </section>
-                                </fieldset>
-                                <fieldset>
                                     <section>
                                         <label class="label">可参与项目</label>
                                         <label class="input"> <i class="icon-prepend fa fa-phone"></i>
                                             <?=$form['project_id']?>
                                         </label>
                                     </section>
-                                </fieldset>
-                                <fieldset>
                                     <section>
                                         <label class="label">手机号码</label>
                                         <label class="input"> <i class="icon-prepend fa fa-phone"></i>

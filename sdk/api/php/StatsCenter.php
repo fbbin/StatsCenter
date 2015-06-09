@@ -5,14 +5,11 @@ class StatsCenter
     const FAIL = 0;
     const TIME_OUT_STATUS = 4444;
 
-    const PACK_LOG = 'NNNNCN';
     const PACK_STATS = 'NNCNNNN';
-
     const PORT_STATS = 9903;
-    const PORT_LOGS = 9902;
 
     protected static $interface_tick = array();
-    protected static $sc_svr_ip = '183.57.36.102';
+    protected static $sc_svr_ip = '192.168.1.102';
 
     protected static $aop_bind;
     protected static $aop_interface;
@@ -180,6 +177,7 @@ class StatsCenter
         {
             $tick->report(false, 4444);
         }
+        StatsCenter_Tick::sendPackage();
     }
 
     static function net_create_id()
@@ -224,7 +222,7 @@ class StatsCenter_Tick
         $this->params[$key] = $value;
     }
 
-    function report($success, $ret_code, $server_ip = 0)
+    function report($success, $ret_code = 0, $server_ip = 0)
     {
         $this->_time_out_pkg = array();
         $use_ms = intval((microtime(true) - $this->start_ms) * 1000);

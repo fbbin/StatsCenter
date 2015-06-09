@@ -78,7 +78,6 @@
                                         <thead>
                                         <tr>
                                             <th style="width: 50px; overflow-x: hidden;">ID</th>
-                                            <th>UID</th>
                                             <th>用户名</th>
                                             <th>真实姓名</th>
                                             <th>手机</th>
@@ -93,7 +92,6 @@
                                             ?>
                                                     <tr height="32">
                                                         <td><?=$d['id']?></td>
-                                                        <td><?=$d['uid']?></td>
                                                         <td><?=$d['username']?></td>
                                                         <td><?=$d['realname']?></td>
                                                         <td><?=$d['mobile']?></td>

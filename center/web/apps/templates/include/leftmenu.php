@@ -20,12 +20,18 @@
     <li>
         <a href="/setting/module_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">模块列表</span></a>
     </li>
+    <?php
+    if ($this->userinfo['usertype'] == 0):
+    ?>
     <li>
         <a href="/user/add/"><i class="fa fa-lg fa-fw fa-user"></i> <span class="menu-item-parent">新增用户</span></a>
     </li>
     <li>
         <a href="/user/ulist/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">用户列表</span></a>
     </li>
+    <?php
+    endif;
+    ?>
     <li>
         <a href="/user/passwd/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">修改密码</span></a>
     </li>
