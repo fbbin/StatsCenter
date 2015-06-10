@@ -209,18 +209,23 @@ class Setting extends \App\LoginController
     {
         //\Swoole\Error::dbd();
         $id = (int)$_GET['id'];
-        $uid = $_SESSION['userinfo']['yyuid'];
+        $uid = $this->uid;
         $data = table('interface')->get($id)->get();
         if ($data['owner_uid'] == 0)
         {
             \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} try to del interface {$id} failed cause of owner_uid==0");
             $return['status'] = 300;
             $return['msg'] = '暂时不能删除';
-        } elseif($uid != $data['owner_uid']) {
+        }
+        //接口创建人，超级管理员，项目负责人可以删除
+        elseif ($uid != $data['owner_uid'] and $_SESSION['usertype'] != 0)
+        {
             \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} try to del interface {$id} failed cause of has no privilege");
             $return['status'] = 400;
             $return['msg'] = '没有权限删除';
-        } else {
+        }
+        else
+        {
             $res = table('interface')->del($id);
             if ($res) {
                 \Swoole::$php->log->put("{$_SESSION['userinfo']['username']}  del interface {$id} success ".print_r($data,1));

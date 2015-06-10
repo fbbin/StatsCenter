@@ -3,43 +3,40 @@ namespace App;
 
 class AutoInterface
 {
-    /**
-     * @var \swoole_server
-     */
     protected $pid_file;
     public $log;
 
+    /**
+     * @var \swoole_server
+     */
     protected $serv;
     const SVR_PORT_AOP = 9904;
     const EOF = "\r\n";
 
     function onReceive(\swoole_server $serv, $fd, $from_id, $data)
     {
-        $_key = explode('_', substr($data, 3), 3);
-        if (substr($data, 0, 3) == 'GET')
+        $_key = explode(' ', trim($data));
+        if (count($_key) != 3)
         {
-            $key = $this->getKey($_key[0], $_key[1], $_key[2]);
-            $this->serv->send($fd, $key);
+            return;
         }
-        elseif (substr($data, 0, 3) == 'SET')
+        if ($_key[0] == 'GET')
         {
-            $key = $this->createKey($_key[0], $_key[1], $_key[2]);
+            $key = $this->getKey($_key[1], $_key[2]);
             $this->serv->send($fd, $key);
-        }
-    }
-
-    private function getKey($module_id, $type, $name)
-    {
-        if ($type == 'log')
-        {
-            $table = 'log_interface';
         }
         else
         {
-            $table = 'interface';
+            $this->serv->send($fd, "unkown".self::EOF);
         }
+    }
+
+    private function getKey($module_id, $interface_key)
+    {
+        $interface_key = \Swoole\Filter::escape($interface_key);
+        $table = 'interface';
         $params['select'] = "id";
-        $params['name'] = $name;
+        $params['name'] = $interface_key;
         $params['module_id'] = $module_id;
         $data = table($table)->gets($params);
         if (!empty($data))
@@ -48,25 +45,11 @@ class AutoInterface
         }
         else
         {
-            return 0;
+            $put['name'] = $interface_key;
+            $put['alias'] = $interface_key;
+            $put['module_id'] = $module_id;
+            return table($table)->put($put);
         }
-    }
-
-    private function createKey($module_id, $type, $name)
-    {
-        if ($type == 'log')
-        {
-            $table = 'log_interface';
-        }
-        else
-        {
-            $table = 'interface';
-        }
-        $params['name'] = $name;
-        $params['alias'] = $name;
-        $params['module_id'] = $module_id;
-        $params['intro'] = 'auto create by api';
-        return table($table)->put($params);
     }
 
     function setLogger($log)
@@ -83,14 +66,14 @@ class AutoInterface
     {
         $default_setting = array(
             'worker_num' => 4,
-            'max_request' => 0,
+            'open_eof_check' => true,
+            'open_eof_split' => true,
+            'package_eof' => self::EOF,
         );
         $this->pid_file = $_setting['pid_file'];
         $setting = array_merge($default_setting, $_setting);
         $serv = new \swoole_server('0.0.0.0', self::SVR_PORT_AOP, SWOOLE_PROCESS, SWOOLE_TCP);
         $serv->set($setting);
-        $serv->on('start', array($this, 'onMasterStart'));
-        $serv->on('managerStop', array($this, 'onManagerStop'));
         $serv->on('receive', array($this, 'onReceive'));
         $this->serv = $serv;
         $this->serv->start();

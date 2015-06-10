@@ -235,6 +235,8 @@
         </ul>
     </div>
     <?php include dirname(__DIR__) . '/include/javascript.php'; ?>
+    <script src="<?=WEBROOT?>/apps/static/js/stats.js" type="text/javascript"></script>
+    <script src="<?=WEBROOT?>/apps/static/js/list.js" type="text/javascript"></script>
     <script >
         pageSetUp();
         if (window.localStorage.module_id) {
