@@ -11,7 +11,7 @@
 <body class="">
 <header style="background: #E4E4E4;color: #22201F" id="header">
     <span><img style="vertical-align:top;padding: 8px" width="80"
-               src="https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superplus/img/logo_white_ee663702.png"/></span>
+               src="<?=Swoole::$php->config['common']['logo_url']?>"/></span>
     <span id="logo" style="margin-left: 0px"><strong
             style="font-size: 18px;"><?= Swoole::$php->config['common']['site_name'] ?></strong></span>
     <span style="float: right;padding: 15px 5px;font-weight: bolder">
