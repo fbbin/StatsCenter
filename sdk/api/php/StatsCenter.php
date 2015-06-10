@@ -27,25 +27,6 @@ class StatsCenter
         self::$sc_svr_ip = $ip;
     }
 
-    static function log($loginfo, $level = 1, $userid = 0, $module = 0, $interfaceid = 0, $special_id = 0)
-    {
-        $pkg = pack(self::PACK_LOG, $module, $interfaceid, $special_id, $userid, $level, time());
-        $data = $pkg.$loginfo;
-        self::_send_udp($data, self::PORT_LOGS);
-    }
-
-    /*
-     * 提供接口名称自动创建接口id,上报日志
-     */
-    static function log1($loginfo, $level = 1, $userid = 0, $module = 0, $interface_name = '', $special_id = 0)
-    {
-        $interface_id = 0;
-        if (!empty($interface_name))
-        {
-            $interface_id = self::getInterfaceId($module.'_log_'.$interface_name);
-        }
-        self::log($loginfo, $level, $userid, $module, $interface_id, $special_id);
-    }
     /**
      * 自动创建接口
      */
@@ -70,15 +51,14 @@ class StatsCenter
         }
     }
 
-    static function getInterfaceId($key)
+    static function getInterfaceId($interface_key, $module)
     {
-        $key = base64_encode($key);
-        $file = '/tmp/mostats/'.$key;
+        $file = '/tmp/mostats/'.$module.'_'.$interface_key;
         if (!is_dir('/tmp/mostats'))
         {
             mkdir('/tmp/mostats');
         }
-        if (is_file('/tmp/mostats/'.$key))
+        if (is_file($file))
         {
             $id = file_get_contents($file);
             return $id;
@@ -86,17 +66,16 @@ class StatsCenter
         else
         {
             $aop = new AopNet();
-            $id = $aop->get_id($key);
+            $id = $aop->getInterfaceId($interface_key, $module);
             if ($id)
             {
                 file_put_contents($file, $id);
                 return $id;
             }
+            //网络调用失败了
             else
             {
-                $id = $aop->create_id($key);
-                file_put_contents($file, $id);
-                return $id;
+                return 0;
             }
         }
     }
@@ -143,11 +122,11 @@ class StatsCenter
         stream_socket_sendto($cli, $data);
     }
 
-    static function tick($interface, $module, $force=false)
+    static function tick($interface, $module)
     {
-        if (!is_numeric($interface) || $force)
+        if (!is_numeric($interface))
         {
-            $interface = self::getInterfaceId($module.'_stat_'.$interface);
+            $interface = self::getInterfaceId($interface, $module);
         }
         if (!self::$registerShutdown)
         {
@@ -306,25 +285,23 @@ class AopNet
 {
     protected static $sc_svr_ip = '183.57.36.102';
     const PORT_AOP = 9904;
+    public $timeout = 1;
 
     static function setServerIp($ip)
     {
         self::$sc_svr_ip = $ip;
     }
 
-    public function get_id($key)
+    /**
+     * 获取接口ID，如果不存在自动创建一个
+     * @param $key
+     * @return mixed|string
+     */
+    public function getInterfaceId($key, $module)
     {
-        $cli = stream_socket_client('tcp://' . self::$sc_svr_ip . ':' . self::PORT_AOP, $errno, $errstr, 5);
-        stream_socket_sendto($cli, 'GET' . $key);
-        $key = fread($cli, 1024);
-        fclose($cli);
-        return $key;
-    }
-
-    public function create_id($key)
-    {
-        $cli = stream_socket_client('tcp://' . self::$sc_svr_ip . ':' . self::PORT_AOP, $errno, $errstr, 5);
-        stream_socket_sendto($cli, 'SET' . $key);
+        $key = str_replace(' ', '_', $key);
+        $cli = stream_socket_client('tcp://' . self::$sc_svr_ip . ':' . self::PORT_AOP, $errno, $errstr, $this->timeout);
+        stream_socket_sendto($cli, "GET {$module} {$key}\r\n");
         $key = fread($cli, 1024);
         fclose($cli);
         return $key;

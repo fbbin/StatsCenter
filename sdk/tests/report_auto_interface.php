@@ -53,8 +53,7 @@ $ifs = array(
     ),
 );
 
-//StatsCenter::setServerIp('119.147.176.30');
-StatsCenter::setServerIp('127.0.0.1');
+//StatsCenter::setServerIp('127.0.0.1');
 for($i = 0; $i< $n; $i++)
 {
     $stat = StatsCenter::tick($ifs[$tid]['id'], 1000257);
