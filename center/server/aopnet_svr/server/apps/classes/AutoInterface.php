@@ -15,22 +15,20 @@ class AutoInterface
 
     function onReceive(\swoole_server $serv, $fd, $from_id, $data)
     {
-        $conn = $serv->connection_info($fd, $from_id);
-        if ($conn['from_port'] == self::SVR_PORT_AOP )
+        $_key = explode('_', substr($data, 3), 3);
+        if (substr($data, 0, 3) == 'GET')
         {
-            $_key = explode('_',substr($data,3),3);
-            if (substr($data,0,3) == 'GET')
-            {
-                $key = $this->getKey($_key[0],$_key[1],$_key[2]);
-                $this->serv->send($fd,$key);
-            } elseif (substr($data,0,3) == 'SET') {
-                $key = $this->createKey($_key[0],$_key[1],$_key[2]);
-                $this->serv->send($fd,$key);
-            }
+            $key = $this->getKey($_key[0], $_key[1], $_key[2]);
+            $this->serv->send($fd, $key);
+        }
+        elseif (substr($data, 0, 3) == 'SET')
+        {
+            $key = $this->createKey($_key[0], $_key[1], $_key[2]);
+            $this->serv->send($fd, $key);
         }
     }
 
-    private function getKey($module_id,$type,$name)
+    private function getKey($module_id, $type, $name)
     {
         if ($type == 'log')
         {
@@ -48,12 +46,13 @@ class AutoInterface
         {
             return $data[0]['id'];
         }
-        else {
+        else
+        {
             return 0;
         }
     }
 
-    private function createKey($module_id,$type,$name)
+    private function createKey($module_id, $type, $name)
     {
         if ($type == 'log')
         {
@@ -68,21 +67,6 @@ class AutoInterface
         $params['module_id'] = $module_id;
         $params['intro'] = 'auto create by api';
         return table($table)->put($params);
-    }
-
-    function onMasterStart($server)
-    {
-        $this->log("autointerface server start");
-        file_put_contents($this->pid_file,$server->master_pid);
-    }
-
-    function onManagerStop($server)
-    {
-        $this->log("autointerface server shutdown");
-        if (file_exists($this->pid_file))
-        {
-            unlink($this->pid_file);
-        }
     }
 
     function setLogger($log)

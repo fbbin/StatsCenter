@@ -270,29 +270,42 @@ class StatsCenter_Tick
     static function getIP()
     {
         if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown"))
+        {
             $ip = getenv("HTTP_CLIENT_IP");
-        else if (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown"))
-            $ip = getenv("HTTP_X_FORWARDED_FOR");
-        else if (getenv("REMOTE_ADDR") && strcasecmp(getenv("REMOTE_ADDR"), "unknown"))
-            $ip = getenv("REMOTE_ADDR");
-        else if (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], "unknown"))
-            $ip = $_SERVER['REMOTE_ADDR'];
+        }
         else
-            $ip = "0.0.0.0";
+        {
+            if (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown"))
+            {
+                $ip = getenv("HTTP_X_FORWARDED_FOR");
+            }
+            else
+            {
+                if (getenv("REMOTE_ADDR") && strcasecmp(getenv("REMOTE_ADDR"), "unknown"))
+                {
+                    $ip = getenv("REMOTE_ADDR");
+                }
+                else
+                {
+                    if (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], "unknown"))
+                    {
+                        $ip = $_SERVER['REMOTE_ADDR'];
+                    }
+                    else
+                    {
+                        $ip = "0.0.0.0";
+                    }
+                }
+            }
+        }
         return $ip;
     }
 }
 
 class AopNet
 {
-    protected static $sc_svr_ip = '119.147.176.30';
+    protected static $sc_svr_ip = '183.57.36.102';
     const PORT_AOP = 9904;
-
-    public function __construct()
-    {
-
-    }
-
 
     static function setServerIp($ip)
     {
@@ -301,8 +314,8 @@ class AopNet
 
     public function get_id($key)
     {
-        $cli = stream_socket_client('tcp://'.self::$sc_svr_ip.':'.self::PORT_AOP, $errno, $errstr,5);
-        stream_socket_sendto($cli, 'GET'.$key);
+        $cli = stream_socket_client('tcp://' . self::$sc_svr_ip . ':' . self::PORT_AOP, $errno, $errstr, 5);
+        stream_socket_sendto($cli, 'GET' . $key);
         $key = fread($cli, 1024);
         fclose($cli);
         return $key;
@@ -310,8 +323,8 @@ class AopNet
 
     public function create_id($key)
     {
-        $cli = stream_socket_client('tcp://'.self::$sc_svr_ip.':'.self::PORT_AOP, $errno, $errstr,5);
-        stream_socket_sendto($cli, 'SET'.$key);
+        $cli = stream_socket_client('tcp://' . self::$sc_svr_ip . ':' . self::PORT_AOP, $errno, $errstr, 5);
+        stream_socket_sendto($cli, 'SET' . $key);
         $key = fread($cli, 1024);
         fclose($cli);
         return $key;

@@ -6,7 +6,6 @@ define('WEBPATH', __DIR__);
 require __DIR__ . '/../../../vendor/autoload.php';
 Swoole\Loader::vendor_init();
 
-
 $setting['worker_num'] = 4;
 $setting['daemonize'] = 1;
 
