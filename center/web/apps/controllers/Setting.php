@@ -104,6 +104,10 @@ class Setting extends \App\LoginController
                 $in['alert_types'] = $alert_types;
 
                 $in['owner_uid'] = trim($_POST['owner_uid']);
+                if (empty($in['owner_uid']))
+                {
+                    $in['owner_uid'] = $this->uid;
+                }
 
                 $backup_uids = '';
                 if (!empty($_POST['backup_uids']))
@@ -259,6 +263,47 @@ class Setting extends \App\LoginController
         return json_encode($return);
     }
 
+    /**
+     * 删除模块
+     * @return string
+     */
+    function delete_module()
+    {
+        $id = (int)$_GET['id'];
+        //接口创建人，超级管理员，项目负责人可以删除
+        if (!$this->isAllow(__METHOD__, $id))
+        {
+            $return['status'] = 400;
+            $return['msg'] = '没有权限删除';
+            return json_encode($return);
+        }
+
+        $data = table('module')->get($id)->get();
+        if ($data['owner_uid'] == 0)
+        {
+            $this->log->put("{$_SESSION['userinfo']['username']} try to del interface {$id} failed cause of owner_uid==0");
+            $return['status'] = 300;
+            $return['msg'] = '暂时不能删除';
+        }
+        else
+        {
+            $res = table('module')->del($id);
+            if ($res)
+            {
+                $return['status'] = 0;
+                $return['msg'] = '操作成功';
+            }
+            else
+            {
+                $this->log->put("{$_SESSION['userinfo']['username']}  del interface {$id} failed with db error");
+                $return['status'] = 500;
+                $return['msg'] = '操作失败';
+            }
+        }
+
+        return json_encode($return);
+    }
+
     function interface_list()
     {
         //Swoole\Error::dbd();
@@ -373,6 +418,10 @@ class Setting extends \App\LoginController
         {
             $in['name'] = trim($_POST['name']);
             $in['owner_uid'] = trim($_POST['owner_uid']);
+            if (empty($in['owner_uid']))
+            {
+                $in['owner_uid'] = $this->uid;
+            }
             $in['project_id'] = trim($_POST['project_id']);
             $backup_uids = '';
             if (!empty($_POST['backup_uids']))

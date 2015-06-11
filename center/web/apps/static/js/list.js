@@ -66,11 +66,18 @@ ListsG.getListsData = function() {
     });
 }
 
-function deleteItem(obj) {
+function deleteItem(obj, type) {
     var id = $(obj).attr('value');
+    var url;
+    if (!type || type == 1) {
+        url = '/setting/delete_interface/?id=' + id;
+    } else {
+        url = '/setting/delete_module/?id=' + id;
+    }
+
     $.ajax({
-        url: '/setting/delete_interface/?id='+id,
-        dataType : 'json',
+        url: url,
+        dataType: 'json',
         data: ListsG.filter,
         success: function(data) {
             if (data.status == 0) {

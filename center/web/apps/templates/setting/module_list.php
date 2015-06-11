@@ -119,9 +119,11 @@
                                                         <td class=" "><?=$d['addtime']?></td>
                                                         <td class=" ">
                                                             <a href="/setting/add_module/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
-<!--                                                            &nbsp;&nbsp;&nbsp;&nbsp;-->
-<!--                                                            <a value="--><?//=$d['id']?><!--" onclick="deleteItem(this)" href="javascript:void(0)" class="btn btn-danger btn-xs">删除</a>-->
-                                                        </td>
+                                                            &nbsp;&nbsp;
+                                                            <?php if ($this->isAllow('delete_module', $d['id'])):?>
+                                                            <a value="<?=$d['id']?>" onclick="deleteItem(this, 2)" href="javascript:void(0)" class="btn btn-danger btn-xs">删除</a>
+                                                            <?php endif; ?>
+                                                    </td>
                                                     </tr>
                                             <?php
                                                 }

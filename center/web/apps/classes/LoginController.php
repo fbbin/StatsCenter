@@ -28,4 +28,12 @@ class LoginController extends \Swoole\Controller
             $this->userinfo = $_SESSION['userinfo'];
         }
     }
+
+    function isAllow($optype, $id)
+    {
+        if ($_SESSION['userinfo']['usertype'] == 0)
+        {
+            return true;
+        }
+    }
 }
