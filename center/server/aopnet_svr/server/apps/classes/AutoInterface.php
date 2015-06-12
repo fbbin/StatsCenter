@@ -23,7 +23,7 @@ class AutoInterface
         if ($_key[0] == 'GET')
         {
             $key = $this->getKey($_key[1], $_key[2]);
-            $this->serv->send($fd, $key);
+            $this->serv->send($fd, strval($key));
         }
         else
         {

@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77cd259a-034a-46a0-a393-16efdca11407" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/center/server/aopnet_svr/server/apps/classes/AutoInterface.php" afterPath="$PROJECT_DIR$/center/server/aopnet_svr/server/apps/classes/AutoInterface.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/StatsCenter.iml" afterPath="$PROJECT_DIR$/.idea/StatsCenter.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="StatsCenter.iws" />
@@ -79,18 +81,22 @@
         <option value="$PROJECT_DIR$/center/web/apps/configs/common.php" />
         <option value="$PROJECT_DIR$/center/web/apps/templates/setting/add_interface.php" />
         <option value="$PROJECT_DIR$/center/web/apps/templates/setting/interface_list.php" />
-        <option value="$PROJECT_DIR$/center/server/aopnet_svr/server/apps/classes/AutoInterface.php" />
         <option value="$PROJECT_DIR$/center/web/apps/static/js/list.js" />
         <option value="$PROJECT_DIR$/center/web/apps/templates/setting/module_list.php" />
         <option value="$PROJECT_DIR$/center/web/apps/classes/LoginController.php" />
         <option value="$PROJECT_DIR$/center/web/apps/controllers/Setting.php" />
+        <option value="$PROJECT_DIR$/center/server/aopnet_svr/server/apps/classes/AutoInterface.php" />
       </list>
     </option>
   </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
   </component>
-  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="PHP 5.6" />
+  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="PHP 5.6">
+    <include_path>
+      <path value="$PROJECT_DIR$/../../swoole-ide-helper" />
+    </include_path>
+  </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="65" />
     <option name="y" value="-4" />
@@ -164,7 +170,7 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../framework" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../swoole-ide-helper" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -346,13 +352,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/center/web/apps/configs/mongo.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="935">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/center/web/apps/configs/session.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="935">
@@ -556,13 +555,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/center/server/aopnet_svr/server/aopnet_server.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.366667" vertical-offset="0" max-vertical-offset="651">
-          <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sdk/tests/report_auto_interface.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-30.166666" vertical-offset="1389" max-vertical-offset="2480">
@@ -669,13 +661,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/center/server/aopnet_svr/server/apps/classes/AutoInterface.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8563536" vertical-offset="837" max-vertical-offset="2666">
-          <caret line="52" column="5" selection-start-line="52" selection-start-column="5" selection-end-line="52" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/center/web/apps/static/js/list.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33766234" vertical-offset="1796" max-vertical-offset="3348">
@@ -704,6 +689,30 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-2.4407158" vertical-offset="5561" max-vertical-offset="18042">
           <caret line="109" column="17" selection-start-line="109" selection-start-column="17" selection-end-line="109" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../swoole-ide-helper/Swoole.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3441704" vertical-offset="23346" max-vertical-offset="46934">
+          <caret line="784" column="13" selection-start-line="784" selection-start-column="13" selection-end-line="784" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/center/server/aopnet_svr/server/apps/classes/AutoInterface.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.640884" vertical-offset="195" max-vertical-offset="2666">
+          <caret line="25" column="49" selection-start-line="25" selection-start-column="49" selection-end-line="25" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/center/server/aopnet_svr/server/aopnet_server.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3767956" vertical-offset="0" max-vertical-offset="905">
+          <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
           <folding />
         </state>
       </provider>
