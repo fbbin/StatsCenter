@@ -283,16 +283,16 @@ StatsG.parseStatsData = function(_data) {
     if (_data['succ_count'] > 0) {
         if (_data.time_key != undefined)
         {
-            line += '<td><a href="javascript: StatsG.openSuccPage('+_data.module_id+','+_data.interface_id+',\''+_data.time_key+'\')" ' +
+            line += '<td data-order="' + _data['succ_count'] + '"><a href="javascript: StatsG.openSuccPage(' + _data.module_id + ',' + _data.interface_id + ',\'' + _data.time_key + '\')" ' +
             'style="color: green ">' + _data['succ_count'] + '</td>';
         }
         else
         {
-            line += '<td><a href="javascript: StatsG.openSuccPage('+_data.module_id+','+_data.interface_id+')" ' +
+            line += '<td data-order="' + _data['succ_count'] + '"><a href="javascript: StatsG.openSuccPage(' + _data.module_id + ',' + _data.interface_id + ')" ' +
             'style="color: green ">' + _data['succ_count'] + '</td>';
         }
     } else {
-        line += '<td> 0 </td>';
+        line += '<td data-order="0"> 0 </td>';
     }
 
     if (fail_rate >= StatsG.config.green_rate) {
@@ -305,36 +305,36 @@ StatsG.parseStatsData = function(_data) {
     if (_data['fail_count'] > 0) {
         if (_data.time_key != undefined)
         {
-            line += '<td><a href="javascript: StatsG.openFailPage('+_data.module_id+','+_data.interface_id+',\''+_data.time_key+'\')" ' +
+            line += '<td data-order="' + _data['fail_count'] + '"><a href="javascript: StatsG.openFailPage('+_data.module_id+','+_data.interface_id+',\''+_data.time_key+'\')" ' +
             'style="color: red; ">' + _data['fail_count'] + '</td>';
         }
         else
         {
-            line += '<td><a href="javascript: StatsG.openFailPage('+_data.module_id+','+_data.interface_id+')" ' +
+            line += '<td data-order="' + _data['fail_count'] + '"><a href="javascript: StatsG.openFailPage('+_data.module_id+','+_data.interface_id+')" ' +
             'style="color: red; ">' + _data['fail_count'] + '</td>';
         }
     } else {
-        line += '<td> 0 </td>';
+        line += '<td data-order="0"> 0 </td>';
     }
     //成功率
-    line += '<td style="color: '+td_color+'">' + fail_rate + '%</td>';
+    line += '<td style="color: '+td_color+'" data-order="' + fail_rate + '">' + fail_rate + '%</td>';
     //响应时间最大值
-    line += '<td>' + _data['max_time'] + 'ms</td>';
+    line += '<td data-order="' + _data['max_time'] + '">' + _data['max_time'] + 'ms</td>';
     //响应时间最小值
-    line += '<td>' + _data['min_time'] + 'ms</td>';
+    line += '<td data-order="' + _data['min_time'] + '">' + _data['min_time'] + 'ms</td>';
     //平均响应事件
     avg_time = round(_data['total_time'] / _data['total_count'], 2);
-    line += '<td>' + avg_time + 'ms </td>';
+    line += '<td data-order="' + avg_time + '">' + avg_time + 'ms </td>';
 
     //失败响应时间
     if (_data['fail_count'] > 0) {
         avg_fail_time = round(_data['total_fail_time'] / _data['fail_count'], 2);
-        line += '<td>' + avg_fail_time + 'ms </td>';
+        line += '<td data-order="' + avg_fail_time + '">' + avg_fail_time + 'ms </td>';
     } else {
-        line += '<td> -- </td>';
+        line += '<td data-order="0"> -- </td>';
     }
     return line;
-}
+};
 
 StatsG.appendToTable2 = function (ip, _data, param) {
     var line;
@@ -464,7 +464,11 @@ function getStatsData() {
             //将interface组成一个map
             for (i = 0; i < data.interface.length; i++) {
                 interface_id = data.interface[i].id;
-                StatsG.interface_name[interface_id] = data.interface[i].name;
+                if (data.interface[i].alias) {
+                    StatsG.interface_name[interface_id] = data.interface[i].alias;
+                } else {
+                    StatsG.interface_name[interface_id] = data.interface[i].name;
+                }
                 stats[interface_id] = {
                     'total_count': 0,
                     'fail_count': 0,

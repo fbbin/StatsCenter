@@ -162,6 +162,7 @@ you can add as many as you like
     $(function() {
         pageSetUp();
         StatsG.filter = <?php echo json_encode($_GET);?>;
+
         getStatsData();
         $("#datepicker").datepicker("option",
             $.datepicker.regional[ 'zh-CN' ]);

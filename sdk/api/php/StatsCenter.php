@@ -172,6 +172,7 @@ class StatsCenter_Tick
     protected $start_ms;
     protected $params;
     protected $id;
+    protected $_end = false;
 
     const STATS_PKG_LEN = 25;
     const STATS_PKG_NUM = 58;
@@ -203,6 +204,11 @@ class StatsCenter_Tick
 
     function report($success, $ret_code = 0, $server_ip = 0)
     {
+        //避免重复调用
+        if ($this->_end)
+        {
+            return;
+        }
         $this->_time_out_pkg = array();
         $use_ms = intval((microtime(true) - $this->start_ms) * 1000);
         $pkg = pack(StatsCenter::PACK_STATS,
@@ -220,6 +226,8 @@ class StatsCenter_Tick
         {
             self::sendPackage();
         }
+        //关闭上报
+        $this->_end = true;
         unset(StatsCenter::$tick_array[$this->id]);
     }
 

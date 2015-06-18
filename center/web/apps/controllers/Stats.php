@@ -40,10 +40,11 @@ class Stats extends \App\LoginController
             $_GET['date_key'] = date('Y-m-d');
         }
 
+        $gets = array();
+        $gets['select'] = 'id,name,alias';
+
         if (empty($_GET['module_id']))
         {
-            $gets = array();
-            $gets['select'] = 'id,name';
             $interfaces = table('interface')->gets($gets);
             $_GET['module_id'] = 0;
         }
@@ -58,7 +59,8 @@ class Stats extends \App\LoginController
             }
             else
             {
-                $interfaces = table('interface')->gets(array('module_id'=>$_GET['module_id']));
+                $gets['module_id'] = intval($_GET['module_id']);
+                $interfaces = table('interface')->gets($gets);
             }
         }
 
@@ -197,7 +199,7 @@ class Stats extends \App\LoginController
             if (!empty($_GET['module_id']))
             {
                 $gets['module_id'] = intval($_GET['module_id']);
-                $sql = "select * from interface";
+                $sql = "select id,name,alias from interface";
                 $ifs = $this->db->query($sql)->fetchall();
             }
             else
@@ -205,6 +207,7 @@ class Stats extends \App\LoginController
                 $ifs = table('interface')->all()->fetchall();
             }
         }
+
         if (!empty($_GET['interface_id']))
         {
             $gets['interface_id'] = intval($_GET['interface_id']);
@@ -213,11 +216,11 @@ class Stats extends \App\LoginController
         else
         {
             $ids = array();
-            foreach($ifs as $if)
+            foreach ($ifs as $if)
             {
                 $ids[] = $if['id'];
             }
-            //$gets['in'] = array('interface_id', join(',', $ids));
+            $gets['in'] = array('interface_id', join(',', $ids));
             $ret['interface'] = $ifs;
         }
 
@@ -232,16 +235,20 @@ class Stats extends \App\LoginController
             $gets['where'][] = 'time_key < '.$param['time_end'];
         }
         $data = model('Stats')->gets($gets);
-        if (!empty($data)) {
+        if (!empty($data))
+        {
             $ret['status'] = 200;
-        } else {
+        }
+        else
+        {
             $ret['status'] = 400;
         }
         $ret['stats'] = $data;
         $ret['date'] = $gets['date_key'];
         $ret['time'] = '00:00~23:59';
 
-        return $ret_json ? json_encode($ret, JSON_NUMERIC_CHECK) : $ret;
+        $this->http->header('Content-Type', 'application/json');
+        return $ret_json ? json_encode($ret, JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE) : $ret;
     }
 
     function modules()

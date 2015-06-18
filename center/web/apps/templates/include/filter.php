@@ -12,9 +12,9 @@
     <select id="interface_id" class="select2">
         <option value="">所有接口</option>
         <?php foreach ($interfaces as $m): ?>
-            <option value="<?= $m['id'] ?>: <?= $m['name'] ?>"
+            <option value="<?= $m['id'] ?>: <?= (empty($m['alias']) ? $m['name'] : $m['alias']) ?>"
                 <?php if ($m['id'] == $_GET['interface_id']) echo 'selected="selected"'; ?> >
-                <?= $m['id'] ?>: <?= $m['name'] ?></option>
+                <?= $m['id'] ?>: <?= (empty($m['alias']) ? $m['name'] : $m['alias']) ?></option>
         <?php endforeach; ?>
     </select>
 </div>
