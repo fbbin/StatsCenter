@@ -3,6 +3,7 @@
  */
 var StatsG = {
     url: '/stats/data/',
+    page_url: '/stats/index/',
     history_url : '/stats/history_data/',
     filter: {
         hour_start: 0,
@@ -84,12 +85,16 @@ var history_chart_option = {
     ]
 };
 
-StatsG.filterByHour = function () {
+StatsG.filterByHour = function (reload) {
     StatsG.filter.hour_start = parseInt($('#filter_hour_s').val(), 10);
     StatsG.filter.hour_end = parseInt($('#filter_hour_e').val(), 10);
     window.localStorage.hour_start = StatsG.filter.hour_start;
     window.localStorage.hour_end = StatsG.filter.hour_end;
-    StatsG.refresh(StatsG.filter.interface_id);
+    if (reload) {
+        StatsG.go();
+    } else {
+        StatsG.refresh(StatsG.filter.interface_id);
+    }
 };
 
 StatsG.refresh = {};
@@ -154,8 +159,8 @@ StatsG.showHistoryData = function () {
     });
 };
 
-StatsG.go = function() {
-    var url = '/stats/index/?';
+StatsG.go = function () {
+    var url = StatsG.page_url + '?';
     for (var o in StatsG.filter) {
         url += o + '=' + StatsG.filter[o] + '&';
     }
@@ -570,6 +575,7 @@ function getStatsData() {
 }
 
 StatsG.showDetailStats = function() {
+    StatsG.page_url = location.pathname;
     StatsG.refresh = StatsG.showDetailStats;
     $.ajax({
         url: StatsG.url,

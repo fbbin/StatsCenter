@@ -215,6 +215,7 @@ class Setting extends \App\LoginController
         $id = (int)$_GET['id'];
         $uid = $this->uid;
         $data = table('interface')->get($id)->get();
+
         if ($data['owner_uid'] == 0)
         {
             \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} try to del interface {$id} failed cause of owner_uid==0");

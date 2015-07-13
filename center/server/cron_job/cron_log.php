@@ -2,8 +2,7 @@
 define('DEBUG', 'on');
 define('WEBPATH', __DIR__);
 
-require __DIR__ . '/../../vendor/autoload.php';
-Swoole\Loader::vendor_init();
+require dirname(__DIR__) . '/config.php';
 Swoole::$php->config->setPath(__DIR__.'/configs/');
 
 class Cron
@@ -53,7 +52,6 @@ class Cron
         }
     }
 }
-
 
 function del_log()
 {

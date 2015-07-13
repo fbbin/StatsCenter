@@ -100,6 +100,17 @@ class Stats extends \App\LoginController
         $param = $_GET;
         unset($param['type']);
         $param['select'] = 'ip, interface_id, time_key, total_count, fail_count, total_time, total_fail_time, max_time, min_time';
+
+        if (!empty($param['hour_start']))
+        {
+            $param['where'][] = 'time_key >= ' . ($param['hour_start'] * 12);
+            unset($param['hour_start']);
+        }
+        if (!empty($param['hour_end']))
+        {
+            $param['where'][] = 'time_key <= ' . ($param['hour_end'] * 12);
+            unset($param['hour_end']);
+        }
         $data = table('stats_'.$_GET['type'])->gets($param);
         return json_encode($data);
     }
@@ -107,6 +118,7 @@ class Stats extends \App\LoginController
     function client()
     {
         $_GET['type'] = 'client';
+        $this->assign('force_reload', true);
         $this->getInterfaceInfo();
         $this->display('stats/detail.php');
     }
@@ -114,6 +126,7 @@ class Stats extends \App\LoginController
     function server()
     {
         $_GET['type'] = 'server';
+        $this->assign('force_reload', true);
         $this->getInterfaceInfo();
         $this->display('stats/detail.php');
     }

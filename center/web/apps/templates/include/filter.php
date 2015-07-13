@@ -21,7 +21,7 @@
 <div class="form-group">
     时间：
     <label class="select">
-        <select class="input-sm" id="filter_hour_s" onchange="StatsG.filterByHour()">
+        <select class="input-sm" id="filter_hour_s" onchange="StatsG.filterByHour(<?=(empty($force_reload)?'false':'true')?>)">
             <option value='00' selected="selected">00</option>
             <?php
             for ($i = 1; $i < 24; $i++) {
@@ -32,7 +32,7 @@
         </select>
     </label> ~
     <label class="select">
-        <select class="input-sm" id="filter_hour_e" onchange="StatsG.filterByHour()">
+        <select class="input-sm" id="filter_hour_e" onchange="StatsG.filterByHour(<?=(empty($force_reload)?'false':'true')?>)">
             <?php
             for ($i = 0; $i < 23; $i++) {
                 $v = $i >= 10 ? $i : '0' . $i;

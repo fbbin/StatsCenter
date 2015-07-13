@@ -161,6 +161,12 @@ you can add as many as you like
         pageSetUp();
         StatsG.url = '/stats/detail_data/';
         StatsG.filter = <?php echo json_encode($_GET);?>;
+        if (StatsG.filter.hour_start > 0) {
+            $('#filter_hour_s').val(fillZero4Time(StatsG.filter.hour_start));
+        }
+        if (StatsG.filter.hour_end < 23) {
+            $('#filter_hour_e').val(fillZero4Time(StatsG.filter.hour_end));
+        }
         StatsG.showDetailStats();
         $("#datepicker").datepicker("option",
             $.datepicker.regional[ 'zh-CN' ]);
