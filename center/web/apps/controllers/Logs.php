@@ -6,16 +6,19 @@ use App;
 class Logs extends App\LoginController
 {
     public $log_level = array(
-        1 => "INFO",
-        2 => "WARNING",
-        3 => "ERROR",
-        4 => "TRACE",
+        "TRACE",
+        "INFO",
+        "NOTICE",
+        "WARNING",
+        "ERROR",
     );
+
     function index()
     {
         $gets['select'] = 'id, name';
         $modules = table('module')->gets($gets);
         $module_id = intval($_GET['module_id']);
+
         if (!empty($module_id))
         {
             $gets['module_id'] = $module_id;
@@ -28,6 +31,7 @@ class Logs extends App\LoginController
         $this->assign('modules',$modules);
         $this->display();
     }
+
     function data()
     {
         //\Swoole\Error::dbd();

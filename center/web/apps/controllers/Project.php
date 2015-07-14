@@ -27,53 +27,41 @@ class Project extends \App\LoginController
 
     function edit()
     {
-        if (empty($_GET) and empty($_POST))
+        if (!empty($_POST['name']))
+        {
+            $inserts['name'] = $_POST['name'];
+            $inserts['intro'] = $_POST['intro'];
+            $msg['code'] = 0;
+
+            if (empty($_POST['id']))
+            {
+                $res = table("project")->put($inserts);
+                $msg['message'] = $res ? "添加成功，ID: " . $res : "添加失败";
+            }
+            else
+            {
+                $res = table("project")->set(intval($_POST['id']),$inserts);
+                $msg['message'] = $res ? "修改成功" : "修改失败";
+            }
+            $this->assign('msg', $msg);
+        }
+
+        if (empty($_GET))
         {
             $form['name'] = \Swoole\Form::input('name');
             $form['intro'] = \Swoole\Form::input('intro');
             $this->assign('form', $form);
-            $this->display();
         }
-        elseif (!empty($_GET['id']) and empty($_POST))
+        else
         {
             $id = (int)$_GET['id'];
             $res = table("project")->get($id)->get();
-            $form['name'] = \Swoole\Form::input('name',$res['name']);
-            $form['intro'] = \Swoole\Form::input('intro',$res['intro']);
-            $form['id'] = \Swoole\Form::hidden('id',$res['id']);
-            $this->assign('form', $form);
-            $this->display();
+            $form['name'] = \Swoole\Form::input('name', $res['name']);
+            $form['intro'] = \Swoole\Form::input('intro', $res['intro']);
+            $form['id'] = \Swoole\Form::hidden('id', $res['id']);
         }
-        elseif(empty($_POST['id']))
-        {
-            $inserts['name'] = $_POST['name'];
-            $inserts['intro'] = $_POST['intro'];
-            $res = table("project")->put($inserts);
-            if ($res)
-            {
-                \Swoole\JS::js_goto("添加成功",'/project/plist/');
-            }
-            else
-            {
-                \Swoole\JS::js_goto("添加失败",'/project/plist/');
-            }
-        }
-        elseif (!empty($_POST['id']))
-        {
-            $id = (int)$_POST['id'];
-            $inserts['name'] = $_POST['name'];
-            $inserts['intro'] = $_POST['intro'];
-            $res = table("project")->set($id,$inserts);
-            if ($res)
-            {
-                \Swoole\JS::js_goto("修改成功",'/project/plist/');
-            }
-            else
-            {
-                \Swoole\JS::js_goto("修改失败",'/project/plist/');
-            }
-        }
-
+        $this->assign('form', $form);
+        $this->display();
     }
 
     function plist()

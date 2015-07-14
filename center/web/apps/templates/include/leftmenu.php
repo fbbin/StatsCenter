@@ -55,6 +55,9 @@
     endif;
     ?>
     <li>
+        <a href="/logs2/index/"><i class="fa fa-lg fa-fw fa-list-alt"></i> <span class="menu-item-parent">日志系统</span></a>
+    </li>
+    <li>
         <a href="/user/passwd/"><i class="fa fa-lg fa-fw fa-key"></i> <span class="menu-item-parent">修改密码</span></a>
     </li>
     <li>

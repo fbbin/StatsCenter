@@ -1,7 +1,6 @@
 <?php
 $redis['master'] = array(
-    'host' => "localhost",
+    'host' => "192.168.0.138",
     'port' => 6379,
-    'database' => 15,
 );
 return $redis;

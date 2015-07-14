@@ -69,6 +69,7 @@
                     <div class="no-padding" role="content">
                         <div class="widget-body">
                             <form class="smart-form" method="post">
+                                <?php include dirname(__DIR__) . '/include/msg.php'; ?>
                                 <?=$this->value($form, 'id')?>
                                 <fieldset>
                                     <section>

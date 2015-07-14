@@ -9,9 +9,9 @@
 
     <span class="ribbon-button-alignment">
         <span id="refresh" class="btn btn-ribbon" data-title="refresh" rel="tooltip"
-                                                 data-placement="bottom"
-                                                 data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
-                                                 data-html="true"><i class="fa fa-refresh"></i></span> </span>
+              data-placement="bottom"
+              data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
+              data-html="true"><i class="fa fa-refresh"></i></span> </span>
 
     <!-- breadcrumb -->
     <ol class="breadcrumb">
@@ -91,7 +91,7 @@
                                                             <?php
                                                             if ($this->isAllow(__METHOD__, $d['id'])):
                                                             ?>
-                                                            <a onclick="return confirm("确定要删除此项目！");" href="/project/delete/?id=<?=$d['id']?>" class="btn btn-danger btn-xs">删除</a>
+                                                            <a onclick="return confirm('确定要删除此项目');" href="/project/delete/?id=<?=$d['id']?>" class="btn btn-danger btn-xs">删除</a>
                                                             <?php endif ?>
                                                         </td>
                                                     </tr>
