@@ -1,15 +1,10 @@
 <?php
 namespace App;
 use Swoole;
+use StatsCenter;
 
-class AppStatsServer extends Swoole\Object
+class AppStatsServer extends StatsCenter\Server
 {
-    protected $pid_file;
-
-    /**
-     * @var \swoole_server
-     */
-    protected $serv;
     const PORT = 8501;
     const EOF = "\r\n";
 
@@ -43,16 +38,6 @@ class AppStatsServer extends Swoole\Object
             $resp->status(404);
             $resp->end("<h1>Page Not Found</h1>");
         }
-    }
-
-    function setLogger($log)
-    {
-        $this->log = $log;
-    }
-
-    function log($msg)
-    {
-        $this->log->info($msg);
     }
 
     function run($_setting = array())
