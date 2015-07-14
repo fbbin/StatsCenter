@@ -41,6 +41,12 @@
     <li>
         <a href="/project/plist/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">项目列表</span></a>
     </li>
+    <li>
+        <a href="/url_shortener/add/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">新增短链接</span></a>
+    </li>
+    <li>
+        <a href="/url_shortener/tiny_url_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">短链接列表</span></a>
+    </li>
 
 </ul>
 </nav>
