@@ -113,7 +113,11 @@
                                             ?>
                                                     <tr height="32">
                                                         <td class=" "><?=$d['id']?></td>
-                                                        <td class=" "><?=$d['name']?></td>
+                                                        <td class=" ">
+                                                            <a href="/stats/index/?module_id=<?=$d['id']?>">
+                                                            <?=$d['name']?>
+                                                            </a>
+                                                        </td>
                                                         <td class=" "><?=$d['owner_uid_name']?></td>
                                                         <td class=" "><?=$d['backup_uids_name']?></td>
                                                         <td class=" "><?=$d['addtime']?></td>

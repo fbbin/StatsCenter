@@ -88,6 +88,11 @@
                                                         <td class=" "><?=$d['add_time']?></td>
                                                         <td class=" ">
                                                             <a href="/project/edit/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
+                                                            <?php
+                                                            if ($this->isAllow(__METHOD__, $d['id'])):
+                                                            ?>
+                                                            <a onclick="return confirm("确定要删除此项目！");" href="/project/delete/?id=<?=$d['id']?>" class="btn btn-danger btn-xs">删除</a>
+                                                            <?php endif ?>
                                                         </td>
                                                     </tr>
                                             <?php

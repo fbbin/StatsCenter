@@ -4,6 +4,27 @@ use Swoole;
 
 class Project extends \App\LoginController
 {
+    function delete()
+    {
+        if (empty($_GET['id']))
+        {
+            return "缺少参数";
+        }
+        $id = intval($_GET['id']);
+        if (!$this->isAllow(__METHOD__, $id))
+        {
+            return '没有权限删除';
+        }
+        if (table('project')->del($id))
+        {
+            return Swoole\JS::js_back("删除成功");
+        }
+        else
+        {
+            return Swoole\JS::js_back("删除失败");
+        }
+    }
+
     function edit()
     {
         if (empty($_GET) and empty($_POST))
