@@ -33,30 +33,6 @@ class StatsCenter
     }
 
     /**
-     * 自动创建接口
-     */
-    static protected function autoCreateInterface()
-    {
-        static $interfaces = null;
-        if ($interfaces === null)
-        {
-            $cache_file = __DIR__.'/cache.php';
-            if (is_file($cache_file))
-            {
-                $interfaces = include $cache_file;
-                if (!is_array($interfaces))
-                {
-                    $interfaces = array();
-                }
-            }
-            else
-            {
-                $interfaces = array();
-            }
-        }
-    }
-
-    /**
      * 自动获取接口,首先获取本地缓存，如果没有则从服务器拉取
      * @param $interface_key
      * @param $module

@@ -1,7 +1,7 @@
 <?php
 namespace App;
 
-class AutoInterface
+class AopNetServer
 {
     protected $pid_file;
     public $log;
@@ -12,6 +12,7 @@ class AutoInterface
     protected $serv;
     const SVR_PORT_AOP = 9904;
     const EOF = "\r\n";
+    const KEY_PREFIX = 'aopnet:';
 
     function onReceive(\swoole_server $serv, $fd, $from_id, $data)
     {
@@ -20,15 +21,33 @@ class AutoInterface
         {
             return;
         }
+        //模调系统，自动创建接口
         if ($_key[0] == 'GET')
         {
             $key = $this->getKey($_key[1], $_key[2]);
             $this->serv->send($fd, strval($key));
         }
+        //服务层获取配置
+        elseif ($_key[0] == 'CONFIG')
+        {
+            $key = $this->getConfig($_key[1], $_key[2]);
+            $this->serv->send($fd, $key . self::EOF);
+        }
         else
         {
-            $this->serv->send($fd, "unkown".self::EOF);
+            $this->serv->send($fd, "unkown" . self::EOF);
         }
+    }
+
+    /**
+     * @param $env
+     * @param $id
+     * @return bool|string
+     */
+    private function getConfig($env, $id)
+    {
+        $redis_key = self::KEY_PREFIX . $env . ':' . $id;
+        return \Swoole::$php->redis->get($redis_key);
     }
 
     private function getKey($module_id, $interface_key)

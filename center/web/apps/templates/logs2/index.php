@@ -49,7 +49,7 @@
                                 <div class="dt-top-row">
                                     <div class="dataTables_filter" style="top:-56px">
                                         <form id="checkout-form" class="smart-form" novalidate="novalidate">
-                                            <div class="form-group" style="width: 200px;">
+                                            <div class="form-group" style="width: 300px;">
                                                 <select class="select2" id="module">
                                                     <option value="">所有模块</option>
                                                     <?php foreach ($modules as $m): ?>
@@ -78,9 +78,11 @@
                                             <div class="form-group" style="width: 120px;">
                                                 <select class="select2" id="level">
                                                     <option value="">日志等级</option>
-                                                    <?php foreach ($this->log_level as $id => $m): ?>
-                                                        <option value="<?= $id ?>"
-                                                            <?php if (isset($_GET['level']) and $id == $_GET['level'])
+                                                    <?php foreach ($this->log_level as $id => $m):
+                                                        $_l = $id + 1;
+                                                        ?>
+                                                        <option value="<?= $_l ?>"
+                                                            <?php if (isset($_GET['level']) and $_l == $_GET['level'])
                                                             {
                                                                 echo 'selected="selected"';
                                                             } ?> ><?= $m ?></option>
@@ -136,34 +138,26 @@
                                             日期：
                                             <div class="form-group">
                                                 <input type="text" class="form-control datepicker"
-                                                       data-dateformat="yymmdd" id="data_key"
+                                                       data-dateformat="yymmdd" id="data_key" style="width: 100px;"
                                                        readonly="readonly" value="<?= $_GET['date_key'] ?>"
                                                     />
                                             </div>
                                             <div class='form-group'>
-                                                <a id='submit' class='btn btn-success' style='padding:6px 12px' href='javascript:void(0)'>提交查询</a>
+                                                <a id='submit' class='btn btn-success' style='padding:6px 12px' href='javascript:void(0)'>查询日志</a>
                                             </div>
-                                            <?php
-                                            if (!empty($_GET['interface_id']) and !empty($_GET['module_id']))
-                                            {
-                                                echo "<div style='padding-left:20px' class='form-group'>
-                                                        <a style='padding:6px 12px' href='/logs/runtime/?interface_id=".$_GET['interface_id']."&module_id=".$_GET['module_id']."' class='btn btn-primary'>查看实时日志</a>
-                                                    </div>";
-                                            }
-                                            ?>
                                         </form>
                                     </div>
                                 </div>
                                 <table id="data_table_stats" class="table table-hover table-bordered table-striped">
                                     <thead>
                                     <tr>
-                                        <th>等级</th>
-                                        <th>时间</th>
-                                        <th>类型</th>
-                                        <th>子类</th>
-                                        <th>用户ID</th>
-                                        <th>客户IP</th>
-                                        <th>内容</th>
+                                        <th>Level</th>
+                                        <th>Time</th>
+                                        <th>Type</th>
+                                        <th>SubType</th>
+                                        <th>UserId</th>
+                                        <th>IP</th>
+                                        <th>Content</th>
                                     </tr>
                                     </thead>
                                     <tbody id="data_table_body">
@@ -172,13 +166,13 @@
                                     {
                                         ?>
                                         <tr height="32">
-                                            <td><?=$this->log_level[$d['level']]?></td>
-                                            <td><?=$d['addtime']?></td>
-                                            <td><?=$d['type']?></td>
-                                            <td><?=$d['subtype']?></td>
-                                            <td><?=$d['uid']?></td>
-                                            <td><?=$d['ip']?></td>
-                                            <td><?=$d['content']?></td>
+                                            <td><?= $this->log_level[$d['level']] ?></td>
+                                            <td><?= $d['addtime'] ?></td>
+                                            <td><?= $d['type'] ?></td>
+                                            <td><?= $d['subtype'] ?></td>
+                                            <td><?= $d['uid'] ?></td>
+                                            <td><?= $d['ip'] ?></td>
+                                            <td><?= $d['content'] ?></td>
                                         </tr>
                                     <?php
                                     }
@@ -187,7 +181,9 @@
                                 </table>
                             </div>
                         </div>
-
+                        <div class="pager-box">
+                            <?php echo $pager['render'];?>
+                        </div>
                     </div>
                     <!-- end widget content -->
 

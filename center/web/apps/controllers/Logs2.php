@@ -45,7 +45,26 @@ class Logs2 extends App\LoginController
         {
             $log_table = $log_table . $_GET['date_key'];
         }
-
+        if (!empty($_GET['type']))
+        {
+            $gets['type'] = $_GET['type'];
+        }
+        if (!empty($_GET['subtype']))
+        {
+            $gets['subtype'] = $_GET['subtype'];
+        }
+        if (!empty($_GET['client_ip']))
+        {
+            $gets['client_ip'] = $_GET['client_ip'];
+        }
+        if (!empty($_GET['level']))
+        {
+            $gets['level'] = $_GET['level'] - 1;
+        }
+        if (!empty($_GET['uid']))
+        {
+            $gets['uid'] = $_GET['uid'];
+        }
         if (isset($_GET['hour_start']))
         {
             $gets['where'][] = 'hour >= ' . $_GET['hour_start'];
@@ -53,22 +72,6 @@ class Logs2 extends App\LoginController
         if (isset($_GET['hour_end']))
         {
             $gets['where'][] = 'hour <= ' . $_GET['hour_end'];
-        }
-//        $start_hour = !empty($_GET['hour_start']) ? ($_GET['hour_start']) : '00';
-//        $end_hour = !empty($_GET['hour_end']) ? ($_GET['hour_end']) : 23;
-//        $start_time = $_GET['date_key'] . ' ' . $start_hour . ':00:' . '00';
-//        $end_time = $_GET['date_key'] . ' ' . $end_hour . ':00:' . '00';
-
-//
-//        $gets['where'][] = 'addtime < ' . strtotime($end_time);
-
-        if (!empty($_GET['client_ip']))
-        {
-            $gets['client_ip'] = $_GET['client_ip'];
-        }
-        if (isset($_GET['level']))
-        {
-            $gets['level'] = $_GET['level'];
         }
         $gets['page'] = !empty($_GET['page']) ? $_GET['page'] : 1;
         $gets['pagesize'] = 50;
@@ -98,9 +101,9 @@ class Logs2 extends App\LoginController
         $type = empty($_GET['type']) ? 0 : $_GET['type'];
         $subtype = empty($_GET['subtype']) ? 0 : $_GET['subtype'];
 
-        $form['clients'] = \Swoole\Form::select('clients', $_clients, $client, '', array('class' => 'select2'));
-        $form['types'] = \Swoole\Form::select('clients', $_types, $type, '', array('class' => 'select2'));
-        $form['subtypes'] = \Swoole\Form::select('clients', $_subtypes, $subtype, '', array('class' => 'select2'));
+        $form['clients'] = \Swoole\Form::select('client', $_clients, $client, '', array('class' => 'select2'));
+        $form['types'] = \Swoole\Form::select('type', $_types, $type, '', array('class' => 'select2'));
+        $form['subtypes'] = \Swoole\Form::select('subtype', $_subtypes, $subtype, '', array('class' => 'select2'));
         $this->assign('form', $form);
         $this->assign('logs', $logs);
     }

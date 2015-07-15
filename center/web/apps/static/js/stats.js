@@ -482,7 +482,7 @@ function getStatsData() {
                     'total_time': 0.0,
                     'max_time': 0,
                     'min_time': 0,
-                    time_str: '00:00~23:59',
+                    time_str: data.time_str,
                     date_key: data.date
                 }
             }
