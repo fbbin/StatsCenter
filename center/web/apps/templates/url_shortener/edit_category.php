@@ -50,6 +50,13 @@
 
     <div id="content">
         <div class="row">
+            <?php if (!empty($error)) : ?>
+            <div class="alert alert-block alert-warning">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                <p><?=$error?></p>
+            </div>
+            <?php endif; ?>
+
             <article class="col-sm-12 sortable-grid ui-sortable">
                 <div class="jarviswidget jarviswidget-sortable" id="wid-id-0" data-widget-togglebutton="false"
                      data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false"

@@ -65,7 +65,7 @@
                         <ul class="nav nav-tabs pull-left in">
                             <li class="active">
                                 <a><i class="fa fa-clock-o"></i>
-                                    <span class="hidden-mobile hidden-tablet">新增短链接</span>
+                                    <span class="hidden-mobile hidden-tablet"><?=$title?></span>
                                 </a>
                             </li>
                         </ul>

@@ -59,7 +59,7 @@
                                                 </label>
                                             </div>
                                             <div class="form-group" style="width: 200px;">
-                                                <?=$form['project_id']?>
+                                                <?=$form['category_id']?>
                                             </div>
                                             <div class='form-group' style="padding-left: 100px">
                                                 <a id='submit' class='btn btn-success' style='padding:6px 12px' href='javascript:void(0)'>提交查询</a>
@@ -73,8 +73,8 @@
                                         <thead>
                                         <tr>
                                             <th style="width: 50px; overflow-x: hidden;">ID</th>
-                                            <th>分类名称</th>
-                                            <th>所属项目</th>
+                                            <th>短网址名称</th>
+                                            <th>所属分类</th>
                                             <th>添加时间</th>
                                             <th>操作</th>
                                         </tr>
@@ -87,11 +87,11 @@
                                                     <tr height="32">
                                                         <td><?=$d['id']?></td>
                                                         <td><?=$d['name']?></td>
-                                                        <td><a href="/url_shortener/category_list?project_id=<?=$d['project_id']?>"><?=$d['project_name']?></a></td>
+                                                        <td><a href="/url_shortener/category_list?"><?=$d['category_name']?></a></td>
                                                         <td><?=$d['add_time']?></td>
                                                         <td>
-                                                            <a href="/url_shortener/edit_category/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
-                                                            <a href="/url_shortener/delete_category/?id=<?=$d['id']?>" class="btn btn-warning btn-xs">删除</a>
+                                                            <a href="/url_shortener/edit/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
+                                                            <a href="/url_shortener/delete/?id=<?=$d['id']?>" class="btn btn-warning btn-xs">删除</a>
                                                         </td>
                                                     </tr>
                                             <?php
