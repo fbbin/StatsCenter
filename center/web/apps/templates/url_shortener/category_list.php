@@ -91,6 +91,7 @@
                                                         <td><?=$d['add_time']?></td>
                                                         <td>
                                                             <a href="/url_shortener/edit_category/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
+                                                            <a href="/url_shortener/delete_category/?id=<?=$d['id']?>" class="btn btn-warning btn-xs">删除</a>
                                                         </td>
                                                     </tr>
                                             <?php

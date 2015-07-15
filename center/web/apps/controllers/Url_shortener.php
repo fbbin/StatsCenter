@@ -4,20 +4,106 @@ use Swoole;
 
 class Url_shortener extends \App\LoginController
 {
+    private function display_edit_page($category_id = null, $name = null, $url = null, $error = null)
+    {
+        $form['name'] = \Swoole\Form::input('name', $name);
+        $form['url'] = \Swoole\Form::input('url', $url);
+
+        $projects = table('project')->gets(array(
+            'select' => 'id, name',
+            'order' => 'id desc'
+        ));
+        $projects = array_rebuild($projects, 'id', 'name');
+
+        $categories = table('tiny_url_category')->gets(array(
+            'select' => 'id, name, project_id',
+            'order' => 'project_id asc',
+            'where' => 'status = 1',
+        ));
+        $category_options = array();
+        foreach ($categories as $category)
+        {
+            $option = '';
+
+            if (!isset($projects[$category['project_id']])) {
+                continue;
+            }
+
+            $option .= $projects[$category['project_id']];
+            $option .= ' - ';
+            $option .= $category['name'];
+            $category_options[$category['id']] = $option;
+        }
+        $form['category_id'] = \Swoole\Form::select(
+            'category_id',
+            $category_options,
+            $category_id,
+            null,
+            array('class' => 'select2 select2-offscreen', 'style' => 'width:100%')
+        );
+
+        $this->assign('error', $error);
+        $this->assign('form', $form);
+        $this->display('url_shortener/edit.php');
+    }
+
     function add()
     {
         if (empty($_POST))
         {
-            $form['name'] = \Swoole\Form::input('name');
-            $form['url'] = \Swoole\Form::input('url');
-            $form['project_id'] = \Swoole\Form::select('project', array(), '', null, array('class' => 'select2 select2-offscreen', 'style' => 'width:100%'));
-
-            $this->assign('form', $form);
-            $this->display('url_shortener/edit');
+            return $this->display_edit_page();
         }
         else
         {
-            $inserts['name'] = $_POST['name'];
+            $error = '';
+
+            $category_id = isset($_POST['category_id'])
+                ? (int) $_POST['category_id']
+                : '';
+            $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+            $url = isset($_POST['url']) ? trim($_POST['url']) : '';
+
+            if (empty($category_id))
+            {
+                $error = '所属分类是必需的！';
+            }
+            elseif ($name === '')
+            {
+                $error = '名称是必需的！';
+            }
+            elseif ($url === '')
+            {
+                $error = '网址是必需的！';
+            }
+            elseif (!is_valid_url($url))
+            {
+                $error = '网址格式不正确！';
+            }
+
+            if (!empty($error)) {
+                return $this->display_edit_page($category_id, $name, $url, $error);
+            }
+
+            $inserts['name'] = $name;
+            $inserts['category_id'] = $category_id;
+
+            $tiny_url_id = table('tiny_url')->put($inserts);
+
+            if ($tiny_url_id)
+            {
+                $msg = '添加成功';
+
+                $res = $this->redis->hSet('tiny-url:url', ShortUrl::encode($tiny_url_id), $url);
+                if (!$res) {
+                    // log
+                }
+            }
+            else
+            {
+                $msg = '添加失败';
+            }
+
+            return \Swoole\JS::js_goto($msg, '/url_shortener/tiny_url_list');
         }
     }
 
@@ -33,7 +119,7 @@ class Url_shortener extends \App\LoginController
 
     function tiny_url_list()
     {
-        echo '短链接列表';
+        $this->display();
     }
 
     private function display_edit_category_page($title = '', $project_id = null, $name = null)
@@ -101,11 +187,16 @@ class Url_shortener extends \App\LoginController
 
             $res = table('tiny_url_category')->set($id, $sets);
             $msg = $res ? '操作成功' : '操作失败';
-
             \Swoole\JS::js_goto($msg, "/url_shortener/edit_category?id={$id}");
         }
 
-        $category = table('tiny_url_category')->get($id)->get();
+        $gets = array('where' => array());
+        $gets['where'][] = "id = {$id}";
+        $gets['where'][] = 'status = 1';
+
+        $category_list = table('tiny_url_category')->gets($gets);
+        $category = !empty($category_list[0]) ? $category_list[0] : null;
+
         if (empty($category))
         {
             $this->http->status(404);
@@ -115,6 +206,20 @@ class Url_shortener extends \App\LoginController
         $name = $category['name'];
 
         $this->display_edit_category_page('编辑短链接分类', $project_id, $name);
+    }
+
+    function delete_category()
+    {
+        if (isset($_GET['id']))
+        {
+            $id = (int) $_GET['id'];
+            $res = table('tiny_url_category')->set($id, array('status' => 2));
+            $msg = $res ? '操作成功' : '操作失败';
+            \Swoole\JS::js_goto($msg, '/url_shortener/category_list');
+        } else {
+            $this->http->status(302);
+            $this->http->header('Location', '/url_shortener/category_list');
+        }
     }
 
     function category_list()
@@ -183,6 +288,7 @@ class Url_shortener extends \App\LoginController
         $gets['order'] = 'id desc';
         $gets['page'] = !empty($_GET['page']) ? (int) $_GET['page'] : 1;
         $gets['pagesize'] = 20;
+        $gets['where'] = 'status = 1';
         $data = table('tiny_url_category')->gets($gets, $pager);
 
         foreach ($data as $k => $v)
@@ -197,6 +303,37 @@ class Url_shortener extends \App\LoginController
         $this->assign('pager', array('render' => $pager->render()));
 
         $this->display();
+    }
+}
+
+class ShortUrl
+{
+    // 53 个字母数字乱序
+    const ALPHABET = '4sF8y2KPuzRHixUtfGX3gcCTLhnASMe65NjpBw9YWDqbamEkQrd7J';
+    const BASE = 53; // strlen(self::ALPHABET)
+    const OFFSET = 10000;
+
+    public static function encode($num)
+    {
+        $num = $num + self::OFFSET;
+        $str = '';
+        while ($num > 0)
+        {
+            $str = substr(self::ALPHABET, ($num % self::BASE), 1) . $str;
+            $num = floor($num / self::BASE);
+        }
+        return $str;
+    }
+    public static function decode($str)
+    {
+        $num = 0;
+        $len = strlen($str);
+        for ($i = 0; $i < $len; $i++)
+        {
+            $num = $num * self::BASE + strpos(self::ALPHABET, $str[$i]);
+        }
+        $num = $num - self::OFFSET;
+        return $num;
     }
 }
 
@@ -227,3 +364,9 @@ function get_post($key)
         return false;
     }
 }
+
+function is_valid_url($url)
+{
+    return (bool) preg_match('@^(https?|ftp)://[^\s/$.?#].[^\s]*$@iS', $url);
+}
+
