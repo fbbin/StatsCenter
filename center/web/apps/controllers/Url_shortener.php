@@ -76,7 +76,7 @@ class Url_shortener extends \App\LoginController
             {
                 $msg = '添加成功';
 
-                $res = $this->redis->hSet('tiny-url:url', ShortUrl::encode($tiny_url_id), $url);
+                $res = $this->redis('cluster')->hSet('tiny-url:url', ShortUrl::encode($tiny_url_id), $url);
                 if (!$res) {
                     // log
                 }

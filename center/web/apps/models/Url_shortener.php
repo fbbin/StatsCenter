@@ -47,7 +47,7 @@ class Url_shortener extends Swoole\Model
         if (!empty($tiny_url_list[0]))
         {
             $tiny_url = $tiny_url_list[0];
-            $tiny_url['url'] = $this->swoole->redis->hGet('tiny-url:url', ShortUrl::encode($id));
+            $tiny_url['url'] = $this->swoole->redis('cluster')->hGet('tiny-url:url', ShortUrl::encode($id));
         }
         else
         {
@@ -66,7 +66,7 @@ class Url_shortener extends Swoole\Model
 
         if ($res)
         {
-            $this->swoole->redis->hSet('tiny-url:url', ShortUrl::encode($id), $url);
+            $this->swoole->redis('cluster')->hSet('tiny-url:url', ShortUrl::encode($id), $url);
         }
 
         return (bool) $res;
@@ -78,7 +78,7 @@ class Url_shortener extends Swoole\Model
 
         if ($res)
         {
-            $this->swoole->redis->hDel('tiny-url:url', ShortUrl::encode($id));
+            $this->swoole->redis('cluster')->hDel('tiny-url:url', ShortUrl::encode($id));
         }
 
         return (bool) $res;
@@ -101,7 +101,7 @@ class Url_shortener extends Swoole\Model
 
         foreach ($tiny_url_id_list as $id)
         {
-            $visits_list[$id] = (int) $this->swoole->redis->zScore(
+            $visits_list[$id] = (int) $this->swoole->redis('cluster')->zScore(
                 'tiny-url:visits',
                 ShortUrl::encode($id)
             );
