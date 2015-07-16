@@ -179,7 +179,7 @@ class Url_shortener extends \App\LoginController
             {
                 $date_str = $date->format('Y-m-d');
 
-                $visits = $this->redis->zScore("tiny-url:visits:{$date_str}", $symbol);
+                $visits = $this->redis('cluster')->zScore("tiny-url:visits:{$date_str}", $symbol);
                 $visits = $visits !== false ? $visits : 0;
 
                 $data[] = array(
