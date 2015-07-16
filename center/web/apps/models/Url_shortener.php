@@ -1,6 +1,7 @@
 <?php
 namespace App\Model;
 use Swoole;
+use App\ShortUrl;
 
 class Url_shortener extends Swoole\Model
 {
@@ -33,5 +34,63 @@ class Url_shortener extends Swoole\Model
         }
 
         return $category_options;
+    }
+
+    function get_tiny_url_by_id($id)
+    {
+        $gets = array('where' => array());
+        $gets['where'][] = "id = {$id}";
+        $gets['where'][] = 'status = 1';
+
+        $tiny_url_list = table('tiny_url')->gets($gets);
+
+        if (!empty($tiny_url_list[0]))
+        {
+            $tiny_url = $tiny_url_list[0];
+            $tiny_url['url'] = $this->swoole->redis->hGet('tiny-url:url', ShortUrl::encode($id));
+        }
+        else
+        {
+            $tiny_url = null;
+        }
+
+        return $tiny_url;
+    }
+
+    function update_tiny_url_by_id($id, $category_id, $name, $url)
+    {
+        $sets = array();
+        $sets['category_id'] = $category_id;
+        $sets['name'] = $name;
+        $res = table('tiny_url')->set($id, $sets);
+
+        if ($res)
+        {
+            $this->swoole->redis->hSet('tiny-url:url', ShortUrl::encode($id), $url);
+        }
+
+        return (bool) $res;
+    }
+
+    function delete_tiny_url($id)
+    {
+        $res = table('tiny_url')->set($id, array('status' => 2));
+
+        if ($res)
+        {
+            $this->swoole->redis->hDel('tiny-url:url', ShortUrl::encode($id));
+        }
+
+        return (bool) $res;
+    }
+
+    function get_symbol_list_by_id_list(array $tiny_url_id_list)
+    {
+        $symbol_list = array();
+        foreach ($tiny_url_id_list as $id) {
+            $symbol_list[$id] = ShortUrl::encode($id);
+        }
+
+        return $symbol_list;
     }
 }

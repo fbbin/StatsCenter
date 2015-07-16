@@ -99,14 +99,7 @@ class Url_shortener extends \App\LoginController
         }
 
         $id = (int) $_GET['id'];
-
-        $gets = array('where' => array());
-        $gets['where'][] = "id = {$id}";
-        $gets['where'][] = 'status = 1';
-
-        $tiny_url_list = table('tiny_url')->gets($gets);
-        $tiny_url = !empty($tiny_url_list[0]) ? $tiny_url_list[0] : null;
-
+        $tiny_url = model('Url_shortener')->get_tiny_url_by_id($id);
         if (empty($tiny_url))
         {
             $this->http->status(404);
@@ -115,7 +108,7 @@ class Url_shortener extends \App\LoginController
 
         $category_id = $tiny_url['category_id'];
         $name = $tiny_url['name'];
-        $url = 'http://www.baidu.com';
+        $url = $tiny_url['url'];
 
         if (empty($_POST))
         {
@@ -129,11 +122,7 @@ class Url_shortener extends \App\LoginController
                 return $this->display_edit_page('编辑短网址', $category_id, $name, $url, $error);
             }
 
-            $sets = array();
-            $sets['category_id'] = $category_id;
-            $sets['name'] = $name;
-
-            $res = table('tiny_url')->set($id, $sets);
+            $res = model('Url_shortener')->update_tiny_url_by_id($id, $category_id, $name, $url);
             $msg = $res ? '操作成功' : '操作失败';
             \Swoole\JS::js_goto($msg, "/url_shortener/edit?id={$id}");
         }
@@ -203,8 +192,12 @@ class Url_shortener extends \App\LoginController
         $gets['pagesize'] = 20;
         $gets['where'][] = 'status = 1';
         $data = table('tiny_url')->gets($gets, $pager);
+
+        $tiny_url_id_list = array();
         foreach ($data as &$row)
         {
+            $tiny_url_id_list[] = (int) $row['id'];
+
             if (isset($category_options[$row['category_id']]))
             {
                 $row['category_name'] = $category_options[$row['category_id']];
@@ -212,6 +205,20 @@ class Url_shortener extends \App\LoginController
             else
             {
                 $row['category_name'] = '';
+            }
+        }
+        unset($row);
+
+        $symbol_list = model('Url_shortener')->get_symbol_list_by_id_list($tiny_url_id_list);
+        foreach ($data as &$row)
+        {
+            if (!empty($symbol_list[$row['id']]))
+            {
+                $row['tiny_url'] = 'http://chelun.com/url/' . $symbol_list[$row['id']];
+            }
+            else
+            {
+                $row['tiny_url'] = '#';
             }
         }
         unset($row);
@@ -228,7 +235,8 @@ class Url_shortener extends \App\LoginController
         if (isset($_GET['id']))
         {
             $id = (int) $_GET['id'];
-            $res = table('tiny_url')->set($id, array('status' => 2));
+            $res = model('Url_shortener')->delete_tiny_url($id);
+
             $msg = $res ? '操作成功' : '操作失败';
             \Swoole\JS::js_goto($msg, '/url_shortener/tiny_url_list');
         } else {

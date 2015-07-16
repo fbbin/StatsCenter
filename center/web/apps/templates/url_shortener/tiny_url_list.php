@@ -86,7 +86,7 @@
                                             ?>
                                                     <tr height="32">
                                                         <td><?=$d['id']?></td>
-                                                        <td><?=$d['name']?></td>
+                                                        <td><a href="<?=$d['tiny_url']?>"><?=$d['name']?></a></td>
                                                         <td><a href="/url_shortener/category_list?"><?=$d['category_name']?></a></td>
                                                         <td><?=$d['add_time']?></td>
                                                         <td>
