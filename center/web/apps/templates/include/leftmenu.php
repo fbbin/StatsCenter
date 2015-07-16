@@ -3,6 +3,7 @@
     <li class="active">
         <a href="/stats/home/" title="Dashboard"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">系统首页</span></a>
     </li>
+    <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 1) : ?>
     <li>
         <a href="/stats/index/" id="stats_index_link"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">统计数据</span></a>
     </li>
@@ -20,6 +21,7 @@
     <li>
         <a href="/setting/module_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">模块列表</span></a>
     </li>
+    <?php endif; ?>
     <?php
     //只有超级管理员可以修改项目
     if ($this->userinfo['usertype'] == 0):
@@ -54,12 +56,15 @@
     <?php
     endif;
     ?>
+    <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 1) : ?>
     <li>
         <a href="/logs2/index/"><i class="fa fa-lg fa-fw fa-list-alt"></i> <span class="menu-item-parent">日志系统</span></a>
     </li>
+    <?php endif; ?>
     <li>
         <a href="/user/passwd/"><i class="fa fa-lg fa-fw fa-key"></i> <span class="menu-item-parent">修改密码</span></a>
     </li>
+    <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 2) : ?>
     <li>
         <a href="#">
             <i class="fa fa-lg fa-fw fa-link"></i>
@@ -84,5 +89,6 @@
             </li>
         </ul>
     </li>
+    <?php endif; ?>
 </ul>
 </nav>

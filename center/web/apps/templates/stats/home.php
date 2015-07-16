@@ -87,14 +87,8 @@
                             <!-- content -->
                             <div id="myTabContent" class="tab-content">
                                 <div class="tab-pane fade active in padding-10 no-padding-bottom" id="s1">
-                                    <p>联系人：韩天峰 </p>
-
-                                    <p>
-                                        SDK下载：<a href="http://192.168.0.2/svn/eclicks/web/StatsCenter/sdk/">
-                                            http://192.168.0.2/svn/eclicks/web/StatsCenter/sdk/
-                                        </a>
-                                    </p>
-
+                                    <p>联系人：韩天峰</p>
+                                    <p>短网址服务联系人：陈东雄</p>
                                 </div>
                                 <!-- end s1 tab pane -->
 
