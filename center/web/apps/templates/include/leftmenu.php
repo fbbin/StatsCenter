@@ -56,7 +56,7 @@
     <?php
     endif;
     ?>
-    <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 1) : ?>
+    <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 3) : ?>
     <li>
         <a href="/logs2/index/"><i class="fa fa-lg fa-fw fa-list-alt"></i> <span class="menu-item-parent">日志系统</span></a>
     </li>

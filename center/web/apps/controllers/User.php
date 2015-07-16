@@ -85,6 +85,7 @@ class User extends \App\LoginController
             $form['mobile'] = \Swoole\Form::input('mobile',$user['mobile']);
             $form['realname'] = \Swoole\Form::input('realname',$user['realname']);
             $form['username'] = \Swoole\Form::input('username',$user['username']);
+            $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], null, null, array('class' => 'select2'));
             $form['id'] = \Swoole\Form::hidden('id',$user['id']);
             $this->assign('form', $form);
             $this->display();
@@ -112,8 +113,10 @@ class User extends \App\LoginController
         {
             $inserts['realname'] = $_POST['realname'];
             $inserts['username'] = trim($_POST['username']);
-            $inserts['uid'] = (int)$_POST['uid'];
-            $inserts['project_id'] = implode(',',$_POST['project_id']);
+            $inserts['uid'] = isset($_POST['uid']) ? (int) $_POST['uid'] : 0;
+            $inserts['project_id'] = isset($_POST['project_id'])
+                ? implode(',',$_POST['project_id'])
+                : '';
             $inserts['mobile'] = $_POST['mobile'];
             //默认密码
             $inserts['password'] = Swoole\Auth::mkpasswd($inserts['username'], '123456');
