@@ -143,6 +143,65 @@ class Url_shortener extends \App\LoginController
         }
     }
 
+    function stats()
+    {
+        if (isset($_GET['id']))
+        {
+            $has_prev = $has_next = false;
+            $tiny_url_id = (int) $_GET['id'];
+            $today = new \DateTime('today');
+            $from_date = isset($_GET['from']) ? new \DateTime($_GET['from']) : clone $today;
+            $next_from_date = clone $from_date;
+            $next_from_date_str = $next_from_date->modify('-20 days')->format('Y-m-d');
+            $prev_from_date = clone $from_date;
+            $prev_from_date_str = $prev_from_date->modify('+20 days')->format('Y-m-d');
+
+            $symbol = ShortUrl::encode($tiny_url_id);
+            $tiny_url = "http://chelun.com/url/{$symbol}";
+
+            $data = array();
+            $start_date = new \DateTime('2015-07-16 00:00:00');
+
+            if ($from_date < $today)
+            {
+                $has_prev = true;
+            }
+
+            $interval = $start_date->diff($from_date);
+            $row_count = $interval->days + 1;
+            if ($row_count > 20)
+            {
+                $row_count = 20;
+                $has_next = true;
+            }
+
+            for ($i = 0, $date = clone $from_date; $i < $row_count; $i++, $date->modify('-1 day'))
+            {
+                $date_str = $date->format('Y-m-d');
+
+                $visits = $this->redis->zScore("tiny-url:visits:{$date_str}", $symbol);
+                $visits = $visits !== false ? $visits : 0;
+
+                $data[] = array(
+                    'date' => $date_str,
+                    'visits' => $visits,
+                );
+            }
+
+            $this->assign('tiny_url_id', $tiny_url_id);
+            $this->assign('tiny_url', $tiny_url);
+            $this->assign('data', $data);
+            $this->assign('next_from_date_str', $next_from_date_str);
+            $this->assign('prev_from_date_str', $prev_from_date_str);
+            $this->assign('has_prev', $has_prev);
+            $this->assign('has_next', $has_next);
+            $this->display();
+        }
+        else
+        {
+        }
+    }
+
     function tiny_url_list()
     {
         $gets = array();

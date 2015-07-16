@@ -64,10 +64,16 @@
                                     ?>
                                 </tbody>
                             </table>
-                            </div>
-                        <div class="pager-box">
-                            <?php // echo $pager['render'];?>
                         </div>
+                        <div class="pager-box">
+                            <div class="pager">
+                                <?php if ($has_prev) : ?>
+                                    <a href="/url_shortener/stats?id=<?=$tiny_url_id?>&from=<?=$prev_from_date_str?>" class="">上一页</a>
+                                <?php endif; ?>
+                                <?php if ($has_next) : ?>
+                                    <a href="/url_shortener/stats?id=<?=$tiny_url_id?>&from=<?=$next_from_date_str?>" class="">下一页</a>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         <!-- end widget content -->
 

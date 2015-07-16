@@ -90,6 +90,7 @@
                                                         <td><a href="/url_shortener/tiny_url_list?category_id=<?=$d['category_id']?>"><?=$d['category_name']?></a></td>
                                                         <td><?=$d['add_time']?></td>
                                                         <td>
+                                                            <a href="/url_shortener/stats/?id=<?=$d['id']?>" class="btn btn-info btn-xs">查看统计</a>
                                                             <a href="/url_shortener/edit/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
                                                             <a href="/url_shortener/delete/?id=<?=$d['id']?>" class="btn btn-warning btn-xs">删除</a>
                                                         </td>
