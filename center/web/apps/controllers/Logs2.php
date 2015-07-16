@@ -25,6 +25,7 @@ class Logs2 extends App\LoginController
         {
             $module_id = $modules[0]['id'];
         }
+        $this->assign('module_id', $module_id);
         $this->data($module_id);
         $this->assign('modules', $modules);
         $this->display();
@@ -53,9 +54,9 @@ class Logs2 extends App\LoginController
         {
             $gets['subtype'] = $_GET['subtype'];
         }
-        if (!empty($_GET['client_ip']))
+        if (!empty($_GET['client']))
         {
-            $gets['client_ip'] = $_GET['client_ip'];
+            $gets['ip'] = $_GET['client'];
         }
         if (!empty($_GET['level']))
         {
@@ -73,6 +74,7 @@ class Logs2 extends App\LoginController
         {
             $gets['where'][] = 'hour <= ' . $_GET['hour_end'];
         }
+
         $gets['page'] = !empty($_GET['page']) ? $_GET['page'] : 1;
         $gets['pagesize'] = 50;
         $gets['order'] = 'id asc';
@@ -98,8 +100,8 @@ class Logs2 extends App\LoginController
         }
 
         $client = empty($_GET['client']) ? 0 : $_GET['client'];
-        $type = empty($_GET['type']) ? 0 : $_GET['type'];
-        $subtype = empty($_GET['subtype']) ? 0 : $_GET['subtype'];
+        $type = empty($_GET['type']) ? '' : $_GET['type'];
+        $subtype = empty($_GET['subtype']) ? '' : $_GET['subtype'];
 
         $form['clients'] = \Swoole\Form::select('client', $_clients, $client, '', array('class' => 'select2'));
         $form['types'] = \Swoole\Form::select('type', $_types, $type, '', array('class' => 'select2'));

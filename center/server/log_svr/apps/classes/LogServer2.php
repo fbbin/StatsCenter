@@ -1,6 +1,7 @@
 <?php
 namespace App;
 use StatsCenter;
+use Swoole\Filter;
 
 class LogServer2 extends StatsCenter\Server
 {
@@ -39,7 +40,7 @@ class LogServer2 extends StatsCenter\Server
         $parts = explode("\n", $data, 2);
         $put = array();
         list($put['module'], $put['level'], $put['type'], $put['subtype'], $put['uid']) = explode("|", $parts[0]);
-        $put['content'] = rtrim($parts[1]);
+        $put['content'] = Filter::escape(rtrim($parts[1]));
         $put['hour'] = date('H');
         $put['ip'] = $info['remote_ip'];
         $table = $this->getTableName();
@@ -69,7 +70,7 @@ class LogServer2 extends StatsCenter\Server
      */
     protected function createTable($table)
     {
-        $sql = "CREATE TABLE IF NOT EXISTS `{$table}` (
+        $create_table_sql = "CREATE TABLE IF NOT EXISTS `{$table}` (
     `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `module` int(11) NOT NULL,
   `type` varchar(40) NOT NULL,
@@ -81,6 +82,11 @@ class LogServer2 extends StatsCenter\Server
   `hour` tinyint(4) NOT NULL,
   `addtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-        \Swoole::$php->db->query($sql);
+
+        $create_index_sql = "ALTER TABLE `{$table}` ADD INDEX( `type`, `subtype`, `ip`);";
+        $create_index_sql2 = "ALTER TABLE `{$table}` ADD INDEX( `uid`);";
+        \Swoole::$php->db->query($create_table_sql);
+        \Swoole::$php->db->query($create_index_sql);
+        \Swoole::$php->db->query($create_index_sql2);
     }
 }
