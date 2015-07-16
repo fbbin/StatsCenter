@@ -87,7 +87,7 @@
                                                     <tr height="32">
                                                         <td><?=$d['id']?></td>
                                                         <td><a href="<?=$d['tiny_url']?>"><?=$d['name']?></a></td>
-                                                        <td><a href="/url_shortener/category_list?"><?=$d['category_name']?></a></td>
+                                                        <td><a href="/url_shortener/tiny_url_list?category_id=<?=$d['category_id']?>"><?=$d['category_name']?></a></td>
                                                         <td><?=$d['add_time']?></td>
                                                         <td>
                                                             <a href="/url_shortener/edit/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
