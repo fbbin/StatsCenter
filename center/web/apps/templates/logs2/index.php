@@ -54,15 +54,15 @@
                                                     <option value="">所有模块</option>
                                                     <?php foreach ($modules as $m): ?>
                                                         <option value="<?= $m['id'] ?>: <?= $m['name'] ?>"
-                                                            <?php if (isset( $_GET['module']) and $m['id'] == $_GET['module']) echo 'selected="selected"'; ?> ><?= $m['id'] ?>
+                                                            <?php if ( $m['id'] == $module_id) echo 'selected="selected"'; ?> ><?= $m['id'] ?>
                                                             : <?= $m['name'] ?></option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             </div>
-                                            <div class="form-group" style="width: 200px;">
+                                            <div class="form-group" style="width: 150px;">
                                                 <?=$form['types']?>
                                             </div>
-                                            <div class="form-group" style="width: 200px;">
+                                            <div class="form-group" style="width: 150px;">
                                                 <?=$form['subtypes']?>
                                             </div>
                                             用户:
@@ -72,7 +72,7 @@
                                                 </label>
                                             </div>
                                             IP:
-                                            <div class="form-group" style="width: 120px;">
+                                            <div class="form-group" style="width: 160px;">
                                                 <?php echo $form['clients']; ?>
                                             </div>
                                             <div class="form-group" style="width: 120px;">
@@ -253,23 +253,32 @@ you can add as many as you like
         pageSetUp();
         var LogsG = {};
         LogsG.filter = <?php echo json_encode($_GET);?>;
-        $("#datepicker").datepicker("option",
-            $.datepicker.regional[ 'zh-CN' ]);
-
+        $("#datepicker").datepicker("option", $.datepicker.regional[ 'zh-CN' ]);
         $("#module").change(function(e) {
             var module = e.currentTarget.value.split(':')[0];
             window.localStorage.module_id = module;
+            LogsG.filter = {};
             LogsG.filter.module = module;
-            $("#client_ip").empty();
             LogsG.go();
         });
         $("#level").change(function (e) {
             LogsG.filter.level = level;
             LogsG.go();
         });
-        $("#client_ip").change(function(e) {
-            var client_ip = e.currentTarget.value;
-            LogsG.filter.client_ip = client_ip;
+        $("#client").change(function(e) {
+            var client = e.currentTarget.value;
+            LogsG.filter.client = client;
+            LogsG.go();
+        });
+        $("#type").change(function (e) {
+            var type = e.currentTarget.value;
+            LogsG.filter.type = type;
+            LogsG.go();
+        });
+        $("#subtype").change(function (e) {
+            var subtype = e.currentTarget.value;
+            LogsG.filter.subtype = subtype;
+            LogsG.go();
         });
         $("#filter_hour_s").change(function(e) {
             LogsG.filter.hour_start = e.currentTarget.value;
@@ -295,45 +304,6 @@ you can add as many as you like
             }
             location.href = url;
         };
-        LogsG.getIpList = function(o) {
-            $.ajax({
-                url: "/logs/get_ip/?module_id="+LogsG.filter.module_id+"&interface_id="+LogsG.filter.interface_id,
-                dataType : 'json',
-                beforeSend:function() {
-                    $("#client_ip").prev().children('.select2-choice').children('.select2-chosen').empty();
-                    $("#client_ip").empty();
-                },
-                success: function(data) {
-                    var line = '<option value="">请选择</option>';
-                    if (data.status == 0) {
-                        for (i = 0; i < data.client_ids.length; i++) {
-                            line += '<option value="'+ data.client_ids[i] +'">' + data.client_ids[i] + '</option>';
-                        }
-                    }
-                    $('#client_ip').html(line);
-                }
-            });
-        }
-
-        LogsG.getInterfaceList = function() {
-            $.ajax({
-                url: "/logs/get_interface/?module_id="+LogsG.filter.module_id,
-                dataType : 'json',
-                beforeSend:function() {
-                    $("#interface_id").prev().children('.select2-choice').children('.select2-chosen').empty();
-                    $("#interface_id").empty();
-                },
-                success: function(data) {
-                    var line = '<option value="">请选择</option>';
-                    if (data.status == 0) {
-                        for (i = 0; i < data.interface_ids.length; i++) {
-                            line += '<option value="'+ data.interface_ids[i]['id'] +'">' + data.interface_ids[i]['id']+':'+data.interface_ids[i]['name'] + '</option>';
-                        }
-                    }
-                    $('#interface_id').html(line);
-                }
-            });
-        }
         LogsG.filterByHour = function () {
             LogsG.filter.hour_start = $('#filter_hour_s').val();
             LogsG.filter.hour_end = $('#filter_hour_e').val();
