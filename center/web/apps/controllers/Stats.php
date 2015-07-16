@@ -187,10 +187,8 @@ class Stats extends \App\LoginController
 
         $param['date_start'] = !empty($_GET['date_start']) ? $_GET['date_start'] : date('Y-m-d');
         $param['date_end'] = !empty($_GET['date_end']) ? $_GET['date_end'] : date('Y-m-d', time() - 86400);
-        $param['time_start'] = !empty($_GET['hour_start']) ? intval($_GET['hour_start']) * 12 : 0;
-        $param['time_end'] = !empty($_GET['hour_end']) ? intval($_GET['hour_end'] + 1) * 12 : 0;
-
         $param['date_key'] = $_GET['date_start'];
+
         $d1 = $this->data($param, false, false);
 
         $param['date_key'] = $_GET['date_end'];
@@ -202,7 +200,7 @@ class Stats extends \App\LoginController
     function data($param = array(), $ret_json = true, $get_interface = true)
     {
         //Swoole\Error::dbd();
-        if (empty($param))
+        if (count($param) < 1)
         {
             $param = $_GET;
         }
@@ -239,14 +237,29 @@ class Stats extends \App\LoginController
 
         $gets['date_key'] = empty($param['date_key']) ? date('Y-m-d') : $param['date_key'];
         $gets['select'] = 'interface_id, module_id, time_key, total_count, fail_count, total_time, total_fail_time, max_time, min_time';
-        if (!empty($param['time_start']))
+
+        if (!empty($param['hour_start']))
         {
-            $gets['where'][] = 'time_key >= '.$param['time_start'];
+            $gets['where'][] = 'time_key >= ' . (intval($param['hour_start']) * 12);
+            $hour_start = $param['hour_start'].':00';
+            unset($param['hour_start']);
         }
-        if (!empty($param['time_end']))
+        else
         {
-            $gets['where'][] = 'time_key < '.$param['time_end'];
+            $hour_start = '00:00';
         }
+
+        if (!empty($param['hour_end']))
+        {
+            $gets['where'][] = 'time_key < '.intval($param['hour_end'] + 1) * 12;
+            $hour_end = $param['hour_end'].':59';
+            unset($param['hour_end']);
+        }
+        else
+        {
+            $hour_end = '23:59';
+        }
+
         $data = model('Stats')->gets($gets);
         if (!empty($data))
         {
@@ -256,9 +269,10 @@ class Stats extends \App\LoginController
         {
             $ret['status'] = 400;
         }
+
         $ret['stats'] = $data;
         $ret['date'] = $gets['date_key'];
-        $ret['time'] = '00:00~23:59';
+        $ret['time_str'] = $hour_start . '~' . $hour_end;
 
         $this->http->header('Content-Type', 'application/json');
         return $ret_json ? json_encode($ret, JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE) : $ret;

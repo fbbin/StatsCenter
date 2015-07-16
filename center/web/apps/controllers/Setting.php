@@ -212,55 +212,59 @@ class Setting extends \App\LoginController
     function delete_interface()
     {
         //\Swoole\Error::dbd();
-        $id = (int)$_GET['id'];
-        $uid = $this->uid;
-        $data = table('interface')->get($id)->get();
-
-        if ($data['owner_uid'] == 0)
+        if (empty($_GET['id']))
         {
-            \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} try to del interface {$id} failed cause of owner_uid==0");
+            $return['status'] = 400;
+            $return['msg'] = '缺少ID参数';
+            return json_encode($return);
+        }
+        $id = (int)$_GET['id'];
+        //接口创建人，超级管理员，项目负责人可以删除
+        if (!$this->isAllow(__METHOD__, $id))
+        {
+            $return['status'] = 401;
+            $return['msg'] = '没有权限删除';
+            return json_encode($return);
+        }
+
+        $data = table('interface')->get($id)->get();
+        if ($data['owner_uid'] == 0 or $data['owner_uid'] != $this->uid)
+        {
+            $this->log->put("{$_SESSION['userinfo']['username']} try to del interface {$id} failed cause of owner_uid==0");
             $return['status'] = 300;
             $return['msg'] = '暂时不能删除';
         }
-        //接口创建人，超级管理员，项目负责人可以删除
-        elseif ($uid != $data['owner_uid'] and $_SESSION['usertype'] != 0)
+        $res = table('interface')->del($id);
+        if ($res)
         {
-            \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} try to del interface {$id} failed cause of has no privilege");
-            $return['status'] = 400;
-            $return['msg'] = '没有权限删除';
+            \Swoole::$php->log->put("{$_SESSION['userinfo']['username']}  del interface {$id} success " . print_r($data, 1));
+            if (\Swoole::$php->redis->delete($this->prefix . "::" . $id) == 1)
+            {
+                \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} del from redis hash $this->prefix::$id success ");
+            }
+            else
+            {
+                \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} del from redis hash $this->prefix::$id failed ");
+            }
+
+            if (\Swoole::$php->redis->sRemove($this->prefix, $id) == 1)
+            {
+                \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} del from redis set {$id} success ");
+            }
+            else
+            {
+                \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} del from redis set {$id} failed ");
+            }
+
+            $return['status'] = 0;
+            $return['msg'] = '操作成功';
         }
         else
         {
-            $res = table('interface')->del($id);
-            if ($res) {
-                \Swoole::$php->log->put("{$_SESSION['userinfo']['username']}  del interface {$id} success ".print_r($data,1));
-                if (\Swoole::$php->redis->delete($this->prefix."::".$id) == 1)
-                {
-                    \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} del from redis hash $this->prefix::$id success ");
-                }
-                else
-                {
-                    \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} del from redis hash $this->prefix::$id failed ");
-                }
-
-                if (\Swoole::$php->redis->sRemove($this->prefix, $id) == 1)
-                {
-                    \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} del from redis set {$id} success ");
-                }
-                else
-                {
-                    \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} del from redis set {$id} failed ");
-                }
-
-                $return['status'] = 0;
-                $return['msg'] = '操作成功';
-            } else {
-                \Swoole::$php->log->put("{$_SESSION['userinfo']['username']}  del interface {$id} failed with db error");
-                $return['status'] = 500;
-                $return['msg'] = '操作失败';
-            }
+            \Swoole::$php->log->put("{$_SESSION['userinfo']['username']}  del interface {$id} failed with db error");
+            $return['status'] = 500;
+            $return['msg'] = '操作失败';
         }
-
         return json_encode($return);
     }
 
@@ -270,6 +274,12 @@ class Setting extends \App\LoginController
      */
     function delete_module()
     {
+        if (empty($_GET['id']))
+        {
+            $return['status'] = 400;
+            $return['msg'] = '缺少ID参数';
+            return json_encode($return);
+        }
         $id = (int)$_GET['id'];
         //接口创建人，超级管理员，项目负责人可以删除
         if (!$this->isAllow(__METHOD__, $id))
@@ -280,7 +290,7 @@ class Setting extends \App\LoginController
         }
 
         $data = table('module')->get($id)->get();
-        if ($data['owner_uid'] == 0)
+        if ($data['owner_uid'] == 0 or $data['owner_uid'] != $this->uid)
         {
             $this->log->put("{$_SESSION['userinfo']['username']} try to del interface {$id} failed cause of owner_uid==0");
             $return['status'] = 300;

@@ -6,21 +6,26 @@ class StatsCenter
     const TIME_OUT_STATUS = 4444;
 
     const PACK_STATS = 'NNCNNNN';
-    const PORT_STATS = 9903;
 
+    const PORT_STATS  = 9903;
+    const PORT_AOPNET = 9904;
+    const PORT_LOG    = 9905;
+
+    const MAX_LOG_SIZE  = 8192;
+
+    protected static $log_socket;
     protected static $interface_tick = array();
-    protected static $sc_svr_ip = '192.168.1.102';
 
-    protected static $aop_bind;
-    protected static $aop_interface;
+    static $sc_svr_ip = '192.168.1.102';
+    static $log_svr_ip = '192.168.1.102';
+    static $net_svr_ip = 'stats.chelun.com';
 
     //默认值
     static $module_id = 1000238;
-    static $retCode = 0;
-    static $callServerIp = '127.0.0.1';
     static $registerShutdown = false;
     static $tick_array = array();
     static $round_index = 0;
+    static $enable = true;
 
     static function setServerIp($ip)
     {
@@ -28,31 +33,17 @@ class StatsCenter
     }
 
     /**
-     * 自动创建接口
+     * 自动获取接口,首先获取本地缓存，如果没有则从服务器拉取
+     * @param $interface_key
+     * @param $module
+     * @return int|string
      */
-    static protected function autoCreateInterface()
-    {
-        static $interfaces = null;
-        if ($interfaces === null)
-        {
-            $cache_file = __DIR__.'/cache.php';
-            if (is_file($cache_file))
-            {
-                $interfaces = include $cache_file;
-                if (!is_array($interfaces))
-                {
-                    $interfaces = array();
-                }
-            }
-            else
-            {
-                $interfaces = array();
-            }
-        }
-    }
-
     static function getInterfaceId($interface_key, $module)
     {
+        if (!self::$enable)
+        {
+            return 1;
+        }
         $file = '/tmp/mostats/'.$module.'_'.$interface_key;
         if (!is_dir('/tmp/mostats'))
         {
@@ -65,12 +56,15 @@ class StatsCenter
         }
         else
         {
-            $aop = new AopNet();
-            $id = $aop->getInterfaceId($interface_key, $module);
-            if ($id)
+            $key = str_replace(' ', '_', $interface_key);
+            $cli = stream_socket_client('tcp://' . StatsCenter::$net_svr_ip . ':' . StatsCenter::PORT_AOPNET, $errno, $errstr, 1);
+            stream_socket_sendto($cli, "GET {$module} {$key}\r\n");
+            $new_id = fread($cli, 1024);
+            fclose($cli);
+            if ($new_id)
             {
-                file_put_contents($file, $id);
-                return $id;
+                file_put_contents($file, $new_id);
+                return $new_id;
             }
             //网络调用失败了
             else
@@ -81,49 +75,25 @@ class StatsCenter
     }
 
     /**
-     * 监听接口
-     * @param $callName
-     * @param int $interface_id
+     * 发送UDP数据包
+     * @param $data
+     * @param $port
      */
-    static function bind($callName, $interface_id = 0)
-    {
-        if (substr($callName, -2, 2) != '()')
-        {
-            $callName .= '()';
-        }
-        if ($interface_id == 0)
-        {
-            $interface_id = self::getInterfaceId(self::$module_id.'_stat_'.substr($callName, 0, -2));
-        }
-        aop_add_before($callName, 'StatsCenter::aop_tick');
-        aop_add_after($callName, 'StatsCenter::aop_report');
-        self::$aop_interface[$callName] = $interface_id;
-    }
-
-    static function aop_tick(\AopJoinPoint $joinpoint)
-    {
-        $func = $joinpoint->getPointcut();
-        self::$aop_bind[$func] = \StatsCenter::tick(self::$aop_interface[$func], self::$module_id);
-    }
-
-    static function aop_report(\AopJoinPoint $joinpoint)
-    {
-        $result = $joinpoint->getReturnedValue();
-        $func = $joinpoint->getPointcut();
-        $tick = self::$aop_bind[$func];
-        $success = ($result === false) ? 0 : 1;
-        $tick->report($success, self::$retCode, self::$callServerIp);
-        unset(self::$aop_bind[$func]);
-    }
-
     static function _send_udp($data, $port)
     {
-        $cli = stream_socket_client('udp://'.self::$sc_svr_ip.':'.$port, $errno, $errstr);
-        stream_socket_sendto($cli, $data);
+        if (self::$enable)
+        {
+            $cli = stream_socket_client('udp://' . self::$sc_svr_ip . ':' . $port, $errno, $errstr);
+            stream_socket_sendto($cli, $data);
+        }
     }
 
     static function tick($interface, $module)
     {
+        if (get_cfg_var('env.name') == 'dev')
+        {
+            self::$enable = false;
+        }
         if (!is_numeric($interface))
         {
             $interface = self::getInterfaceId($interface, $module);
@@ -137,11 +107,6 @@ class StatsCenter
         self::$tick_array[self::$round_index] = $obj;
         self::$round_index ++;
         return $obj;
-    }
-
-    static function net_get_id()
-    {
-
     }
 
     /**
@@ -159,9 +124,45 @@ class StatsCenter
         StatsCenter_Tick::sendPackage();
     }
 
-    static function net_create_id()
+    /**
+     * 发送日志信息，最大不得超过8K
+     * @param $level
+     * @param $type
+     * @param $subtype
+     * @param $msg
+     * @param $uid
+     * @return bool
+     */
+    static function log($level, $type, $subtype, $msg, $uid = 0)
     {
+        if (!self::$log_socket)
+        {
+            self::$log_socket = stream_socket_client('tcp://' . self::$log_svr_ip . ':' . self::PORT_LOG, $errno, $errstr, 1,
+                STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT);
+            if (empty(self::$log_socket))
+            {
+                return false;
+            }
+        }
 
+        if (strlen($msg) > self::MAX_LOG_SIZE)
+        {
+            trigger_error("log message max size is " . self::MAX_LOG_SIZE);
+            return false;
+        }
+
+        $log = self::$module_id . "|$level|$type|$subtype|$uid\n$msg\r\n";
+        $length = strlen($log);
+
+        for ($written = 0; $written < $length; $written += $fwrite)
+        {
+            $fwrite = fwrite(self::$log_socket, substr($log, $written));
+            if ($fwrite === false)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
@@ -286,32 +287,5 @@ class StatsCenter_Tick
             }
         }
         return $ip;
-    }
-}
-
-class AopNet
-{
-    protected static $sc_svr_ip = '183.57.36.102';
-    const PORT_AOP = 9904;
-    public $timeout = 1;
-
-    static function setServerIp($ip)
-    {
-        self::$sc_svr_ip = $ip;
-    }
-
-    /**
-     * 获取接口ID，如果不存在自动创建一个
-     * @param $key
-     * @return mixed|string
-     */
-    public function getInterfaceId($key, $module)
-    {
-        $key = str_replace(' ', '_', $key);
-        $cli = stream_socket_client('tcp://' . self::$sc_svr_ip . ':' . self::PORT_AOP, $errno, $errstr, $this->timeout);
-        stream_socket_sendto($cli, "GET {$module} {$key}\r\n");
-        $key = fread($cli, 1024);
-        fclose($cli);
-        return $key;
     }
 }
