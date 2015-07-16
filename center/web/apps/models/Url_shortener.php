@@ -87,10 +87,26 @@ class Url_shortener extends Swoole\Model
     function get_symbol_list_by_id_list(array $tiny_url_id_list)
     {
         $symbol_list = array();
-        foreach ($tiny_url_id_list as $id) {
+        foreach ($tiny_url_id_list as $id)
+        {
             $symbol_list[$id] = ShortUrl::encode($id);
         }
 
         return $symbol_list;
+    }
+
+    function get_visits_list_by_id_list(array $tiny_url_id_list)
+    {
+        $visits_list = array();
+
+        foreach ($tiny_url_id_list as $id)
+        {
+            $visits_list[$id] = (int) $this->swoole->redis->zScore(
+                'tiny-url:visits',
+                ShortUrl::encode($id)
+            );
+        }
+
+        return $visits_list;
     }
 }

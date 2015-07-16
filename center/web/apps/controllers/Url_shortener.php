@@ -210,6 +210,8 @@ class Url_shortener extends \App\LoginController
         unset($row);
 
         $symbol_list = model('Url_shortener')->get_symbol_list_by_id_list($tiny_url_id_list);
+        // 访问次数
+        $visits_list = model('Url_shortener')->get_visits_list_by_id_list($tiny_url_id_list);
         foreach ($data as &$row)
         {
             if (!empty($symbol_list[$row['id']]))
@@ -219,6 +221,15 @@ class Url_shortener extends \App\LoginController
             else
             {
                 $row['tiny_url'] = '#';
+            }
+
+            if (!empty($visits_list[$row['id']]))
+            {
+                $row['visits'] = $visits_list[$row['id']];
+            }
+            else
+            {
+                $row['visits'] = 0;
             }
         }
         unset($row);
