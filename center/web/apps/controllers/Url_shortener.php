@@ -128,6 +128,21 @@ class Url_shortener extends \App\LoginController
         }
     }
 
+    function delete()
+    {
+        if (isset($_GET['id']))
+        {
+            $id = (int) $_GET['id'];
+            $res = model('Url_shortener')->delete_tiny_url($id);
+
+            $msg = $res ? '操作成功' : '操作失败';
+            \Swoole\JS::js_goto($msg, '/url_shortener/tiny_url_list');
+        } else {
+            $this->http->status(302);
+            $this->http->header('Location', '/url_shortener/tiny_url_list');
+        }
+    }
+
     function tiny_url_list()
     {
         $gets = array();
@@ -239,21 +254,6 @@ class Url_shortener extends \App\LoginController
         $this->assign('pager', array('render' => $pager->render()));
 
         $this->display();
-    }
-
-    function delete()
-    {
-        if (isset($_GET['id']))
-        {
-            $id = (int) $_GET['id'];
-            $res = model('Url_shortener')->delete_tiny_url($id);
-
-            $msg = $res ? '操作成功' : '操作失败';
-            \Swoole\JS::js_goto($msg, '/url_shortener/tiny_url_list');
-        } else {
-            $this->http->status(302);
-            $this->http->header('Location', '/url_shortener/tiny_url_list');
-        }
     }
 
     private function display_edit_category_page($title = '', $project_id = null, $name = null, $error = null)
