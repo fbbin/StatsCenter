@@ -263,7 +263,7 @@ class Url_shortener extends \App\LoginController
         ));
         $form['name'] = \Swoole\Form::input('name', htmlspecialchars($name), array(
             'id' => 'name',
-            'placeholder' => '分类名称'
+            'placeholder' => '短网址名称'
         ));
         $form['category_id'] = \Swoole\Form::select(
             'category_id',
