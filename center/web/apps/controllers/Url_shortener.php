@@ -5,6 +5,8 @@ use App\ShortUrl;
 
 class Url_shortener extends \App\LoginController
 {
+    public $if_filter = false;
+
     private function display_edit_page($title, $category_id = null, $name = null, $url = null, $error = null)
     {
         $form['name'] = \Swoole\Form::input('name', $name);
