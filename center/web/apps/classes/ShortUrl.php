@@ -7,6 +7,7 @@ class ShortUrl
     const ALPHABET = '4sF8y2KPuzRHixUtfGX3gcCTLhnASMe65NjpBw9YWDqbamEkQrd7J';
     const BASE = 53; // strlen(self::ALPHABET)
     const OFFSET = 10000;
+    const PREFIX_LEN = 3;
 
     public static function encode($num)
     {
@@ -29,5 +30,17 @@ class ShortUrl
         }
         $num = $num - self::OFFSET;
         return $num;
+    }
+
+    public static function gen_prefix_str()
+    {
+        $pool = self::ALPHABET;
+        $len = self::PREFIX_LEN;
+        $str = '';
+        for ($i = 0; $i < $len; $i++)
+        {
+            $str .= substr($pool, mt_rand(0, strlen($pool) - 1), 1);
+        }
+        return $str;
     }
 }

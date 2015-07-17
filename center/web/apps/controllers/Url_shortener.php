@@ -71,6 +71,7 @@ class Url_shortener extends \App\LoginController
 
             $inserts['name'] = $name;
             $inserts['category_id'] = $category_id;
+            $inserts['prefix'] = ShortUrl::gen_prefix_str();
 
             $tiny_url_id = table('tiny_url')->put($inserts);
 
@@ -288,11 +289,12 @@ class Url_shortener extends \App\LoginController
         $symbol_list = model('Url_shortener')->get_symbol_list_by_id_list($tiny_url_id_list);
         // 访问次数
         $visits_list = model('Url_shortener')->get_visits_list_by_id_list($tiny_url_id_list);
+
         foreach ($data as &$row)
         {
             if (!empty($symbol_list[$row['id']]))
             {
-                $row['tiny_url'] = 'http://chelun.com/url/' . $symbol_list[$row['id']];
+                $row['tiny_url'] = 'http://chelun.com/url/' . $row['prefix'] . $symbol_list[$row['id']];
             }
             else
             {
