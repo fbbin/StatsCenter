@@ -47,7 +47,8 @@ class Url_shortener extends Swoole\Model
         if (!empty($tiny_url_list[0]))
         {
             $tiny_url = $tiny_url_list[0];
-            $tiny_url['url'] = $this->swoole->redis('cluster')->hGet('tiny-url:url', ShortUrl::encode($id));
+            $symbol = $tiny_url['prefix'] . ShortUrl::encode($id);
+            $tiny_url['url'] = $this->swoole->redis('cluster')->hGet('tiny-url:url', $symbol);
         }
         else
         {
@@ -59,6 +60,12 @@ class Url_shortener extends Swoole\Model
 
     function update_tiny_url_by_id($id, $category_id, $name, $url)
     {
+        $tiny_url = table('tiny_url')->get($id);
+        if (!$tiny_url)
+        {
+            return false;
+        }
+
         $sets = array();
         $sets['category_id'] = $category_id;
         $sets['name'] = $name;
@@ -66,7 +73,8 @@ class Url_shortener extends Swoole\Model
 
         if ($res)
         {
-            $this->swoole->redis('cluster')->hSet('tiny-url:url', ShortUrl::encode($id), $url);
+            $symbol = $tiny_url['prefix'] . ShortUrl::encode($id);
+            $this->swoole->redis('cluster')->hSet('tiny-url:url', $symbol, $url);
         }
 
         return (bool) $res;
@@ -74,39 +82,20 @@ class Url_shortener extends Swoole\Model
 
     function delete_tiny_url($id)
     {
+        $tiny_url = table('tiny_url')->get($id);
+        if (!$tiny_url)
+        {
+            return false;
+        }
+
         $res = table('tiny_url')->set($id, array('status' => 2));
 
         if ($res)
         {
-            $this->swoole->redis('cluster')->hDel('tiny-url:url', ShortUrl::encode($id));
+            $symbol = $tiny_url['prefix'] . ShortUrl::encode($id);
+            $this->swoole->redis('cluster')->hDel('tiny-url:url', $symbol);
         }
 
         return (bool) $res;
-    }
-
-    function get_symbol_list_by_id_list(array $tiny_url_id_list)
-    {
-        $symbol_list = array();
-        foreach ($tiny_url_id_list as $id)
-        {
-            $symbol_list[$id] = ShortUrl::encode($id);
-        }
-
-        return $symbol_list;
-    }
-
-    function get_visits_list_by_id_list(array $tiny_url_id_list)
-    {
-        $visits_list = array();
-
-        foreach ($tiny_url_id_list as $id)
-        {
-            $visits_list[$id] = (int) $this->swoole->redis('cluster')->zScore(
-                'tiny-url:visits',
-                ShortUrl::encode($id)
-            );
-        }
-
-        return $visits_list;
     }
 }

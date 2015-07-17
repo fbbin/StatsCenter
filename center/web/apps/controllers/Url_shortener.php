@@ -5,6 +5,8 @@ use App\ShortUrl;
 
 class Url_shortener extends \App\LoginController
 {
+    public $if_filter = false;
+
     private function display_edit_page($title, $category_id = null, $name = null, $url = null, $error = null)
     {
         $form['name'] = \Swoole\Form::input('name', $name);
@@ -69,6 +71,8 @@ class Url_shortener extends \App\LoginController
 
             $inserts['name'] = $name;
             $inserts['category_id'] = $category_id;
+            $prefix = ShortUrl::gen_prefix_str();
+            $inserts['prefix'] = $prefix;
 
             $tiny_url_id = table('tiny_url')->put($inserts);
 
@@ -76,7 +80,8 @@ class Url_shortener extends \App\LoginController
             {
                 $msg = '添加成功';
 
-                $res = $this->redis('cluster')->hSet('tiny-url:url', ShortUrl::encode($tiny_url_id), $url);
+                $symbol = $prefix . ShortUrl::encode($tiny_url_id);
+                $res = $this->redis('cluster')->hSet('tiny-url:url', $symbol, $url);
                 if (!$res) {
                     // log
                 }
@@ -156,7 +161,12 @@ class Url_shortener extends \App\LoginController
             $prev_from_date = clone $from_date;
             $prev_from_date_str = $prev_from_date->modify('+20 days')->format('Y-m-d');
 
-            $symbol = ShortUrl::encode($tiny_url_id);
+            $tiny_url_info = table('tiny_url')->get($tiny_url_id)->get();
+            if (!$tiny_url_info)
+            {
+                \Swoole\JS::js_goto('短网址不存在！', '/url_shortener/tiny_url_list');
+            }
+            $symbol = $tiny_url_info['prefix'] . ShortUrl::encode($tiny_url_id);
             $tiny_url = "http://chelun.com/url/{$symbol}";
 
             $data = array();
@@ -199,6 +209,8 @@ class Url_shortener extends \App\LoginController
         }
         else
         {
+            $this->http->status(302);
+            $this->http->header('Location', '/url_shortener/tiny_url_list');
         }
     }
 
@@ -267,10 +279,13 @@ class Url_shortener extends \App\LoginController
         $gets['where'][] = 'status = 1';
         $data = table('tiny_url')->gets($gets, $pager);
 
-        $tiny_url_id_list = array();
+        $symbol_list = array();
         foreach ($data as &$row)
         {
-            $tiny_url_id_list[] = (int) $row['id'];
+            $tiny_url_id = (int) $row['id'];
+
+            $symbol = $row['prefix'] . ShortUrl::encode($tiny_url_id);
+            $symbol_list[$tiny_url_id] = $symbol;
 
             if (isset($category_options[$row['category_id']]))
             {
@@ -283,9 +298,6 @@ class Url_shortener extends \App\LoginController
         }
         unset($row);
 
-        $symbol_list = model('Url_shortener')->get_symbol_list_by_id_list($tiny_url_id_list);
-        // 访问次数
-        $visits_list = model('Url_shortener')->get_visits_list_by_id_list($tiny_url_id_list);
         foreach ($data as &$row)
         {
             if (!empty($symbol_list[$row['id']]))
@@ -295,15 +307,6 @@ class Url_shortener extends \App\LoginController
             else
             {
                 $row['tiny_url'] = '#';
-            }
-
-            if (!empty($visits_list[$row['id']]))
-            {
-                $row['visits'] = $visits_list[$row['id']];
-            }
-            else
-            {
-                $row['visits'] = 0;
             }
         }
         unset($row);
