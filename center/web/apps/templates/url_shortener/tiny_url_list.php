@@ -94,7 +94,7 @@
                                                         <td>
                                                             <a href="/url_shortener/stats/?id=<?=$d['id']?>" class="btn btn-info btn-xs">查看统计</a>
                                                             <a href="/url_shortener/edit/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
-                                                            <a href="/url_shortener/delete/?id=<?=$d['id']?>" class="btn btn-warning btn-xs">删除</a>
+                                                            <a href="/url_shortener/delete/?id=<?=$d['id']?>" class="btn btn-warning btn-xs delete-tiny-url">删除</a>
                                                         </td>
                                                     </tr>
                                             <?php
@@ -172,6 +172,10 @@ you can add as many as you like
 <?php include dirname(__DIR__).'/include/javascript.php'; ?>
 <script>
     $(function() {
+        $('.delete-tiny-url').click(function () {
+            return confirm('确认删除？');
+        });
+
         pageSetUp();
 //        ListsG.getListsData();
         $("#submit").click(function(){
