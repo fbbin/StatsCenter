@@ -135,40 +135,73 @@ class User extends \App\LoginController
 
     function passwd()
     {
-        if (!empty($_POST['old_password']))
+        if (empty($_POST['old_password']))
         {
-            if (empty($_POST['new_password']) or empty($_POST['new_password2']))
+            $this->display();
+            return;
+        }
+        if (empty($_POST['new_password']) or empty($_POST['new_password2']))
+        {
+            $msg['message'] = '新密码不能为空';
+            $msg['code'] = 200;
+        }
+        elseif ($_POST['new_password'] == $_POST['old_password'])
+        {
+            $msg['message'] = '新密码与旧密码不能相同';
+            $msg['code'] = 201;
+        }
+        elseif ($_POST['new_password'] != $_POST['new_password2'])
+        {
+            $msg['message'] = '密码前后输入不一致';
+            $msg['code'] = 201;
+        }
+        else
+        {
+            $ret = $this->user->changePassword($this->uid, $_POST['old_password'], $_POST['new_password']);
+            if ($ret)
             {
-                $msg['message'] = '新密码不能为空';
-                $msg['code'] = 200;
-            }
-            elseif ($_POST['new_password'] == $_POST['old_password'])
-            {
-                $msg['message'] = '新密码与旧密码不能相同';
-                $msg['code'] = 201;
-            }
-            elseif ($_POST['new_password'] != $_POST['new_password2'])
-            {
-                $msg['message'] = '密码前后输入不一致';
-                $msg['code'] = 201;
+                $msg['message'] = '密码修改成功';
+                $msg['code'] = 0;
             }
             else
             {
-                $ret = $this->user->changePassword($this->uid, $_POST['old_password'], $_POST['new_password']);
-                if ($ret)
-                {
-                    $msg['message'] = '密码修改成功';
-                    $msg['code'] = 0;
-                }
-                else
-                {
-                    $msg['message'] = $this->user->errMessage;
-                    $msg['code'] = $this->user->errCode;
-                }
+                $msg['message'] = $this->user->errMessage;
+                $msg['code'] = $this->user->errCode;
             }
-            $this->assign('msg', $msg);
         }
+        $this->assign('msg', $msg);
         $this->display();
+    }
+
+    function reset_passwd()
+    {
+        //不是超级用户不能查看修改用户
+        if ($this->userinfo['usertype'] != 0)
+        {
+            return "access deny";
+        }
+
+        if (empty($_GET['id']))
+        {
+            return \Swoole\JS::js_back("操作不合法");
+        }
+
+        $uid = intval($_GET['id']);
+        $user = table('user')->get($uid);
+        if (!$user->exist())
+        {
+            return \Swoole\JS::js_back("用户不存在");
+        }
+
+        $user->password = Swoole\Auth::mkpasswd($user->username, '123456');
+        if ($user->save())
+        {
+            return \Swoole\JS::js_back("重置密码成功");
+        }
+        else
+        {
+            return \Swoole\JS::js_back("重置密码失败，请稍后重试");
+        }
     }
 
     function ulist()

@@ -86,23 +86,33 @@
                                         </tr>
                                         </thead>
                                         <tbody id="data_table_body">
-                                            <?php
-                                                foreach ($data as $d)
-                                                {
+                                        <?php
+                                        foreach ($data as $d)
+                                        {
                                             ?>
-                                                    <tr height="32">
-                                                        <td><?=$d['id']?></td>
-                                                        <td><?=$d['username']?></td>
-                                                        <td><?=$d['realname']?></td>
-                                                        <td><?=$d['mobile']?></td>
-                                                        <td><?=$d['addtime']?></td>
-                                                        <td>
-                                                            <a href="/user/add/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
-                                                        </td>
-                                                    </tr>
-                                            <?php
-                                                }
-                                            ?>
+                                            <tr height="32">
+                                                <td><?= $d['id'] ?></td>
+                                                <td><?= $d['username'] ?></td>
+                                                <td><?= $d['realname'] ?>
+                                                    <?php if ($d['usertype'] == 0)
+                                                    {
+                                                        echo "<span style='color: red;'>(超级管理员)</span>";
+                                                    }
+                                                    ?>
+                                                </td>
+                                                <td><?= $d['mobile'] ?></td>
+                                                <td><?= $d['addtime'] ?></td>
+                                                <td>
+                                                    <a href="/user/add/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改</a>
+                                                    <?php if ($this->userinfo['usertype'] == 0):?>
+                                                    <a href="/user/reset_passwd/?id=<?= $d['id'] ?>"
+                                                       class="btn btn-danger btn-xs">重置密码</a>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php
+                                        }
+                                        ?>
                                         </tbody>
                                     </table>
                             </div>
