@@ -64,7 +64,14 @@ class Logs2 extends App\LoginController
         }
         if (!empty($_GET['uid']))
         {
-            $gets['uid'] = $_GET['uid'];
+            if (is_numeric($_GET['uid']))
+            {
+                $gets['uid'] = $_GET['uid'];
+            }
+            else
+            {
+                $gets['ukey'] = $_GET['uid'];
+            }
         }
         if (isset($_GET['hour_start']))
         {

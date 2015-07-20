@@ -170,7 +170,7 @@
                                             <td><?= $d['addtime'] ?></td>
                                             <td><?= $d['type'] ?></td>
                                             <td><?= $d['subtype'] ?></td>
-                                            <td><?= $d['uid'] ?></td>
+                                            <td><?= empty($d['uid']) ? $d['ukey'] : $d['uid'] ?></td>
                                             <td><?= $d['ip'] ?></td>
                                             <td><?= $d['content'] ?></td>
                                         </tr>

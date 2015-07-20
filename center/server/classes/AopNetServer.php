@@ -1,11 +1,8 @@
 <?php
-namespace App;
+namespace StatsCenter;
 
-class AopNetServer
+class AopNetServer extends Server
 {
-    protected $pid_file;
-    public $log;
-
     /**
      * @var \swoole_server
      */
@@ -69,16 +66,6 @@ class AopNetServer
             $put['module_id'] = $module_id;
             return table($table)->put($put);
         }
-    }
-
-    function setLogger($log)
-    {
-        $this->log = $log;
-    }
-
-    function log($msg)
-    {
-        $this->log->info($msg);
     }
 
     function run($_setting = array())

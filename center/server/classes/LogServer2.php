@@ -1,9 +1,8 @@
 <?php
-namespace App;
-use StatsCenter;
+namespace StatsCenter;
 use Swoole\Filter;
 
-class LogServer2 extends StatsCenter\Server
+class LogServer2 extends Server
 {
     const PORT = 9905;
     const EOF  = "\r\n";
@@ -39,12 +38,18 @@ class LogServer2 extends StatsCenter\Server
         $info = $this->serv->connection_info($fd, $thread_id, true);
         $parts = explode("\n", $data, 2);
         $put = array();
+
         list($put['module'], $put['level'], $put['type'], $put['subtype'], $put['uid']) = explode("|", $parts[0]);
         $put['content'] = Filter::escape(rtrim($parts[1]));
         $put['hour'] = date('H');
         $put['ip'] = $info['remote_ip'];
-        $table = $this->getTableName();
+        if (!is_numeric($put['uid']))
+        {
+            $put['ukey'] = $put['uid'];
+            $put['uid'] = 0;
+        }
 
+        $table = $this->getTableName();
         if (!table($table)->put($put) and \Swoole::$php->db->errno() == 1146)
         {
             $this->createTable($table);
@@ -76,6 +81,7 @@ class LogServer2 extends StatsCenter\Server
   `type` varchar(40) NOT NULL,
   `subtype` varchar(40) NOT NULL,
   `uid` int(11) NOT NULL,
+  `ukey` varchar(128) NOT NULL,
   `level` tinyint(4) NOT NULL,
   `content` text NOT NULL,
   `ip` varchar(40) NOT NULL,

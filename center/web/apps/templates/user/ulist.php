@@ -105,7 +105,7 @@
                                                 <td>
                                                     <a href="/user/add/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改</a>
                                                     <?php if ($this->userinfo['usertype'] == 0):?>
-                                                    <a href="/user/reset_passwd/?id=<?= $d['id'] ?>"
+                                                    <a onclick="return confirm('确定要重置用户密码');" href="/user/reset_passwd/?id=<?= $d['id'] ?>"
                                                        class="btn btn-danger btn-xs">重置密码</a>
                                                     <?php endif; ?>
                                                 </td>
