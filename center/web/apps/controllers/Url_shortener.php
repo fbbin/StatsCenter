@@ -150,6 +150,8 @@ class Url_shortener extends \App\LoginController
 
     function stats()
     {
+        $format = isset($_GET['format']) ? trim($_GET['format']) : 'html';
+
         if (isset($_GET['id']))
         {
             $has_prev = $has_next = false;
@@ -169,10 +171,6 @@ class Url_shortener extends \App\LoginController
             $symbol = $tiny_url_info['prefix'] . ShortUrl::encode($tiny_url_id);
             $tiny_url = "http://chelun.com/url/{$symbol}";
 
-            $data = array();
-            // $start_date = new \DateTime('2015-07-16 00:00:00');
-
-
             $start_date = new \DateTime(model('Url_shortener')->get_initial_date());
 
             if ($from_date < $today)
@@ -188,6 +186,7 @@ class Url_shortener extends \App\LoginController
                 $has_next = true;
             }
 
+            $data = array();
             for ($i = 0, $date = clone $from_date; $i < $row_count; $i++, $date->modify('-1 day'))
             {
                 $date_str = $date->format('Y-m-d');
@@ -201,20 +200,41 @@ class Url_shortener extends \App\LoginController
                 );
             }
 
-            $this->assign('tiny_url_id', $tiny_url_id);
-            $this->assign('tiny_url', $tiny_url);
-            $this->assign('data', $data);
-            $this->assign('next_from_date_str', $next_from_date_str);
-            $this->assign('prev_from_date_str', $prev_from_date_str);
-            $this->assign('has_prev', $has_prev);
-            $this->assign('has_next', $has_next);
-            $this->display();
+            if ($format === 'csv')
+            {
+                $this->output_csv_stats($data);
+            }
+            else
+            {
+                $this->assign('tiny_url_id', $tiny_url_id);
+                $this->assign('tiny_url', $tiny_url);
+                $this->assign('data', $data);
+                $this->assign('next_from_date_str', $next_from_date_str);
+                $this->assign('prev_from_date_str', $prev_from_date_str);
+                $this->assign('has_prev', $has_prev);
+                $this->assign('has_next', $has_next);
+                $this->display();
+            }
         }
         else
         {
             $this->http->status(302);
             $this->http->header('Location', '/url_shortener/tiny_url_list');
         }
+    }
+
+    private function output_csv_stats(array $data)
+    {
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=data.csv');
+        $fp = fopen('php://output', 'w');
+        fputcsv($fp, array('日期', '访问次数'));
+        foreach ($data as $row)
+        {
+            fputcsv($fp, $row);
+
+        }
+        fclose($fp);
     }
 
     function tiny_url_list()
