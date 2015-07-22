@@ -279,13 +279,11 @@ class Url_shortener extends \App\LoginController
         $gets['where'][] = 'status = 1';
         $data = table('tiny_url')->gets($gets, $pager);
 
-        $symbol_list = array();
         foreach ($data as &$row)
         {
             $tiny_url_id = (int) $row['id'];
-
             $symbol = $row['prefix'] . ShortUrl::encode($tiny_url_id);
-            $symbol_list[$tiny_url_id] = $symbol;
+            $row['tiny_url'] = 'http://chelun.com/url/' . $symbol;
 
             if (isset($category_options[$row['category_id']]))
             {
@@ -294,19 +292,6 @@ class Url_shortener extends \App\LoginController
             else
             {
                 $row['category_name'] = '';
-            }
-        }
-        unset($row);
-
-        foreach ($data as &$row)
-        {
-            if (!empty($symbol_list[$row['id']]))
-            {
-                $row['tiny_url'] = 'http://chelun.com/url/' . $symbol_list[$row['id']];
-            }
-            else
-            {
-                $row['tiny_url'] = '#';
             }
         }
         unset($row);
