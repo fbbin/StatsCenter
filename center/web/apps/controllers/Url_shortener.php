@@ -150,6 +150,8 @@ class Url_shortener extends \App\LoginController
 
     function stats()
     {
+        $format = isset($_GET['format']) ? trim($_GET['format']) : 'html';
+
         if (isset($_GET['id']))
         {
             $has_prev = $has_next = false;
@@ -169,8 +171,7 @@ class Url_shortener extends \App\LoginController
             $symbol = $tiny_url_info['prefix'] . ShortUrl::encode($tiny_url_id);
             $tiny_url = "http://chelun.com/url/{$symbol}";
 
-            $data = array();
-            $start_date = new \DateTime('2015-07-16 00:00:00');
+            $start_date = new \DateTime(model('Url_shortener')->get_initial_date());
 
             if ($from_date < $today)
             {
@@ -185,6 +186,7 @@ class Url_shortener extends \App\LoginController
                 $has_next = true;
             }
 
+            $data = array();
             for ($i = 0, $date = clone $from_date; $i < $row_count; $i++, $date->modify('-1 day'))
             {
                 $date_str = $date->format('Y-m-d');
@@ -198,20 +200,41 @@ class Url_shortener extends \App\LoginController
                 );
             }
 
-            $this->assign('tiny_url_id', $tiny_url_id);
-            $this->assign('tiny_url', $tiny_url);
-            $this->assign('data', $data);
-            $this->assign('next_from_date_str', $next_from_date_str);
-            $this->assign('prev_from_date_str', $prev_from_date_str);
-            $this->assign('has_prev', $has_prev);
-            $this->assign('has_next', $has_next);
-            $this->display();
+            if ($format === 'csv')
+            {
+                $this->output_csv_stats($data);
+            }
+            else
+            {
+                $this->assign('tiny_url_id', $tiny_url_id);
+                $this->assign('tiny_url', $tiny_url);
+                $this->assign('data', $data);
+                $this->assign('next_from_date_str', $next_from_date_str);
+                $this->assign('prev_from_date_str', $prev_from_date_str);
+                $this->assign('has_prev', $has_prev);
+                $this->assign('has_next', $has_next);
+                $this->display();
+            }
         }
         else
         {
             $this->http->status(302);
             $this->http->header('Location', '/url_shortener/tiny_url_list');
         }
+    }
+
+    private function output_csv_stats(array $data)
+    {
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=data.csv');
+        $fp = fopen('php://output', 'w');
+        fputcsv($fp, array('日期', '访问次数'));
+        foreach ($data as $row)
+        {
+            fputcsv($fp, $row);
+
+        }
+        fclose($fp);
     }
 
     function tiny_url_list()
@@ -280,34 +303,26 @@ class Url_shortener extends \App\LoginController
         $data = table('tiny_url')->gets($gets, $pager);
 
         $symbol_list = array();
-        foreach ($data as &$row)
+        foreach ($data as $row)
         {
             $tiny_url_id = (int) $row['id'];
-
-            $symbol = $row['prefix'] . ShortUrl::encode($tiny_url_id);
-            $symbol_list[$tiny_url_id] = $symbol;
-
-            if (isset($category_options[$row['category_id']]))
-            {
-                $row['category_name'] = $category_options[$row['category_id']];
-            }
-            else
-            {
-                $row['category_name'] = '';
-            }
+            $symbol_list[$tiny_url_id] = $row['prefix'] . ShortUrl::encode($tiny_url_id);
         }
-        unset($row);
+
+        $total_visits_list = model('Url_shortener')->get_total_visits_list($symbol_list);
+        $tiny_url_list = model('Url_shortener')->get_tiny_url_list($symbol_list);
 
         foreach ($data as &$row)
         {
-            if (!empty($symbol_list[$row['id']]))
-            {
-                $row['tiny_url'] = 'http://chelun.com/url/' . $symbol_list[$row['id']];
-            }
-            else
-            {
-                $row['tiny_url'] = '#';
-            }
+            $symbol = $row['prefix'] . ShortUrl::encode($tiny_url_id);
+
+            $row['tiny_url'] = isset($tiny_url_list[$symbol]) ? $tiny_url_list[$symbol] : '';
+            $row['total_visits'] = isset($total_visits_list[$symbol])
+                ? $total_visits_list[$symbol]
+                : 0;
+            $row['category_name'] = isset($category_options[$row['category_id']])
+                ? $category_options[$row['category_id']]
+                : '';
         }
         unset($row);
 

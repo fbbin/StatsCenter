@@ -96,5 +96,5 @@ class TokenServer extends Server
             $this->serv->send($fd, "ERR|02" . self::EOF);
             return;
         }
-    }
+   }
 }

@@ -43,6 +43,8 @@
                         <div class="widget-body">
                             <p>短网址：<a href="<?=$tiny_url?>"><?=$tiny_url?></a></p>
 
+                            <p><a href="/url_shortener/stats?id=<?=$tiny_url_id?>&format=csv">导出 CSV 格式</a>（可以用 Excel、WPS表格 打开）</p>
+
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
