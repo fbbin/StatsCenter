@@ -170,7 +170,10 @@ class Url_shortener extends \App\LoginController
             $tiny_url = "http://chelun.com/url/{$symbol}";
 
             $data = array();
-            $start_date = new \DateTime('2015-07-16 00:00:00');
+            // $start_date = new \DateTime('2015-07-16 00:00:00');
+
+
+            $start_date = new \DateTime(model('Url_shortener')->get_initial_date());
 
             if ($from_date < $today)
             {
@@ -279,20 +282,27 @@ class Url_shortener extends \App\LoginController
         $gets['where'][] = 'status = 1';
         $data = table('tiny_url')->gets($gets, $pager);
 
-        foreach ($data as &$row)
+        $symbol_list = array();
+        foreach ($data as $row)
         {
             $tiny_url_id = (int) $row['id'];
-            $symbol = $row['prefix'] . ShortUrl::encode($tiny_url_id);
-            $row['tiny_url'] = 'http://chelun.com/url/' . $symbol;
+            $symbol_list[$tiny_url_id] = $row['prefix'] . ShortUrl::encode($tiny_url_id);
+        }
 
-            if (isset($category_options[$row['category_id']]))
-            {
-                $row['category_name'] = $category_options[$row['category_id']];
-            }
-            else
-            {
-                $row['category_name'] = '';
-            }
+        $total_visits_list = model('Url_shortener')->get_total_visits_list($symbol_list);
+        $tiny_url_list = model('Url_shortener')->get_tiny_url_list($symbol_list);
+
+        foreach ($data as &$row)
+        {
+            $symbol = $row['prefix'] . ShortUrl::encode($tiny_url_id);
+
+            $row['tiny_url'] = isset($tiny_url_list[$symbol]) ? $tiny_url_list[$symbol] : '';
+            $row['total_visits'] = isset($total_visits_list[$symbol])
+                ? $total_visits_list[$symbol]
+                : 0;
+            $row['category_name'] = isset($category_options[$row['category_id']])
+                ? $category_options[$row['category_id']]
+                : '';
         }
         unset($row);
 

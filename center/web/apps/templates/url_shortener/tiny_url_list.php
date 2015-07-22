@@ -76,6 +76,7 @@
                                             <th>短网址名称</th>
                                             <th>短网址</th>
                                             <th>所属分类</th>
+                                            <th>近180天访问次数</th>
                                             <th>添加时间</th>
                                             <th>操作</th>
                                         </tr>
@@ -90,6 +91,7 @@
                                                         <td><?=$d['name']?></td>
                                                         <td><a href="<?=$d['tiny_url']?>"><?=$d['tiny_url']?></a></td>
                                                         <td><a href="/url_shortener/tiny_url_list?category_id=<?=$d['category_id']?>"><?=$d['category_name']?></a></td>
+                                                        <td><?=$d['total_visits']?></td>
                                                         <td><?=$d['add_time']?></td>
                                                         <td>
                                                             <a href="/url_shortener/stats/?id=<?=$d['id']?>" class="btn btn-info btn-xs">查看统计</a>
