@@ -314,6 +314,7 @@ class Url_shortener extends \App\LoginController
 
         foreach ($data as &$row)
         {
+            $tiny_url_id = (int) $row['id'];
             $symbol = $row['prefix'] . ShortUrl::encode($tiny_url_id);
 
             $row['tiny_url'] = isset($tiny_url_list[$symbol]) ? $tiny_url_list[$symbol] : '';
