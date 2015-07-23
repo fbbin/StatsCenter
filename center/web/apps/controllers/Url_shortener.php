@@ -309,6 +309,7 @@ class Url_shortener extends \App\LoginController
             $symbol_list[$tiny_url_id] = $row['prefix'] . ShortUrl::encode($tiny_url_id);
         }
 
+        $total_visits_list = model('Url_shortener')->get_total_visits_list($symbol_list);
         $tiny_url_list = model('Url_shortener')->get_tiny_url_list($symbol_list);
 
         foreach ($data as &$row)
@@ -317,7 +318,9 @@ class Url_shortener extends \App\LoginController
             $symbol = $row['prefix'] . ShortUrl::encode($tiny_url_id);
 
             $row['tiny_url'] = isset($tiny_url_list[$symbol]) ? $tiny_url_list[$symbol] : '';
-            $row['total_visits'] = 0;
+            $row['total_visits'] = isset($total_visits_list[$symbol])
+                ? $total_visits_list[$symbol]
+                : 0;
             $row['category_name'] = isset($category_options[$row['category_id']])
                 ? $category_options[$row['category_id']]
                 : '';

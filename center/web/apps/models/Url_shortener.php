@@ -102,6 +102,19 @@ class Url_shortener extends Swoole\Model
         return (bool) $res;
     }
 
+    function get_total_visits_list(array $symbol_list)
+    {
+        $total_visits_list = array();
+        foreach ($symbol_list as $symbol)
+        {
+            $total_visits = $this->swoole->redis('cluster')->zScore('tiny-url:visits:sum', $symbol);
+            $total_visits = $total_visits !== false ? $total_visits : 0;
+            $total_visits_list[$symbol] = $total_visits;
+        }
+
+        return $total_visits_list;
+    }
+
     function get_tiny_url_list(array $symbol_list)
     {
         $list = array();
@@ -117,21 +130,5 @@ class Url_shortener extends Swoole\Model
     function get_initial_date()
     {
         return $this->initial_date;
-    }
-
-    function lastest_keys_of_visits()
-    {
-        $key_list = array();
-
-        $start_date = new \DateTime($this->initial_date);
-        $today = new \DateTime('today');
-        $i = 0;
-        for ($d = clone $today; $d >= $start_date && $i < 180; $d->modify('-1 day'))
-        {
-            $key_list[] = 'tiny-url:visits:' . $d->format('Y-m-d');
-            $i++;
-        }
-
-        return $key_list;
     }
 }
