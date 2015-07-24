@@ -48,7 +48,7 @@
     if (window.localStorage.module_id) {
         $('#stats_index_link').attr('href', $('#stats_index_link').attr('href') + '?module_id=' + window.localStorage.module_id);
     }
-    if (window.localStorage.module_id && window.localStorage.interface_id) {
-        $('#logs_index_link').attr('href', $('#logs_index_link').attr('href') + '?module_id=' + window.localStorage.module_id + '&interface_id=' + window.localStorage.interface_id);
+    if (window.localStorage.log_module_id) {
+        $('#logs2_index_link').attr('href', $('#logs2_index_link').attr('href') + '?module=' + window.localStorage.log_module_id);
     }
 </script>

@@ -294,7 +294,7 @@ you can add as many as you like
         $("#datepicker").datepicker("option", $.datepicker.regional[ 'zh-CN' ]);
         $("#module").change(function(e) {
             var module = e.currentTarget.value.split(':')[0];
-            window.localStorage.module_id = module;
+            window.localStorage.log_module_id = module;
             LogsG.filter = {};
             LogsG.filter.module = module;
             LogsG.go();

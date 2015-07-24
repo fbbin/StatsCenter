@@ -73,6 +73,7 @@ class Logs2 extends App\LoginController
                 $gets['ukey'] = $_GET['uid'];
             }
         }
+
         if (isset($_GET['hour_start']))
         {
             $gets['where'][] = 'hour >= ' . $_GET['hour_start'];
@@ -83,7 +84,7 @@ class Logs2 extends App\LoginController
         }
 
         //排序
-        if (isset($_GET['order']))
+        if (!empty($_GET['order']))
         {
             $gets['order'] = str_replace('_', ' ', $_GET['order']);
         }
@@ -93,7 +94,7 @@ class Logs2 extends App\LoginController
         }
 
         //页数
-        if (isset($_GET['pagesize']))
+        if (!empty($_GET['pagesize']))
         {
             $gets['pagesize'] = intval($_GET['pagesize']);
         }
