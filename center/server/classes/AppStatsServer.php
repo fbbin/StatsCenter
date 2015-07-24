@@ -7,6 +7,28 @@ class AppStatsServer extends Server
     const PORT = 8501;
     const EOF = "\r\n";
 
+    function insertToDb($json)
+    {
+        $table = table('stats_app');
+        $list = json_decode($json, true);
+
+        foreach ($list as $li)
+        {
+            $put['client_network_type'] = $li['client_info']['network_type'];
+            $put['client_network_name'] = $li['client_info']['network_sub_type'];
+            $put['http_url'] = $li['http']['url'];
+            $put['http_method'] = $li['http']['method'];
+            $put['http_body_length'] = $li['http']['body_length'];
+            $put['http_post_length'] = $li['http']['post_length'];
+            $put['http_data_code'] = $li['http']['data_code'];
+            $put['http_header_time'] = $li['http']['header_time'];
+            $put['http_total_titme'] = $li['http']['time'];
+            $put['http_json_parse'] = $li['http']['json_parse'];
+            $put['http_request_time'] = $li['http']['request_time'];
+            $table->put($put);
+        }
+    }
+
     function onRequest(\swoole_http_request $req, \swoole_http_response $resp)
     {
         $path = trim($req->server['request_uri'], '/');
@@ -21,25 +43,10 @@ class AppStatsServer extends Server
             {
                 $data = $req->rawContent();
                 $stats = gzdecode($data);
-                $table = table('stats_app');
+
                 if ($stats)
                 {
-                    $list = json_decode($stats, true);
-                    foreach($list as $li)
-                    {
-                        $put['client_network_type'] = $li['client']['network_type'];
-                        $put['client_network_name'] = $li['client']['network_subtype'];
-                        $put['http_url'] = $li['http']['url'];
-                        $put['http_method'] = $li['http']['method'];
-                        $put['http_body_length'] = $li['http']['body_length'];
-                        $put['http_post_length'] = $li['http']['post_length'];
-                        $put['http_data_code'] = $li['http']['data_code'];
-                        $put['http_header_time'] = $li['http']['header_time'];
-                        $put['http_total_titme'] = $li['http']['time'];
-                        $put['http_json_parse'] = $li['http']['json_parse'];
-                        $put['http_request_time'] = $li['http']['request_time'];
-                        $table->put($put);
-                    }
+                    $this->insertToDb($stats);
                 }
                 else
                 {

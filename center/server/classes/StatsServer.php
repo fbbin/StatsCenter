@@ -37,7 +37,7 @@ class StatsServer extends Server
 
         foreach ($data as $key => $content)
         {
-            $this->log("task insert {$key} to DB");
+            $this->log("insert task-{$key} to stats_server table");
             foreach ($content['server'] as $server_ip => $c)
             {
                 $server_count = $this->getCount($content,self::T_SERVER,$server_ip);
@@ -55,6 +55,7 @@ class StatsServer extends Server
                 }
             }
 
+            $this->log("insert task-{$key} to stats_client table");
             foreach ($content['client'] as $client_ip => $c)
             {
                 $client_count = $this->getCount($content,self::T_CLIENT,$client_ip);
@@ -65,12 +66,15 @@ class StatsServer extends Server
                 $client_count['ret_code'] = self::tryEncode($client_count, 'ret_code');
                 $client_count['succ_ret_code'] = self::tryEncode($client_count, 'succ_ret_code');
 
-                if (!table($table_client)->put($client_count) and \Swoole::$php->db->errno() == 1146)
+                $ret = table($table_client)->put($client_count);
+                if (!$ret and \Swoole::$php->db->errno() == 1146)
                 {
                     $this->createTable2($table_client);
                     table($table_client)->put($client_count);
                 }
             }
+
+            $this->log("insert task-{$key} to stats table");
 
             $count = $this->getCount($content,self::T_ALL);
             $count['total_server'] = self::tryEncode($count, 'total_server');
@@ -81,7 +85,9 @@ class StatsServer extends Server
             $count['fail_client'] = self::tryEncode($count, 'fail_client');
             $count['ret_code'] = self::tryEncode($count, 'ret_code');
             $count['succ_ret_code'] = self::tryEncode($count, 'succ_ret_code');
-            if (!table($table_total)->put($count) and \Swoole::$php->db->errno() == 1146)
+
+            $ret = table($table_total)->put($count);
+            if (!$ret and \Swoole::$php->db->errno() == 1146)
             {
                 $this->createTable3($table_total);
                 table($table_total)->put($count);
@@ -1072,11 +1078,12 @@ class StatsServer extends Server
         \Swoole::$php->db->query($sql1);
 
         $sql2 = "ALTER TABLE `{$table}`
-          ADD PRIMARY KEY (`id`),
           ADD KEY `module_id` (`module_id`),
           ADD KEY `interface_id` (`interface_id`),
           ADD KEY `interface_id_2` (`interface_id`);";
         \Swoole::$php->db->query($sql2);
+
+        $this->log("new table {$table}");
     }
 
     function createTable2($table)
@@ -1109,6 +1116,8 @@ class StatsServer extends Server
             ADD KEY `interface_id` (`interface_id`),
             ADD KEY `interface_id_3` (`interface_id`,`module_id`,`date_key`);";
         \Swoole::$php->db->query($sql2);
+
+        $this->log("new table {$table}");
     }
 
     function createTable3($table)
@@ -1146,6 +1155,8 @@ ALTER TABLE `{$table}`
   ADD KEY `interface_id_2` (`interface_id`,`module_id`,`date_key`),
   ADD KEY `module_id_2` (`module_id`,`date_key`);";
         \Swoole::$php->db->query($sql2);
+
+        $this->log("new table {$table}");
     }
 
     function run($_setting = array())
@@ -1157,7 +1168,6 @@ ALTER TABLE `{$table}`
             //'dispatch_mode' => 4,
         );
 
-        define('SWOOLE_SERVER', true);
         $this->pid_file = $_setting['pid_file'];
         $setting = array_merge($default_setting, $_setting);
         $this->setting = $setting;

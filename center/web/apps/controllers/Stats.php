@@ -284,7 +284,7 @@ class Stats extends \App\LoginController
             $hour_end = '23:59';
         }
 
-        $data = model($table)->gets($gets);
+        $data = table($table)->gets($gets);
         if (!empty($data))
         {
             $ret['status'] = 200;
@@ -295,7 +295,7 @@ class Stats extends \App\LoginController
         }
 
         $ret['stats'] = $data;
-        $ret['date'] = $gets['date_key'];
+        $ret['date'] = $date_key;
         $ret['time_str'] = $hour_start . '~' . $hour_end;
 
         $this->http->header('Content-Type', 'application/json');
