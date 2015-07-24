@@ -76,7 +76,7 @@ class LogServer2 extends Server
     protected function createTable($table)
     {
         $create_table_sql = "CREATE TABLE IF NOT EXISTS `{$table}` (
-    `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `module` int(11) NOT NULL,
   `type` varchar(40) NOT NULL,
   `subtype` varchar(40) NOT NULL,
@@ -89,7 +89,7 @@ class LogServer2 extends Server
   `addtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-        $create_index_sql = "ALTER TABLE `{$table}` ADD INDEX( `type`, `subtype`, `ip`);";
+        $create_index_sql = "ALTER TABLE `{$table}` ADD INDEX(`module`, `type`, `subtype`, `ip`);";
         $create_index_sql2 = "ALTER TABLE `{$table}` ADD INDEX( `uid`);";
         \Swoole::$php->db->query($create_table_sql);
         \Swoole::$php->db->query($create_index_sql);
