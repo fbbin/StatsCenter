@@ -344,7 +344,14 @@ class Setting extends \App\LoginController
         $data = table('interface')->gets($gets,$pager);
         foreach ($data as $k => $v)
         {
-            $data[$k]['owner_uid_name'] = $user[$v['owner_uid']];
+            if ($v['owner_uid'] > 0)
+            {
+                $data[$k]['owner_uid_name'] = $user[$v['owner_uid']];
+            }
+            else
+            {
+                $data[$k]['owner_uid_name'] = '';
+            }
         }
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $this->assign('data', $data);

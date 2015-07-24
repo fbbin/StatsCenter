@@ -9,6 +9,7 @@ class AppStatsServer extends Server
 
     function insertToDb($json)
     {
+        $this->log($json);
         $table = table('stats_app');
         $list = json_decode($json, true);
 
