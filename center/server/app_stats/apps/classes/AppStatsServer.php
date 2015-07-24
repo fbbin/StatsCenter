@@ -22,9 +22,25 @@ class AppStatsServer extends StatsCenter\Server
             {
                 $data = $req->rawContent();
                 $stats = gzdecode($data);
+                $table = table('stats_app');
                 if ($stats)
                 {
-                    $this->log($stats);
+                    $list = json_decode($stats, true);
+                    foreach($list as $li)
+                    {
+                        $put['client_network_type'] = $li['client']['network_type'];
+                        $put['client_network_name'] = $li['client']['network_subtype'];
+                        $put['http_url'] = $li['http']['url'];
+                        $put['http_method'] = $li['http']['method'];
+                        $put['http_body_length'] = $li['http']['body_length'];
+                        $put['http_post_length'] = $li['http']['post_length'];
+                        $put['http_data_code'] = $li['http']['data_code'];
+                        $put['http_header_time'] = $li['http']['header_time'];
+                        $put['http_total_titme'] = $li['http']['time'];
+                        $put['http_json_parse'] = $li['http']['json_parse'];
+                        $put['http_request_time'] = $li['http']['request_time'];
+                        $table->put($put);
+                    }
                 }
                 else
                 {

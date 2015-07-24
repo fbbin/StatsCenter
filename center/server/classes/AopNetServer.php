@@ -30,6 +30,12 @@ class AopNetServer extends Server
             $key = $this->getConfig($_key[1], $_key[2]);
             $this->serv->send($fd, $key . self::EOF);
         }
+        //上报机器存活状态
+        elseif ($_key[0] == 'REPORT')
+        {
+            $serverIp = $_key[1];
+            $serviceName = $_key[2];
+        }
         else
         {
             $this->serv->send($fd, "unkown" . self::EOF);
