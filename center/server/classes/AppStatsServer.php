@@ -1,9 +1,8 @@
 <?php
-namespace App;
+namespace StatsCenter;
 use Swoole;
-use StatsCenter;
 
-class AppStatsServer extends StatsCenter\Server
+class AppStatsServer extends Server
 {
     const PORT = 8501;
     const EOF = "\r\n";
