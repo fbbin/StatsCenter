@@ -9,7 +9,7 @@ $setting['daemonize'] = false;
 $setting['pid_file'] = __DIR__.'/dump/server.pid';
 $setting['worker_dump_file'] = __DIR__.'/dump/worker';
 $setting['task_dump_file'] = __DIR__.'/dump/task';
-$svr = new App\StatsCenterSvr();
+$svr = new StatsCenter\StatsServer();
 $svr->setLogger(new Swoole\Log\FileLog(__DIR__.'/logs/server.log'));
 $svr->run($setting);
 
