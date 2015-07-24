@@ -33,7 +33,45 @@
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
                         <h2>日志统计</h2>
-                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+
+                        <!--每页数量-->
+                        <div class="widget-toolbar">
+                            <div class="btn-group">
+                                <button class="btn dropdown-toggle btn-xs btn-success" data-toggle="dropdown">
+                                    每页显示 <?=$pager['pagesize']?> 条结果 <i class="fa fa-caret-down"></i>
+                                </button>
+                                <ul class="dropdown-menu pull-right">
+                                    <li <?php if (isset($_GET['pagesize']) and $_GET['pagesize'] == '10') echo 'class="active"'; ?>>
+                                        <a href="<?=Swoole\Tool::url_merge('pagesize', '10')?>">10</a>
+                                    </li>
+                                    <li <?php if (isset($_GET['pagesize']) and $_GET['pagesize'] == '20') echo 'class="active"'; ?>>
+                                        <a href="<?=Swoole\Tool::url_merge('pagesize', '20')?>">20</a>
+                                    </li>
+                                    <li <?php if (empty($_GET['pagesize']) or $_GET['pagesize'] == '50') echo 'class="active"'; ?>>
+                                        <a href="<?=Swoole\Tool::url_merge('pagesize', '50')?>">50</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!--排序-->
+                        <div class="widget-toolbar">
+                            <div class="btn-group">
+                                <button class="btn dropdown-toggle btn-xs btn-success" data-toggle="dropdown">
+                                    排序选项 <i class="fa fa-caret-down"></i>
+                                </button>
+                                <ul class="dropdown-menu pull-right">
+                                    <li <?php if (isset($_GET['order']) and $_GET['order'] == 'id_asc') echo 'class="active"'; ?>>
+                                        <a href="<?=Swoole\Tool::url_merge('order', 'id_asc')?>">时间升序</a>
+                                    </li>
+                                    <li <?php if (empty($_GET['order']) or $_GET['order'] == 'id_desc') echo 'class="active"'; ?>>
+                                        <a href="<?=Swoole\Tool::url_merge('order', 'id_desc')?>">时间降序</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </header>
                     <div role="content">
 
                         <div class="jarviswidget-editbox">

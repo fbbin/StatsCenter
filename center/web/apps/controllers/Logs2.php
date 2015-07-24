@@ -82,11 +82,29 @@ class Logs2 extends App\LoginController
             $gets['where'][] = 'hour <= ' . $_GET['hour_end'];
         }
 
+        //排序
+        if (isset($_GET['order']))
+        {
+            $gets['order'] = str_replace('_', ' ', $_GET['order']);
+        }
+        else
+        {
+            $gets['order'] = 'id desc';
+        }
+
+        //页数
+        if (isset($_GET['pagesize']))
+        {
+            $gets['pagesize'] = intval($_GET['pagesize']);
+        }
+        else
+        {
+            $gets['pagesize'] = 50;
+        }
+
         $gets['page'] = !empty($_GET['page']) ? $_GET['page'] : 1;
-        $gets['pagesize'] = 50;
-        $gets['order'] = 'id desc';
         $logs = table($log_table)->gets($gets, $pager);
-        $this->assign('pager', array('total' => $pager->total, 'render' => $pager->render()));
+        $this->assign('pager', array('total' => $pager->total, 'pagesize' => $gets['pagesize'], 'render' => $pager->render()));
 
         $clients = $this->redis->sMembers('logs2:client:'.$module_id);
         $types = $this->redis->sMembers('logs2:type:'.$module_id);
