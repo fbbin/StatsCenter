@@ -151,12 +151,12 @@
                                 <table id="data_table_stats" class="table table-hover table-bordered table-striped">
                                     <thead>
                                     <tr>
-                                        <th>Level</th>
-                                        <th>Time</th>
-                                        <th>Type</th>
-                                        <th>SubType</th>
-                                        <th>UserId</th>
-                                        <th>IP</th>
+                                        <th width="3%">Level</th>
+                                        <th width="5%">Time</th>
+                                        <th width="6%">Type</th>
+                                        <th width="6%">SubType</th>
+                                        <th width="6%">UserId</th>
+                                        <th width="6%">IP</th>
                                         <th>Content</th>
                                     </tr>
                                     </thead>
@@ -167,12 +167,12 @@
                                         ?>
                                         <tr height="32">
                                             <td><?= $this->log_level[$d['level']] ?></td>
-                                            <td><?= $d['addtime'] ?></td>
+                                            <td><?= explode(' ', $d['addtime'])[1] ?></td>
                                             <td><?= $d['type'] ?></td>
                                             <td><?= $d['subtype'] ?></td>
                                             <td><?= empty($d['uid']) ? $d['ukey'] : $d['uid'] ?></td>
                                             <td><?= $d['ip'] ?></td>
-                                            <td><?= $d['content'] ?></td>
+                                            <td style="word-break: break-all;"><?= $d['content'] ?></td>
                                         </tr>
                                     <?php
                                     }

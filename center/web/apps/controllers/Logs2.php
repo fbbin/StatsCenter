@@ -84,7 +84,7 @@ class Logs2 extends App\LoginController
 
         $gets['page'] = !empty($_GET['page']) ? $_GET['page'] : 1;
         $gets['pagesize'] = 50;
-        $gets['order'] = 'id asc';
+        $gets['order'] = 'id desc';
         $logs = table($log_table)->gets($gets, $pager);
         $this->assign('pager', array('total' => $pager->total, 'render' => $pager->render()));
 
