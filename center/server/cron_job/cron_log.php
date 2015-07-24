@@ -53,11 +53,14 @@ class Cron
     }
 }
 
+/**
+ * 删除一个月前的日志
+ */
 function del_log()
 {
     //\Swoole\Error::dbd();
     $now = date("Y-m-d",time()-3600*24*30);
-    $sql = "show tables like 'logs_%'";
+    $sql = "show tables like 'logs2_%'";
     $res = Swoole::$php->db->query($sql)->fetchall();
     if (!empty($res))
     {
@@ -90,22 +93,21 @@ function del_log()
     }
 }
 
+/**
+ * 删除一个月前的日志
+ */
 function del_stats()
 {
-    $time_key = date("Y-m-d",time()-3600*24*30);
-    $tables = array('stats','stats_client','stats_server');
+    $time_key = date("Y-m-d", time() - 3600 * 24 * 30);
+    $tables = array('stats', 'stats_client', 'stats_server');
     foreach ($tables as $table)
     {
-        $sql1 = "DELETE FROM `".$table."` where date_key < '$time_key'";
-        $res = Swoole::$php->db->query($sql1);
-        echo $sql1;
-        if ($res)
+        while(true)
         {
-            echo ' success '.PHP_EOL;
-        }
-        else
-        {
-            echo ' failed '.PHP_EOL;
+            $sql1 = "DELETE FROM `" . $table . "` where date_key < '$time_key' limit 1000";
+            echo $sql1."\n";
+            $res = Swoole::$php->db->query($sql1);
+            if ($res === false) break;
         }
     }
 }

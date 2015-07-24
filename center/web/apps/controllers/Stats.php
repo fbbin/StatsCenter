@@ -111,7 +111,11 @@ class Stats extends \App\LoginController
             $param['where'][] = 'time_key <= ' . ($param['hour_end'] * 12);
             unset($param['hour_end']);
         }
-        $data = table('stats_'.$_GET['type'])->gets($param);
+
+        $date_key = empty($param['date_key']) ? date('Y-m-d') : $param['date_key'];
+        $table = $this->getTableName($date_key, $_GET['type'] == 'server' ? 1 : 2);
+        $data = table($table)->gets($param);
+
         return json_encode($data);
     }
 
@@ -131,17 +135,35 @@ class Stats extends \App\LoginController
         $this->display('stats/detail.php');
     }
 
+    function getTableName($date_key, $type = 3)
+    {
+        $table_prefix = 'stats';
+        switch($type)
+        {
+            case 1:
+                $table_prefix .= '_server';
+                break;
+            case 2:
+                $table_prefix .= '_client';
+                break;
+            default:
+                break;
+        }
+        return $table_prefix . '_' . str_replace('-', '', $date_key);
+    }
+
     function fail()
     {
         $gets['interface_id'] = $_GET['interface_id'];
         $gets['module_id'] = $_GET['module_id'];
-        $gets['date_key'] = $_GET['date_key'];
+        $table = $this->getTableName($_GET['date_key']);
+
         if (!empty($_GET['time_key']) or $_GET['time_key'] == '0')
         {
             $gets['time_key'] = $_GET['time_key'];
         }
         $gets['select'] = 'time_key, ret_code, fail_server';
-        $data = table('stats')->gets($gets);
+        $data = table($table)->gets($gets);
         $ret_code = $fail_server = array();
         foreach($data as $d)
         {
@@ -158,13 +180,13 @@ class Stats extends \App\LoginController
     {
         $gets['interface_id'] = $_GET['interface_id'];
         $gets['module_id'] = $_GET['module_id'];
-        $gets['date_key'] = $_GET['date_key'];
+        $table = $this->getTableName($_GET['date_key']);
         if (!empty($_GET['time_key']) or $_GET['time_key'] == '0')
         {
             $gets['time_key'] = $_GET['time_key'];
         }
         $gets['select'] = 'time_key, succ_ret_code, succ_server';
-        $data = table('stats')->gets($gets);
+        $data = table($table)->gets($gets);
         $ret_code = $fail_server = array();
         foreach($data as $d)
         {
@@ -235,7 +257,6 @@ class Stats extends \App\LoginController
             $ret['interface'] = $ifs;
         }
 
-        $gets['date_key'] = empty($param['date_key']) ? date('Y-m-d') : $param['date_key'];
         $gets['select'] = 'interface_id, module_id, time_key, total_count, fail_count, total_time, total_fail_time, max_time, min_time';
 
         if (!empty($param['hour_start']))
@@ -249,6 +270,9 @@ class Stats extends \App\LoginController
             $hour_start = '00:00';
         }
 
+        $date_key = empty($param['date_key']) ? date('Y-m-d') : $param['date_key'];
+        $table = $this->getTableName($date_key);
+
         if (!empty($param['hour_end']))
         {
             $gets['where'][] = 'time_key < '.intval($param['hour_end'] + 1) * 12;
@@ -260,7 +284,7 @@ class Stats extends \App\LoginController
             $hour_end = '23:59';
         }
 
-        $data = model('Stats')->gets($gets);
+        $data = model($table)->gets($gets);
         if (!empty($data))
         {
             $ret['status'] = 200;

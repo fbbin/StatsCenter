@@ -1,7 +1,7 @@
 <?php
-namespace App;
+namespace StatsCenter;
 
-class StatsCenterSvr
+class StatsServer extends Server
 {
     /**
      * @var \swoole_server
@@ -18,10 +18,11 @@ class StatsCenterSvr
     protected $serv;
     protected $worker_id;
     protected $pid_file;
-    public $log;
-    const SVR_PORT_STATS = 9903;
 
+    const SVR_PORT_STATS = 9903;
     const STATS_PKG_LEN = 25;
+
+    const PROCESS_NAME = "stats_server";
 
     const T_ALL = 1;
     const T_SERVER = 2;
@@ -29,6 +30,11 @@ class StatsCenterSvr
 
     function insertToDB($data)
     {
+        $today = date('Ymd');
+        $table_server = 'stats_server_'.$today;
+        $table_client = 'stats_client_'.$today;
+        $table_total = 'stats_'.$today;
+
         foreach ($data as $key => $content)
         {
             $this->log("task insert {$key} to DB");
@@ -41,7 +47,12 @@ class StatsCenterSvr
                 $server_count['fail_client'] = self::tryEncode($server_count, 'fail_client');
                 $server_count['ret_code'] = self::tryEncode($server_count, 'ret_code');
                 $server_count['succ_ret_code'] = self::tryEncode($server_count, 'succ_ret_code');
-                table('stats_server')->put($server_count);
+                table($table_server)->put($server_count);
+                if (!table($table_server)->put($server_count) and \Swoole::$php->db->errno() == 1146)
+                {
+                    $this->createTable1($table_server);
+                    table($table_server)->put($server_count);
+                }
             }
 
             foreach ($content['client'] as $client_ip => $c)
@@ -53,7 +64,12 @@ class StatsCenterSvr
                 $client_count['fail_server'] = self::tryEncode($client_count, 'fail_server');
                 $client_count['ret_code'] = self::tryEncode($client_count, 'ret_code');
                 $client_count['succ_ret_code'] = self::tryEncode($client_count, 'succ_ret_code');
-                table('stats_client')->put($client_count);
+
+                if (!table($table_client)->put($client_count) and \Swoole::$php->db->errno() == 1146)
+                {
+                    $this->createTable2($table_client);
+                    table($table_client)->put($client_count);
+                }
             }
 
             $count = $this->getCount($content,self::T_ALL);
@@ -65,11 +81,15 @@ class StatsCenterSvr
             $count['fail_client'] = self::tryEncode($count, 'fail_client');
             $count['ret_code'] = self::tryEncode($count, 'ret_code');
             $count['succ_ret_code'] = self::tryEncode($count, 'succ_ret_code');
-            table('stats')->put($count);
+            if (!table($table_total)->put($count) and \Swoole::$php->db->errno() == 1146)
+            {
+                $this->createTable3($table_total);
+                table($table_total)->put($count);
+            }
         }
     }
 
-    function getCount($data,$type=self::T_ALL,$ip=null)
+    function getCount($data, $type = self::T_ALL, $ip = null)
     {
         $count = array();
         $count['module_id'] =  $data['all']['module_id'];
@@ -167,7 +187,7 @@ class StatsCenterSvr
         $this->worker_id = $worker_id;
         if ($this->worker_id <= $this->setting['worker_num'] -1)
         {
-            swoole_set_process_name("mostats server worker $worker_id");
+            swoole_set_process_name(self::PROCESS_NAME.": worker #$worker_id");
             $serv->addtimer($this->recyle_time);
             if (isset($this->setting['worker_dump_file']))
             {
@@ -182,7 +202,7 @@ class StatsCenterSvr
         }
         else
         {
-            swoole_set_process_name("mostats server task worker $worker_id");
+            swoole_set_process_name(self::PROCESS_NAME.": task #$worker_id");
             $serv->addtimer($this->insert_time);
             if (isset($this->setting['task_dump_file']))
             {
@@ -1005,21 +1025,16 @@ class StatsCenterSvr
         }
     }
 
-    function log($msg)
-    {
-        $this->log->info($msg);
-    }
-
     function onMasterStart($server)
     {
-        swoole_set_process_name("mostats server master");
+        swoole_set_process_name(self::PROCESS_NAME.": master");
         $this->log("stats server start");
         file_put_contents($this->pid_file,$server->master_pid);
     }
 
     function onManagerStart($server)
     {
-        swoole_set_process_name("mostats server manager");
+        swoole_set_process_name(self::PROCESS_NAME . ": manager");
     }
 
     function onManagerStop($server)
@@ -1031,9 +1046,106 @@ class StatsCenterSvr
         }
     }
 
-    function setLogger($log)
+    function createTable1($table)
     {
-        $this->log = $log;
+        $sql1 = "CREATE TABLE IF NOT EXISTS `{$table}` (
+              `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+              `interface_id` int(11) NOT NULL,
+              `module_id` int(11) NOT NULL,
+              `ip` varchar(16) NOT NULL,
+              `time_key` int(11) NOT NULL,
+              `date_key` date NOT NULL,
+              `total_count` int(11) NOT NULL,
+              `fail_count` int(11) NOT NULL,
+              `total_time` double NOT NULL,
+              `total_fail_time` double NOT NULL,
+              `avg_time` int(11) NOT NULL,
+              `avg_fail_time` int(11) NOT NULL,
+              `max_time` int(11) NOT NULL,
+              `min_time` int(11) NOT NULL,
+              `fail_client` text NOT NULL,
+              `succ_client` text NOT NULL,
+              `total_client` text NOT NULL,
+              `ret_code` text NOT NULL,
+              `succ_ret_code` text NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+        \Swoole::$php->db->query($sql1);
+
+        $sql2 = "ALTER TABLE `{$table}`
+          ADD PRIMARY KEY (`id`),
+          ADD KEY `module_id` (`module_id`),
+          ADD KEY `interface_id` (`interface_id`),
+          ADD KEY `interface_id_2` (`interface_id`);";
+        \Swoole::$php->db->query($sql2);
+    }
+
+    function createTable2($table)
+    {
+        $sql1 = "CREATE TABLE IF NOT EXISTS `{$table}` (
+          `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+          `interface_id` int(11) NOT NULL,
+          `module_id` int(11) NOT NULL,
+          `ip` varchar(16) NOT NULL,
+          `time_key` int(11) NOT NULL,
+          `date_key` date NOT NULL,
+          `total_count` int(11) NOT NULL,
+          `fail_count` int(11) NOT NULL,
+          `total_time` double NOT NULL,
+          `total_fail_time` double NOT NULL,
+          `avg_time` int(11) NOT NULL,
+          `avg_fail_time` int(11) NOT NULL,
+          `max_time` int(11) NOT NULL,
+          `min_time` int(11) NOT NULL,
+          `fail_server` text NOT NULL,
+          `succ_server` text NOT NULL,
+          `total_server` text NOT NULL,
+          `ret_code` text NOT NULL,
+          `succ_ret_code` text NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+        \Swoole::$php->db->query($sql1);
+
+        $sql2 = "ALTER TABLE `{$table}`
+            ADD KEY `module_id` (`module_id`),
+            ADD KEY `interface_id` (`interface_id`),
+            ADD KEY `interface_id_3` (`interface_id`,`module_id`,`date_key`);";
+        \Swoole::$php->db->query($sql2);
+    }
+
+    function createTable3($table)
+    {
+        $sql1 = "CREATE TABLE IF NOT EXISTS `{$table}` (
+    `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `interface_id` int(11) NOT NULL,
+  `module_id` int(11) NOT NULL,
+  `time_key` int(11) NOT NULL,
+  `date_key` date NOT NULL,
+  `total_count` int(11) NOT NULL,
+  `fail_count` int(11) NOT NULL,
+  `total_time` double NOT NULL,
+  `total_fail_time` double NOT NULL,
+  `avg_time` int(11) NOT NULL,
+  `avg_fail_time` int(11) NOT NULL,
+  `max_time` int(11) NOT NULL DEFAULT '0' COMMENT '最长时间',
+  `min_time` int(11) NOT NULL DEFAULT '0' COMMENT '最小时间',
+  `fail_server` text NOT NULL,
+  `succ_server` text NOT NULL,
+  `total_server` text NOT NULL,
+  `fail_client` text NOT NULL,
+  `succ_client` text NOT NULL,
+  `total_client` text NOT NULL,
+  `ret_code` text NOT NULL,
+  `succ_ret_code` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+        \Swoole::$php->db->query($sql1);
+
+        $sql2 = "
+ALTER TABLE `{$table}`
+  ADD KEY `module_id` (`module_id`),
+  ADD KEY `interface_id` (`interface_id`),
+  ADD KEY `interface_id_2` (`interface_id`,`module_id`,`date_key`),
+  ADD KEY `module_id_2` (`module_id`,`date_key`);";
+        \Swoole::$php->db->query($sql2);
     }
 
     function run($_setting = array())
@@ -1044,6 +1156,8 @@ class StatsCenterSvr
             'max_request' => 0,
             //'dispatch_mode' => 4,
         );
+
+        define('SWOOLE_SERVER', true);
         $this->pid_file = $_setting['pid_file'];
         $setting = array_merge($default_setting, $_setting);
         $this->setting = $setting;
