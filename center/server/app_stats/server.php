@@ -1,13 +1,11 @@
 #! /usr/bin/php
 <?php
-define('DEBUG', 'on');
-define('WEBPATH', __DIR__);
-require dirname(__DIR__) . '/config.php';
+require __DIR__ . '/_init.php';
 
 $setting['worker_num'] = 4;
 //$setting['daemonize'] = 1;
 
-$svr = new App\AppStatsServer();
-$svr->setLogger(new Swoole\Log\FileLog(__DIR__.'/logs/app.log'));
-$setting['pid_file'] = __DIR__.'/logs/server.pid';
+$svr = new StatsCenter\AppStatsServer();
+$svr->setLogger(new Swoole\Log\FileLog(__DIR__ . '/logs/app.log'));
+$setting['pid_file'] = __DIR__ . '/logs/server.pid';
 $svr->run($setting);
