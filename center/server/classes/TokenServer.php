@@ -47,12 +47,54 @@ class TokenServer extends Server
             $token = $cmd[1];
             $time = time();
 
+            if (preg_match('#^u(\d+)_(\d+)_(.+)$#i', $token, $ar))
+            {
+                list (, $uid, $tkid, $ac_token) = $ar;
+                $redis_key = '1100_202_' . $tkid;
+                $token_info = \Swoole::$php->redis->get($redis_key);
+                if (!$token_info)
+                {
+                    $res = \Swoole::$php->db->query("select * from cw_utoken_0 where tkid={$tkid} limit 1");
+                    if (!$res)
+                    {
+                        $this->log("get from db failed. tkid={$tkid}");
+                        goto fail;
+                    }
+                    $token_info = $res->fetch();
+                    \Swoole::$php->redis->setex($redis_key, json_encode($token_info), self::EXPIRE);
+                }
+                else
+                {
+                    $token_info = json_decode($token_info, true);
+                }
 
+                if (!isset($token_info['uid']) or $uid != $token_info['uid'])
+                {
+                    $this->log("uid error, tk_uid={$token_info['uid']}, in_uid={$uid}");
+                    goto fail;
+                }
+
+                if (isset ($token_info ['ac_token']) and $token_info ['ac_token'] == $ac_token)
+                {
+                    if ($token_info ['ctime'] < $time - self::EXPIRE)
+                    {
+                        $this->log("token expire, ctime={$token_info ['ctime']}");
+                        goto fail;
+                    }
+                    else
+                    {
+                        $this->sendJson($fd, ['code' => 1]);
+                        return;
+                    }
+                }
+            }
+            fail:
+            $this->sendJson($fd, ['code' => self::RJ_ERR_TOKEN]);
         }
         else
         {
             $this->serv->send($fd, "ERR|02" . self::EOF);
             return;
         }
-    }
+   }
 }

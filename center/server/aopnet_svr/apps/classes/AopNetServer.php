@@ -1,8 +1,11 @@
 <?php
-namespace StatsCenter;
+namespace App;
 
-class AopNetServer extends Server
+class AopNetServer
 {
+    protected $pid_file;
+    public $log;
+
     /**
      * @var \swoole_server
      */
@@ -29,12 +32,6 @@ class AopNetServer extends Server
         {
             $key = $this->getConfig($_key[1], $_key[2]);
             $this->serv->send($fd, $key . self::EOF);
-        }
-        //上报机器存活状态
-        elseif ($_key[0] == 'REPORT')
-        {
-            $serverIp = $_key[1];
-            $serviceName = $_key[2];
         }
         else
         {
@@ -72,6 +69,16 @@ class AopNetServer extends Server
             $put['module_id'] = $module_id;
             return table($table)->put($put);
         }
+    }
+
+    function setLogger($log)
+    {
+        $this->log = $log;
+    }
+
+    function log($msg)
+    {
+        $this->log->info($msg);
     }
 
     function run($_setting = array())
