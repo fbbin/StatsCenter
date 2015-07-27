@@ -24,15 +24,10 @@ class Stats extends \App\LoginController
     protected function getInterfaceInfo()
     {
         //\Swoole\Error::dbd();
-        //获取用户项目
-        $uid = $this->uid;
-        $user = table('user')->get($uid)->get();
-        $project_ids = $user['project_id'];
-
         $gets['select'] = 'id,name';
         if (!empty($project_ids))
         {
-            $gets['where'][] = 'project_id in('.$project_ids.')';
+            $gets['project_id'] = $this->projectId;
         }
         $modules = table('module')->gets($gets);
         if (empty($_GET['date_key']))
