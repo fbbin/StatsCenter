@@ -95,6 +95,13 @@ class StatsServer extends Server
         }
     }
 
+    /**
+     * 计算计数
+     * @param $data
+     * @param int $type
+     * @param null $ip
+     * @return array
+     */
     function getCount($data, $type = self::T_ALL, $ip = null)
     {
         $count = array();
@@ -1148,12 +1155,7 @@ class StatsServer extends Server
 
         \Swoole::$php->db->query($sql1);
 
-        $sql2 = "
-ALTER TABLE `{$table}`
-  ADD KEY `module_id` (`module_id`),
-  ADD KEY `interface_id` (`interface_id`),
-  ADD KEY `interface_id_2` (`interface_id`,`module_id`,`date_key`),
-  ADD KEY `module_id_2` (`module_id`,`date_key`);";
+        $sql2 = "ALTER TABLE `{$table}` ADD KEY `module_interface` (`module_id`,`interface_id`);";
         \Swoole::$php->db->query($sql2);
 
         $this->log("new table {$table}");
