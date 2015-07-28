@@ -25,10 +25,8 @@ class Stats extends \App\LoginController
     {
         //\Swoole\Error::dbd();
         $gets['select'] = 'id,name';
-        if (!empty($project_ids))
-        {
-            $gets['project_id'] = $this->projectId;
-        }
+        $gets['project_id'] = $this->projectId;
+
         $modules = table('module')->gets($gets);
         if (empty($_GET['date_key']))
         {

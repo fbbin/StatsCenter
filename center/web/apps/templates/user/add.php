@@ -76,6 +76,9 @@
                                         <label class="input"><i class="icon-prepend fa fa-user"></i>
                                             <?=$form['username']?>
                                         </label>
+                                        <div class="note">
+                                            请使用真实姓名的全拼
+                                        </div>
                                     </section>
                                 </fieldset>
                                 <fieldset>
@@ -99,6 +102,9 @@
                                         <label class="input"> <i class="icon-prepend fa fa-phone"></i>
                                             <?=$form['project_id']?>
                                         </label>
+                                        <div class="note">
+                                            为空表示可以参与全部项目
+                                        </div>
                                     </section>
                                     <section>
                                         <label class="label">手机号码</label>

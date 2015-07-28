@@ -16,6 +16,7 @@ class Logs2 extends App\LoginController
     function index()
     {
         $gets['select'] = 'id, name';
+        $gets['project_id'] = $this->projectId;
         $modules = table('module')->gets($gets);
         if (!empty($_GET['module']))
         {

@@ -53,6 +53,10 @@ class LoginController extends \Swoole\Controller
             {
                 goto first_project;
             }
+            else
+            {
+                $_SESSION['project'] = $this->projectId;
+            }
         }
         //从Session中获取
         elseif (!empty($_SESSION['project']))
@@ -67,11 +71,10 @@ class LoginController extends \Swoole\Controller
         }
 
         //修改Session记录中的project
-        if (!empty($_SESSION['project']) and  $this->projectId != $_SESSION['project'])
+        if (!empty($_SESSION['project']) and $this->projectId != $_SESSION['project'])
         {
             $_SESSION['project'] = $this->projectId;
         }
-
         $this->projectInfo = $projects[$this->projectId];
         $this->assign('_project_id', $this->projectId);
         $this->assign('_project_info', $this->projectInfo);
