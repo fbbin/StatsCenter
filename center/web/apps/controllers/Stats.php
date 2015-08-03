@@ -21,10 +21,14 @@ class Stats extends \App\LoginController
         $this->display();
     }
 
+    /**
+     * 获取接口相关信息
+     * @throws \Exception
+     */
     protected function getInterfaceInfo()
     {
         //\Swoole\Error::dbd();
-        $gets['select'] = 'id,name';
+        $gets['select'] = 'id, name';
         $gets['project_id'] = $this->projectId;
 
         $modules = table('module')->gets($gets);
