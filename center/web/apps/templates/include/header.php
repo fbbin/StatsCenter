@@ -36,8 +36,8 @@
         <!-- end dropdown-menu-->
     </div>
 
-    <div class="pull-right">
-            <span style="padding: 15px 5px;font-weight: bolder">
+    <div class="pull-right" style="padding: 15px;">
+            <span style="font-weight: bolder">
         <span style="text-transform: none;">
                     <a style="text-decoration: none" href="/user/edit">用户：<?= $_COOKIE['username'] ?>
         </span>
