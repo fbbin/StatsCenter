@@ -11,9 +11,9 @@
 <body class="">
 <header style="background: #E4E4E4;color: #22201F" id="header">
     <div id="logo-group">
-    <span><img style="vertical-align:top;padding: 8px" width="80"
+    <span><img style="vertical-align:top; padding: 8px" width="80"
                src="<?= Swoole::$php->config['common']['logo_url'] ?>"/></span>
-    <span id="logo" style="margin-left: 0px"><strong
+    <span id="logo" style="margin-left: 0px; width: 120px;"><strong
             style="font-size: 18px;"><?= Swoole::$php->config['common']['site_name'] ?></strong></span>
     </div>
 
