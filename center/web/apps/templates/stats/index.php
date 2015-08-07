@@ -72,17 +72,17 @@
                                     <table id="data_table_stats" class="table table-bordered">
                                         <thead>
                                         <tr>
-                                            <th style="width: 300px; overflow-x: hidden;">接口名称</th>
-                                            <th style="width: 100px; overflow-x: hidden;">时间</th>
-                                            <th style="width: 70px; overflow-x: hidden;">调用次数</th>
-                                            <th style="width: 70px; overflow-x: hidden;">成功次数</th>
-                                            <th style="width: 70px; overflow-x: hidden;">失败次数</th>
-                                            <th style="width: 70px; overflow-x: hidden;">成功率</th>
-                                            <th style="width: 70px; overflow-x: hidden;">响应最大值</th>
-                                            <th style="width: 70px; overflow-x: hidden;">响应最小值</th>
-                                            <th style="width: 70px; overflow-x: hidden;">平均响应时间</th>
-                                            <th style="width: 70px; overflow-x: hidden;">失败平均时间</th>
-                                            <th>操作</th>
+                                            <th style="width: 300px;">接口名称</th>
+                                            <th style="width: 100px;">时间</th>
+                                            <th style="width: 70px;">调用次数</th>
+                                            <th style="width: 70px;">成功次数</th>
+                                            <th style="width: 70px;">失败次数</th>
+                                            <th style="width: 70px;">成功率</th>
+                                            <th style="width: 70px;">响应最大值</th>
+                                            <th style="width: 70px;">响应最小值</th>
+                                            <th style="width: 70px;">平均响应时间</th>
+                                            <th style="width: 70px;">失败平均时间</th>
+                                            <th style="width: 260px;">操作</th>
                                         </tr>
                                         </thead>
                                         <tbody id="data_table_body"></tbody>
