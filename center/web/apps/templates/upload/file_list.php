@@ -46,7 +46,7 @@
                             <thead>
                                 <tr>
                                     <th style="width: 50px; overflow-x: hidden;">ID</th>
-                                    <th>短网址</th>
+                                    <th>文件超链接</th>
                                     <th>添加时间</th>
                                     <th>操作</th>
                                 </tr>
@@ -61,8 +61,6 @@
                                         <td><a href="<?=$d['url']?>"><?=$d['url']?></a></td>
                                         <td><?=$d['add_time']?></td>
                                         <td>
-                                            <a href="/url_shortener/stats/?id=<?=$d['id']?>" class="btn btn-info btn-xs">查看统计</a>
-                                            <a href="/url_shortener/edit/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
                                             <a href="/url_shortener/delete/?id=<?=$d['id']?>" class="btn btn-warning btn-xs delete-tiny-url">删除</a>
                                         </td>
                                     </tr>
@@ -92,13 +90,8 @@
 
             </div>
         </article>
-        <!-- WIDGET END -->
     </div>
 </div>
-<!-- END MAIN CONTENT -->
-
-</div>
-<!-- END MAIN PANEL -->
 
 <!-- SHORTCUT AREA : With large tiles (activated via clicking user name tag)
 Note: These tiles are completely responsive,

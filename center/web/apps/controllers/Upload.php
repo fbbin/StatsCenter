@@ -27,4 +27,21 @@ class Upload extends \App\LoginController
             exit($this->json('', 0, 'Success'));
         }
     }
+
+    function file_list()
+    {
+        $data = array();
+
+        $data = model('Files')->gets(
+            array('where' => array('status' => 1), 'order' => 'add_time DESC'),
+            $pager
+        );
+        if ($data === false)
+        {
+            $data = array();
+        }
+
+        $this->assign('data', $data);
+        $this->display('upload/file_list.php');
+    }
 }
