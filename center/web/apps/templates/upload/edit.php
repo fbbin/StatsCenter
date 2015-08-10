@@ -66,16 +66,6 @@
                     <div class="no-padding" role="content">
                         <div class="widget-body">
                             <div id="uploader" style="width: 100%; height: 330px;">浏览器不支持上传功能。</div>
-                            <form class="smart-form" method="post">
-                                <footer>
-                                    <button type="submit" class="btn btn-primary">
-                                        提交
-                                    </button>
-                                    <button type="button" class="btn btn-default" onclick="window.history.back();">
-                                        返回
-                                    </button>
-                                </footer>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -122,6 +112,8 @@
         pageSetUp();
 
         $(function() {
+            var url_list = [];
+
             var uploader = $("#uploader").pluploadQueue({
                 runtimes: 'html5,flash,silverlight,html4',
                 url: 'http://file.chelun.com/upload.php',
@@ -135,9 +127,9 @@
 
                 filters : {
                     max_file_size : '100mb',
-                    /* mime_types: [
+                    mime_types: [
                        {title : "Apk files", extensions : "apk"}
-                       ] */
+                    ]
                 },
 
                 flash_swf_url: '../js/Moxie.swf',
@@ -145,7 +137,18 @@
 
                 init: {
                     FileUploaded: function(uploader, file, response) {
-                        log(response);
+                        var data = $.parseJSON(response.response);
+                        $.merge(url_list, data.data);
+                    },
+                    uploadComplete: function(uploader, files) {
+                        console.log(url_list);
+
+                        $.post('/upload/add', {url_list: url_list}, function(data) {
+                            if (data.code != 0)
+                            {
+                                alert('上传文件失败');
+                            }
+                        }, 'json');
                     }
                 }
             });
