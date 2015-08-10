@@ -142,7 +142,9 @@ class Url_shortener extends \App\LoginController
 
             $msg = $res ? '操作成功' : '操作失败';
             \Swoole\JS::js_goto($msg, '/url_shortener/tiny_url_list');
-        } else {
+        }
+        else
+        {
             $this->http->status(302);
             $this->http->header('Location', '/url_shortener/tiny_url_list');
         }
