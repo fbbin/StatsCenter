@@ -125,7 +125,6 @@
             var uploader = $("#uploader").pluploadQueue({
                 runtimes: 'html5,flash,silverlight,html4',
                 url: 'http://file.chelun.com/upload.php',
-                // chunk_size: '1mb',
                 multi_selection: true,
                 prevent_duplicates: true,
                 dragdrop: true,
