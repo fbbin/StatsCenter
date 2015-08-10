@@ -134,7 +134,7 @@
                 },
 
                 filters : {
-                    // max_file_size : '100mb',
+                    max_file_size : '100mb',
                     /* mime_types: [
                        {title : "Apk files", extensions : "apk"}
                        ] */
