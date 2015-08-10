@@ -88,5 +88,26 @@
             </li>
         </ul>
     </li>
+    <li>
+      <a href="#">
+        <i class="fa fa-lg fa-fw fa-file"></i>
+        <span class="menu-item-parent">文件上传</span>
+      </a>
+      <ul>
+        <li <?php if ($this->isActiveMenu('upload', 'add')){ ?>
+             class ="active" <?php } ?>>
+          <a href="/upload/add">
+            <i class="fa fa-lg fa-fw fa-pencil"></i>
+            <span class="menu-item-parent">新增文件</span>
+          </a>
+        </li>
+        <li>
+          <a href="/upload/list">
+            <i class="fa fa-lg fa-fw fa-reorder"></i>
+            <span class="menu-item-parent">文件列表</span>
+          </a>
+        </li>
+      </ul>
+    </li>
 </ul>
 </nav>
