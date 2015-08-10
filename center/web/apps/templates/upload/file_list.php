@@ -61,7 +61,7 @@
                                         <td><a href="<?=$d['url']?>"><?=$d['url']?></a></td>
                                         <td><?=$d['add_time']?></td>
                                         <td>
-                                            <a href="/url_shortener/delete/?id=<?=$d['id']?>" class="btn btn-warning btn-xs delete-tiny-url">删除</a>
+                                            <a href="/upload/delete/?id=<?=$d['id']?>" class="btn btn-warning btn-xs delete-tiny-url">删除</a>
                                         </td>
                                     </tr>
                                 <?php
