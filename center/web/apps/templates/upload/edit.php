@@ -65,6 +65,9 @@
                     <!-- widget div-->
                     <div class="no-padding" role="content">
                         <div class="widget-body">
+                            <ul style="margin-top:20px;color:red;">
+                                <li>同名文件会覆盖原文件。</li>
+                            </ul>
                             <div id="uploader" style="width: 100%; height: 330px;">浏览器不支持上传功能。</div>
                         </div>
                     </div>
