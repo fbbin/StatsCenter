@@ -28,12 +28,29 @@ class Upload extends \App\LoginController
         }
     }
 
+    function delete()
+    {
+        if (isset($_GET['id']))
+        {
+            $id = (int) $_GET['id'];
+            $res = model('Files')->del($id);
+
+            $msg = $res ? '操作成功' : '操作失败';
+            \Swoole\JS::js_goto($msg, '/upload/file_list');
+        }
+        else
+        {
+            $this->http->status(302);
+            $this->http->header('Location', '/upload/file_list');
+        }
+    }
+
     function file_list()
     {
         $data = array();
 
         $data = model('Files')->gets(
-            array('where' => array('status' => 1), 'order' => 'add_time DESC'),
+            array('where' => array('1 = 1'), 'order' => 'add_time DESC'),
             $pager
         );
         if ($data === false)
