@@ -102,7 +102,7 @@
           </a>
         </li>
         <li>
-          <a href="/upload/list">
+          <a href="/upload/file_list">
             <i class="fa fa-lg fa-fw fa-reorder"></i>
             <span class="menu-item-parent">文件列表</span>
           </a>
