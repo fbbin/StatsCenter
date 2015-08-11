@@ -95,6 +95,7 @@ class AopNetServer extends Server
             'open_eof_check' => true,
             'open_eof_split' => true,
             'package_eof' => self::EOF,
+            'dispatch_mode' => 3,
         );
         $this->pid_file = $_setting['pid_file'];
         $setting = array_merge($default_setting, $_setting);
