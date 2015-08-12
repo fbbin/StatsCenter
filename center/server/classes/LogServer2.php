@@ -50,10 +50,14 @@ class LogServer2 extends Server
         }
 
         $table = $this->getTableName();
-        if (!table($table)->put($put) and \Swoole::$php->db->errno() == 1146)
+        if (!table($table)->put($put) )
         {
-            $this->createTable($table);
-            table($table)->put($put);
+            if (\Swoole::$php->db->errno() == 1146)
+            {
+                $this->createTable($table);
+                table($table)->put($put);
+            }
+            $this->log->warn("put failed. errno=" . \Swoole::$php->db->errno());
         }
 
         \Swoole::$php->redis->sAdd('logs2:client:' . $put['module'], $put['ip']);
