@@ -26,6 +26,8 @@ class StatsCenter
     static $tick_array = array();
     static $round_index = 0;
     static $enable = true;
+    //UDP socket
+    static $socket = null;
 
     static function setServerIp($ip)
     {
@@ -47,7 +49,7 @@ class StatsCenter
         $file = '/tmp/mostats/'.$module.'_'.$interface_key;
         if (!is_dir('/tmp/mostats'))
         {
-            mkdir('/tmp/mostats');
+            mkdir('/tmp/mostats', 0777);
         }
         if (is_file($file))
         {
@@ -64,6 +66,7 @@ class StatsCenter
             if ($new_id)
             {
                 file_put_contents($file, $new_id);
+                chmod($file, 0777);
                 return $new_id;
             }
             //网络调用失败了
@@ -83,8 +86,11 @@ class StatsCenter
     {
         if (self::$enable)
         {
-            $cli = stream_socket_client('udp://' . self::$sc_svr_ip . ':' . $port, $errno, $errstr);
-            stream_socket_sendto($cli, $data);
+            if (!self::$socket)
+            {
+                self::$socket = stream_socket_client('udp://' . self::$sc_svr_ip . ':' . $port, $errno, $errstr, 1);
+            }
+            stream_socket_sendto(self::$socket, $data);
         }
     }
 
