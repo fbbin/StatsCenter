@@ -102,7 +102,8 @@
             <span class="menu-item-parent">新增文件</span>
           </a>
         </li>
-        <li>
+        <li <?php if ($this->isActiveMenu('upload', 'file_list')){ ?>
+             class ="active" <?php } ?>>
           <a href="/upload/file_list">
             <i class="fa fa-lg fa-fw fa-reorder"></i>
             <span class="menu-item-parent">文件列表</span>
