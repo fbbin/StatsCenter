@@ -88,7 +88,7 @@
             </li>
         </ul>
     </li>
-    <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 4) : ?>
+    <?php // if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 4) : ?>
     <li>
       <a href="#">
         <i class="fa fa-lg fa-fw fa-file"></i>
@@ -110,6 +110,6 @@
         </li>
       </ul>
     </li>
-     <?php endif; ?>
+     <?php // endif; ?>
 </ul>
 </nav>
