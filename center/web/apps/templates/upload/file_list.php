@@ -47,6 +47,7 @@
                                 <tr>
                                     <th style="width: 50px; overflow-x: hidden;">ID</th>
                                     <th>文件超链接</th>
+                                    <th>文件md5</th>
                                     <th>添加时间</th>
                                     <th>操作</th>
                                 </tr>
@@ -59,8 +60,16 @@
                                     <tr height="32">
                                         <td><?=$d['id']?></td>
                                         <td><a href="<?=$d['url']?>"><?=$d['url']?></a></td>
+                                        <td><?=$d['md5']?></td>
                                         <td><?=$d['add_time']?></td>
                                         <td>
+                                            <?php if ($d['status'] == 0) : ?>
+                                                <a href="/upload/ucdn_prefetch_domain_cache/?id=<?=$d['id']?>&file=<?=urlencode($d['url'])?>&md5=<?=$d['md5']?>" class="btn btn-info btn-xs">同步到CDN</a>
+                                            <?php elseif ($d['status'] == 1) : ?>
+                                                <a href="/upload/ucdn_query_prefetch_cache_status/?id=<?=$d['id']?>&task_id=<?=urlencode($d['ucdn_task_id'])?>" class="btn btn-warning btn-xs">查询状态</a>
+                                            <?php else : ?>
+                                                <span class="btn btn-xs">可以发布</span>
+                                            <?php endif; ?>
                                             <a href="/upload/delete/?id=<?=$d['id']?>" class="btn btn-warning btn-xs delete-tiny-url">删除</a>
                                         </td>
                                     </tr>

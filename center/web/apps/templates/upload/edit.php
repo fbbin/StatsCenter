@@ -126,6 +126,7 @@
                 multiple_queues: true,
                 multipart_params: {
                     ftype: 100,
+                    retmd5: 1,
                 },
 
                 filters : {
@@ -141,12 +142,13 @@
                 init: {
                     FileUploaded: function(uploader, file, response) {
                         var data = $.parseJSON(response.response);
-                        $.merge(url_list, data.data);
+                        if (data.code == 0)
+                        {
+                            url_list.push(JSON.stringify(data.data[0]));
+                        }
                     },
                     uploadComplete: function(uploader, files) {
-                        console.log(url_list);
-
-                        $.post('/upload/add', {url_list: url_list}, function(data) {
+                        $.post('/upload/add', {'url_list': url_list}, function(data) {
                             if (data.code != 0)
                             {
                                 alert('上传文件失败');
