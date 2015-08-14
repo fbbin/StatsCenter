@@ -144,7 +144,7 @@
                         var data = $.parseJSON(response.response);
                         if (data.code == 0)
                         {
-                            url_list.push(JSON.stringify(data.data[0]));
+                            url_list.push(JSON.stringify(data.data.file));
                         }
                     },
                     uploadComplete: function(uploader, files) {
