@@ -90,7 +90,7 @@ class Alert
 
     function onTask($serv, $task_id, $from_worker_id, $interface)
     {
-        $time_key = 163;//self::getMinute() - 10;//当前时间减去2 统计要占用两个时间片
+        $time_key = self::getMinute() - 3;//当前时间减去2 统计要占用两个时间片
 
         if ($time_key)
         {
