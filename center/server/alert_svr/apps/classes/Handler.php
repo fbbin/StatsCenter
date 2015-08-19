@@ -118,11 +118,14 @@ class Handler
 
     public function build_msg($message)
     {
+        \Swoole\Filter::safe($message['module_name']);
+        \Swoole\Filter::safe($message['interface_name']);
         $content = "紧急告警:".date("Y-m-d")." ".$this->get_time_string($message['time_key'])."-".$this->get_time_string($message['time_key']+1)
             ."  {$message['module_name']}->{$message['interface_name']} ";
         if (isset($message['succ_percent'])) //注意成功率为0 不要用empty 判断
         {
-            $content .= "成功率低于{$message['succ_hold']}%，";
+            $content .= "5分钟内调用{$message['total_count']}次，失败{$message['fail_count']}次，";
+            $content .= "成功率{$message['succ_percent']}%低于{$message['succ_hold']}%，";
         }
         if (isset($message['wave_percent']) and !empty($message['wave_percent']))
         {
@@ -135,7 +138,7 @@ class Handler
                 $content .= "波动率同比下降{$message['wave_percent']}% 高于 {$message['wave_hold']}%，";
             }
         }
-        $content .= "需要尽快处理，请登录https://stats.chelun.com/stats/index/?module_id=".$message['module_id']." 查看更详细的信息。";
+        $content .= "请尽快处理。";
         return $content;
     }
 

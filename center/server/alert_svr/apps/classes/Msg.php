@@ -11,13 +11,14 @@ class Msg
 {
     public $handler;
     public $worker_id;
-
     private $config;
+    public $service;
 
     function __construct($handler)
     {
         $this->handler = $handler;
         $this->config = \Swoole::$php->config['msg']['master'];
+        $this->service = new \Service('chelun');
     }
 
     function alert($msg)
@@ -26,7 +27,6 @@ class Msg
         $mobiles = explode(',',$msg['alert_mobiles']);
         if (!empty($mobiles))
         {
-            \Swoole\Filter::safe($msg);
             $msg = $this->handler->build_msg($msg);
             $this->_send($mobiles,$msg);
         }
@@ -42,8 +42,7 @@ class Msg
         {
             foreach ($mobiles as $number)
             {
-                $service = new \Service('chelun');
-                $res = $service->call('Common\SMS::send', $number, $message)->getResult();
+                $res = $this->service->call('Common\SMS::send', $number, $message)->getResult();
                 if ($res)
                 {
                     $this->log("task worker {$this->worker_id} send msg success: $number  {$message}");
