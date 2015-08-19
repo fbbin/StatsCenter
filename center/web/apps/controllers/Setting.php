@@ -29,6 +29,7 @@ class Setting extends \App\LoginController
             if (!empty($t['mobile']))
             {
                 $mobile[$t['mobile']] = $name . $t['mobile'];
+                $user[$t['id']] = "{$name} [{$t['username']}]-{$t['mobile']}";
             }
         }
         //\Swoole\Error::dbd();
@@ -65,7 +66,8 @@ class Setting extends \App\LoginController
                 $msg['message'] = "错误操作";
                 $this->assign('msg', $msg);
             } else {
-                $data['alert_types'] = explode('|',$data['alert_types']);
+                if (!empty($data['alert_types']))
+                    $data['alert_types'] = explode('|',$data['alert_types']);
                 $params['data'] = $data;
             }
             $this->assign('data', $params);
@@ -517,7 +519,7 @@ class Setting extends \App\LoginController
             )
         {
             $gets['select'] = 'id,mobile';
-            $gets['where'][] = 'uid in ('.$interface['alert_uids'].')';
+            $gets['where'][] = 'id in ('.$interface['alert_uids'].')';
             $tmp = table('user')->gets($gets);
             $user = array();
             foreach ($tmp as $t)

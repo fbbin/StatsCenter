@@ -129,34 +129,7 @@
                                         <label class="input" style="padding-bottom: 10px">
                                             <input type="text" class="input" name="alert_int"  value="<?= $this->value($data['data'], 'alert_int') ?>">
                                         </label>
-                                        <label class="checkbox state-success" style="display: inline-block;">
-                                            <input type="checkbox" name="alert_types[]" value="1" <?php
-                                            if (isset($data['data']['alert_types']))
-                                            {
-                                                echo is_array($data['data']['alert_types']
-                                                    and in_array(1, $data['data']['alert_types'])) ? 'checked' : '';
-                                            }
-                                            else
-                                            {
-                                                echo '';
-                                            }
-                                            ?>>
-                                            <i></i>弹窗
-                                        </label>
-                                        <label class="checkbox state-success" style="display: inline-block;">
-                                            <input type="checkbox" name="alert_types[]" value="2" <?php
-                                            if (isset($data['data']['alert_types']))
-                                            {
-                                                echo is_array($data['data']['alert_types']
-                                                    and in_array(2, $data['data']['alert_types'])) ? 'checked' : '';
-                                            }
-                                            else
-                                            {
-                                                echo '';
-                                            }
-                                            ?>>
-                                            <i></i>短信
-                                        </label><span class="note">(使用手机短信报警前,请确认在本系统用户管理中绑定手机号正确)</span>
+                                        <span class="note">(目前支持手机短信报警,请确认在本系统用户管理中绑定手机号正确)</span>
                                         <label class="label">报警通知列表</label>
                                         <div class="form-group">
                                             <?=$form['alert_uids']?>
