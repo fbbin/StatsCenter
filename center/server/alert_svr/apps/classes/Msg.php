@@ -1,5 +1,7 @@
 <?php
 namespace App;
+
+require '/data/system/libraries/Service.php';
 /**
  * Class Msg
  * @package App
@@ -39,7 +41,16 @@ class Msg
         {
             foreach ($mobiles as $number)
             {
-                $this->log("task worker {$this->worker_id} simulate send msg $number {$message}");
+                $service = new \Service('chelun');
+                $res = $service->call('Common\SMS::send', $number, $message)->getResult();
+                if ($res)
+                {
+                    $this->log("task worker {$this->worker_id} send msg success: $number  {$message}");
+                }
+                else
+                {
+                    $this->log("task worker {$this->worker_id} send msg failed: $number  {$message}");
+                }
             }
         }
         else
