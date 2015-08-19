@@ -26,6 +26,7 @@ class Msg
         $mobiles = explode(',',$msg['alert_mobiles']);
         if (!empty($mobiles))
         {
+            \Swoole\Filter::safe($msg);
             $msg = $this->handler->build_msg($msg);
             $this->_send($mobiles,$msg);
         }

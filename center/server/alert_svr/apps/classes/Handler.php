@@ -118,7 +118,7 @@ class Handler
 
     public function build_msg($message)
     {
-        $content = "【紧急告警】 ".date("Y-m-d")." ".$this->get_time_string($message['time_key'])."-".$this->get_time_string($message['time_key']+1)
+        $content = "紧急告警:".date("Y-m-d")." ".$this->get_time_string($message['time_key'])."-".$this->get_time_string($message['time_key']+1)
             ."  {$message['module_name']}->{$message['interface_name']} ";
         if (isset($message['succ_percent'])) //注意成功率为0 不要用empty 判断
         {

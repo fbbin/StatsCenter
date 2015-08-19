@@ -49,9 +49,9 @@ class Alert
         swoole_set_process_name(self::PROCESS_NAME.": worker #$worker_id");
         if ($worker_id == 0)
         {
-            //$serv->addtimer(self::CHECK_TIME*60*1000);
-            $serv->addtimer(5000);
-            $this->log("{$this->worker_id} add timer 5000ms");
+            $serv->addtimer(self::CHECK_TIME*60*1000);
+            //$serv->addtimer(5000);
+            $this->log("{$this->worker_id} add timer min ".self::CHECK_TIME);
         }
     }
 

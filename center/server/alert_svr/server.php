@@ -12,6 +12,7 @@ else
     \Swoole::$php->config->setPath(__DIR__.'/apps/configs/product/');
     $setting['worker_num'] = 1;
     $setting['daemonize'] = 1;
+    $setting['log_file'] = __DIR__ . '/logs/swoole_server.log';
 }
 $setting['pid_file'] = __DIR__ . '/logs/server.pid';
 $svr = new App\Alert();
@@ -21,7 +22,8 @@ if ($env == 'dev' or $env == 'test' or $env == 'local')
 }
 else
 {
-    $svr->setLogger(new Swoole\Log\FileLog(__DIR__ . '/logs/server.log'));
+    $svr->setLogger(new Swoole\Log\EchoLog(array('display'=>1)));
+    //$svr->setLogger(new Swoole\Log\FileLog(__DIR__ . '/logs/server.log'));
 }
 
 $svr->run($setting);
