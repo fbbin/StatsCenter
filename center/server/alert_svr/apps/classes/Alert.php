@@ -11,6 +11,7 @@ class Alert
     const SVR_PORT = 9990;
     const CHECK_TIME = 5;//5min pre check
     const PREFIX="YYPUSH";
+    const PROCESS_NAME = "alert_server";
 
     protected $serv;
     protected $pid_file;
@@ -39,6 +40,7 @@ class Alert
     {
         $this->log("worker start {$worker_id}");
         $this->worker_id = $worker_id;
+        swoole_set_process_name(self::PROCESS_NAME.": worker #$worker_id");
         if ($worker_id == 0)
         {
             //$serv->addtimer(self::CHECK_TIME*60*1000);
