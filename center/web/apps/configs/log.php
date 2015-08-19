@@ -1,5 +1,5 @@
 <?php
-$log = array(
+$log['master'] = array(
     'type' => 'FileLog',
     'file' => '/data/logs/swoole/web.log',
 );
