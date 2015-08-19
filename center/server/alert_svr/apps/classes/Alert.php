@@ -23,6 +23,12 @@ class Alert
 
     function onMasterStart($server)
     {
+        swoole_set_process_name(self::PROCESS_NAME.": master");
+    }
+
+    function onManagerStart($server)
+    {
+        swoole_set_process_name(self::PROCESS_NAME.": manager");
         $this->log("stats server start");
         file_put_contents($this->pid_file,$server->master_pid);
     }
@@ -162,6 +168,7 @@ class Alert
         $serv->set($setting);
         $serv->on('start', array($this, 'onMasterStart'));
         $serv->on('managerStop', array($this, 'onManagerStop'));
+        $serv->on('managerStart', array($this, 'onManagerStart'));
         $serv->on('workerStart', array($this, 'onWorkerStart'));
         $serv->on('receive', array($this, 'onPackage'));
         $serv->on('timer', array($this, 'onTimer'));
