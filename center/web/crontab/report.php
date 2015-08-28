@@ -14,10 +14,7 @@ elseif ($env == 'dev')
 {
     Swoole::$php->config->setPath(dirname(__DIR__).'/apps/configs/dev/');
 }
-else
-{
-    Swoole::$php->config->setPath(dirname(__DIR__).'/apps/configs/product/');
-}
+
 
 require dirname(__DIR__).'/apps/include/mail.php';
 $m = new \Apps\Mail();
