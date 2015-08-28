@@ -4,9 +4,9 @@ namespace Apps;
 require __DIR__.'/PHPMailer/PHPMailerAutoload.php';
 class Mail
 {
-    private $host = "mail.yy.com";
-    private $username = 'shiguangqi@yy.com';
-    private $password = 'sgq198766775577';
+    private $host = "smtp.qq.com";
+    private $username = 'shiguangqi@chelun.com';
+    private $password = 'sgq198766';
     private $secure = 'ssl';
     private $port = 465;
 
@@ -25,9 +25,10 @@ class Mail
         $this->mail->Password = $this->password;
         $this->mail->SMTPSecure = $this->secure;
         $this->mail->Port = $this->port;
+        $this->mail->CharSet = "utf-8";
 
-        $this->mail->From = 'shiguangqi@yy.com';
-        $this->mail->FromName = '石光启';
+        $this->mail->From = 'shiguangqi@chelun.com';
+        $this->mail->FromName = 'shiguangqi';
         $this->mail->isHTML(true);
     }
 
