@@ -64,8 +64,13 @@
                     <header role="heading">
                         <ul class="nav nav-tabs pull-left in">
                             <li class="active">
-                                <a><i class="fa fa-clock-o"></i>
-                                    <span class="hidden-mobile hidden-tablet">接口编辑</span>
+                                <a href="#s1" data-toggle="tab">
+                                    <span class="hidden-mobile hidden-tablet">按UID指定</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#s2" data-toggle="tab">
+                                    <span class="hidden-mobile hidden-tablet">按OpenUDID指定</span>
                                 </a>
                             </li>
                         </ul>
@@ -73,20 +78,47 @@
                     </header>
 
                     <!-- widget div-->
-                    <div class="no-padding" role="content">
-                        <div class="widget-body">
+                    <div class="no-padding tab-content" role="content">
+                        <div class="widget-body tab-pane fade in active" id="s1">
                             <form class="smart-form" method="post">
                                 <fieldset>
                                     <section>
-                                        <label class="label">接口标识符（必填，建议“项目标识符-环境标识符”的格式，如“chelun-test”、“common-dev”，英文字母、数字组合）</label>
+                                        <label class="label">UID（必填）</label>
+                                        <label class="input">
+                                            <?=$form['uid']?>
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">接口标识符（必填）</label>
                                         <label class="input">
                                             <?=$form['identifier']?>
                                         </label>
                                     </section>
+                                </fieldset>
+                                <footer>
+                                    <button type="submit" class="btn btn-primary">
+                                        提交
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="window.history.back();">
+                                        返回
+                                    </button>
+                                </footer>
+                            </form>
+                        </div>
+
+                        <div class="widget-body tab-pane fade" id="s2">
+                            <form class="smart-form" method="post">
+                                <fieldset>
                                     <section>
-                                        <label class="label">接口地址（必填，必须包括“http://”）</label>
+                                        <label class="label">OpenUDID（必填）</label>
                                         <label class="input">
-                                            <?=$form['host']?>
+                                            <?=$form['openUDID']?>
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">接口标识符（必填）</label>
+                                        <label class="input">
+                                            <?=$form['identifier']?>
                                         </label>
                                     </section>
                                 </fieldset>

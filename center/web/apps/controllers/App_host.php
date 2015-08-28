@@ -3,22 +3,6 @@ namespace App\Controller;
 
 class App_host extends \App\LoginController
 {
-    function add_project()
-    {
-        $form['name'] = \Swoole\Form::input('name');
-        $form['identifier'] = \Swoole\Form::input('identifier');
-        $form['description'] = \Swoole\Form::text('description', '', array('cols' => 80, 'rows' => 10));
-
-        $this->assign('form', $form);
-
-        $this->display('app_host/edit_project.php');
-    }
-
-    function project_list()
-    {
-        $this->display();
-    }
-
     function add_host()
     {
         $form['name'] = \Swoole\Form::input('name');
@@ -37,7 +21,13 @@ class App_host extends \App\LoginController
 
     function add_rule()
     {
-        $this->display();
+        $form['uid'] = \Swoole\Form::input('uid');
+        $form['openUDID'] = \Swoole\Form::input('openUDID');
+        $form['identifier'] = \Swoole\Form::input('identifier');
+
+        $this->assign('form', $form);
+
+        $this->display('app_host/edit_rule.php');
     }
 
     function rule_list()
