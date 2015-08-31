@@ -1,5 +1,5 @@
 <?php
-//ini_set("memory_limit","1024M");
+ini_set("memory_limit","1024M");
 define('DEBUG', 'off');
 define('WEBPATH', __DIR__);
 require dirname(__DIR__).'/../../framework/libs/lib_config.php';
@@ -140,8 +140,8 @@ function get_cache($interface_ids)
 
 function save_interface_stats($interface_id,$name,$module_info)
 {
-    //$table = "stats_". date('Ymd');
-    $table = "stats_20150818";
+    $table = "stats_". date('Ymd');
+    //$table = "stats_20150818";
     $gets['order'] = 'time_key asc';
     $gets['interface_id'] = $interface_id;
     $res = table($table)->gets($gets);
