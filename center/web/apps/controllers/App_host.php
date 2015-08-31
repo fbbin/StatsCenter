@@ -15,6 +15,7 @@ class App_host extends \App\LoginController
         else
         {
             $this->edit_host_check($project_id, $env_id, $host, $error);
+            $host = rtrim($host, '/');
             if (!empty($error))
             {
                 return $this->display_edit_host_page($project_id, $env_id, $host, $error);
