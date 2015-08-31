@@ -80,13 +80,13 @@
                                     <section>
                                         <label class="label">项目标识符（必填，如“chelun”、“common”，小写字母、数字、下划线组合）</label>
                                         <label class="input">
-                                            <?=$form['identifier']?>
+                                            <?=$form['project_id']?>
                                         </label>
                                     </section>
                                     <section>
                                         <label class="label">环境标识符（必填，如“test、dev”，小写英文字母、数字组合、下划线组合）</label>
                                         <label class="input">
-                                            <?=$form['identifier']?>
+                                            <?=$form['env_id']?>
                                         </label>
                                     </section>
                                     <section>
@@ -113,9 +113,10 @@
     </div>
 
     <?php include dirname(__DIR__) . '/include/javascript.php'; ?>
-</body>
+
     <script >
         pageSetUp();
     </script>
+</body>
 </html>
 
