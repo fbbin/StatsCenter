@@ -23,48 +23,121 @@ require dirname(__DIR__).'/apps/include/mail.php';
 $m = new \Apps\Mail();
 $i_gets['select'] = 'id,name';
 $i_gets['order'] = 'id asc';
-$interface_info = table("interface")->getMap($i_gets,'name');
-$m_gets['select'] = 'id,name';
-$module_info = table("module")->getMap($i_gets,'name');
+$project_info = table("project")->getMap($i_gets,'name' );
+
+$i_gets['select'] = 'id,name,module_id';
+$i_gets['order'] = 'name asc';
+$interface_tmp = table("interface")->gets($i_gets );
+
+$mid2interface_id = array();
+$interface_info = array();
+foreach ($interface_tmp as $v)
+{
+    $interface_info[$v['id']] = $v['name'];
+    $mid2interface_id[$v['module_id']][$v['id']] = $v['id'];
+}
+
+$m_gets['select'] = 'id,name,project_id';
+$module_tmp = table("module")->gets($m_gets);
+$pid2mid = array();
+$module_info = array();
+foreach ($module_tmp as $v)
+{
+    $module_info[$v['id']] = $v['name'];
+    $pid2mid[$v['project_id']][$v['id']] = $v['id'];
+}
+
+$pid2interface_id = array();
+foreach ($pid2mid as $pid => $mids)
+{
+    foreach ($mids as $mid)
+    {
+        if (isset($mid2interface_id[$mid]) and !empty($mid2interface_id[$mid]))
+        {
+            $pid2interface_id[$pid] = $mid2interface_id[$mid];
+        }
+    }
+}
+
+$u_gets['where'][]= "project_id!=''";
+$user = table("user")->gets($u_gets);
+$pid2username = array();
+foreach ($user as $u)
+{
+    if (!empty($u['project_id']))
+    {
+        $pids = explode(',',$u['project_id']);
+        foreach ($pids as $pid)
+        {
+            $pid2username[$pid][] = $u['username']."@chelun.com";
+        }
+    }
+
+}
+
 foreach ($interface_info as $interface_id => $name)
 {
     $res = save_interface_stats($interface_id,$name,$module_info);
 }
-$content = get_cache();
-$html = render($content);
-$subject = "模块调用统计报表-".date("Y-m-d");
-$addr = array(
-    'shiguangqi@chelun.com',
-    'hantianfeng@chelun.com',
-);
-$cc = array(
-    'shiguangqi@chelun.com'
-);
-$res = $m->mail($addr,$subject,$html,$cc);
-debug($res);
-function get_cache()
+
+foreach ($pid2interface_id as $pid => $interface_ids)
+{
+    if (!empty($interface_ids))
+    {
+        $content = get_cache($interface_ids);
+        if ($content !== false)
+        {
+            $html = get_html($content);
+            $subject = "模块调用统计报表-".$project_info[$pid]."-".date("Y-m-d");
+            $addr = array(
+                'shiguangqi@chelun.com',
+            );
+            $user = $pid2username[$pid];
+            if (!empty($user = $pid2username[$pid]))
+            {
+                $res = $m->mail($addr,$subject,$html);
+                echo "send success $subject to ".json_encode($user)."\n";
+            }
+        }
+    }
+}
+
+$files = scandir("./cache");
+foreach ($files as $file)
+{
+    if (!in_array($file,array('.','..','.keep')))
+    {
+        unlink("./cache/$file");
+    }
+}
+
+//----functions-----------------------
+function get_cache($interface_ids)
 {
     $files = scandir("./cache");
-    $all = array();
-    foreach ($files as $file)
+    $return = array();
+    foreach ($interface_ids as $interface_id)
     {
-        if (strpos($file,'.') === false)
+        $file = "interface_cache_$interface_id";
+        if (in_array($file,$files))
         {
-
             $_interface = unserialize(file_get_contents("./cache/$file"));
             if (!empty($_interface))
             {
-                $all[$_interface['interface_id']] = $_interface;
+                $return[$_interface['interface_id']] = $_interface;
             }
-            unlink("./cache/$file");
         }
     }
-    return $all;
+    if (!empty($return))
+        return $return;
+    else
+        return false;
 }
 
 function save_interface_stats($interface_id,$name,$module_info)
 {
-    $table = "stats_". date('Ymd');
+    //$table = "stats_". date('Ymd');
+    $table = "stats_20150818";
     $gets['order'] = 'time_key asc';
     $gets['interface_id'] = $interface_id;
     $res = table($table)->gets($gets);
@@ -176,132 +249,7 @@ function save_interface_stats($interface_id,$name,$module_info)
     }
 }
 
-function get_content()
-{
-    $content = '';
-    $table = "stats_". date('Ymd');
-    $gets['order'] = 'interface_id asc,time_key asc';
-    $res = table($table)->gets($gets);
-    $all_interface = array();
-    foreach ($res as $v)
-    {
-        $all_interface[$v['interface_id']][] = $v;
-    }
-    $caculate = array();
-    foreach ($all_interface as $interface_id => $faces)
-    {
-        foreach ($faces as $v)
-        {
-            //基础接口信息
-            if (!isset($caculate[$interface_id]['interface_id']))
-            {
-                $caculate[$interface_id]['interface_id'] = $v['interface_id'];
-            }
-            //基础模块信息
-            if (!isset($caculate[$interface_id]['module_id']))
-            {
-                $caculate[$interface_id]['module_id'] = $v['module_id'];
-            }
-            //总数
-            if (!isset($caculate[$interface_id]['total_count']))
-            {
-                $caculate[$interface_id]['total_count'] = $v['total_count'];
-            }
-            else
-            {
-                $caculate[$interface_id]['total_count'] += $v['total_count'];
-            }
-            //失败汇总
-            if (!isset($caculate[$interface_id]['fail_count']))
-            {
-                $caculate[$interface_id]['fail_count'] = $v['fail_count'];
-            }
-            else
-            {
-                $caculate[$interface_id]['fail_count'] += $v['fail_count'];
-            }
-            //总时间汇总
-            if (!isset($caculate[$interface_id]['total_time']))
-            {
-                $caculate[$interface_id]['total_time'] = $v['total_time'];
-            }
-            else
-            {
-                $caculate[$interface_id]['total_time'] += $v['total_time'];
-            }
-            //总失败时间汇总 total_fail_time
-            if (!isset($caculate[$interface_id]['total_fail_time']))
-            {
-                $caculate[$interface_id]['total_fail_time'] = $v['total_fail_time'];
-            }
-            else
-            {
-                $caculate[$interface_id]['total_fail_time'] += $v['total_fail_time'];
-            }
-            //获取最大时间
-            if (!isset($caculate[$interface_id]['max_time']))
-            {
-                $caculate[$interface_id]['max_time'] = $v['max_time'];
-            }
-            elseif($caculate[$interface_id]['max_time'] < $v['max_time'])
-            {
-                $caculate[$interface_id]['max_time'] = $v['max_time'];
-            }
-            //获取最小时间
-            if (!isset($caculate[$interface_id]['min_time']))
-            {
-                $caculate[$interface_id]['min_time'] = $v['min_time'];
-            }
-            elseif($caculate[$interface_id]['min_time'] > $v['min_time'])
-            {
-                $caculate[$interface_id]['min_time'] = $v['min_time'];
-            }
-        }
-    }
-    $i_gets['select'] = 'id,name';
-    $interface_info = table("interface")->getMap($i_gets,'name');
-    $m_gets['select'] = 'id,name';
-    $module_info = table("module")->getMap($i_gets,'name');
-
-    //平均时间计算
-    foreach ($caculate as $k => $count)
-    {
-        //平均响应时间
-        if ($count['total_count'] != 0)
-        {
-            $res = $count['total_time'] / $count['total_count'];
-            $caculate[$k]['avg_time'] = number_format($res,2);
-            $caculate[$k]['succ_rate'] = number_format(($count['total_count']-$count['fail_count']) /
-                    $count['total_count'],2)*100;
-        }
-        else
-        {
-            $caculate[$k]['avg_time'] = 0;
-            $caculate[$k]['succ_rate'] = 0;
-        }
-        //平均失败响应时间
-        if ($count['fail_count'] != 0)
-        {
-            $res = $count['total_fail_time'] / $count['fail_count'];
-            $caculate[$k]['avg_fail_time'] = number_format($res,2);
-        }
-        else
-        {
-            $caculate[$k]['avg_fail_time'] = 0;
-        }
-        $caculate[$k]['succ_count'] = $count['total_count'] - $count['fail_count'];
-
-        $interface_name = $interface_info[$count['interface_id']];
-        \Swoole\Filter::safe($interface_name);
-        $caculate[$k]['interface_name'] = $interface_name;
-        $module_name = $module_info[$count['module_id']];
-        \Swoole\Filter::safe($module_name);
-        $caculate[$k]['module_name'] = $module_name;
-    }
-    return $caculate;
-}
-
-function render($content)
+function get_html($content)
 {
     $header = '<lang="en-us"><head>
                 <head>
@@ -374,22 +322,36 @@ function render($content)
                 </head>
                 <body>
                 <div style="overflow: hidden;">
-                <table class="table table-bordered dataTable">
+                <table style="width: 100%;
+                            margin-bottom: 18px;
+                            border-collapse: collapse;
+                            border-spacing: 0;
+                            border-color: grey;
+                            " class="table table-bordered dataTable">
                     <thead>
-                        <tr>
-                            <th>模块名称</th>
-                            <th>接口名称</th>
-                            <th>调用次数</th>
-                            <th>成功次数</th>
-                            <th>失败次数</th>
-                            <th>成功率</th>
-                            <th>最大响应时间</th>
-                            <th>最小响应时间</th>
-                            <th>平均响应时间</th>
-                            <th>失败响应时间</th>
+                        <tr style="background-color: #eee;
+                            background-image: -webkit-gradient(linear,0 0,0 100%,from(#f2f2f2),to(#fafafa));
+                            background-image: -webkit-linear-gradient(top,#f2f2f2 0,#fafafa 100%);
+                            background-image: -moz-linear-gradient(top,#f2f2f2 0,#fafafa 100%);
+                            background-image: -ms-linear-gradient(top,#f2f2f2 0,#fafafa 100%);
+                            background-image: -o-linear-gradient(top,#f2f2f2 0,#fafafa 100%);
+                            background-image: -linear-gradient(top,#f2f2f2 0,#fafafa 100%);
+                            font-size: 16px;">
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;text-align: left;font-weight: bold;">模块名称</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">接口名称</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">调用次数</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">成功次数</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">失败次数</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">成功率</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">最大响应时间</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">最小响应时间</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">平均响应时间</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">失败响应时间</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="display: table-row-group;
+                            vertical-align: middle;
+                            border-color: inherit;">
                 ';
     $body = '';
     foreach ($content as $v)
@@ -401,16 +363,16 @@ function render($content)
             $bg_color = "#FFDFDF";
         }
         $body .= '<tr height="32" style="background-color:'.$bg_color.'" width="100%">
-                    <td>'.$v['module_name'].'</td>
-                    <td>'.$v['interface_name'].'</td>
-                    <td>'.$v['total_count'].'</td>
-                    <td>'.$v['succ_count'].'</td>
-                    <td>'.$v['fail_count'].'</td>
-                    <td>'.$v['succ_rate'].'%</td>
-                    <td>'.$v['max_time'].'ms</td>
-                    <td>'.$v['min_time'].'ms</td>
-                    <td>'.$v['avg_time'].'ms</td>
-                    <td>'.$v['avg_fail_time'].'ms</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['module_name'].'</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['interface_name'].'</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['total_count'].'</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['succ_count'].'</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['fail_count'].'</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['succ_rate'].'%</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['max_time'].'ms</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['min_time'].'ms</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['avg_time'].'ms</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['avg_fail_time'].'ms</td>
                 </tr>';
     }
 
