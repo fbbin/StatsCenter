@@ -21,11 +21,12 @@ else
 
 require dirname(__DIR__).'/apps/include/mail.php';
 $start = microtime(true);
+echo ("start to report \n");
 
 $m = new \Apps\Mail();
-$i_gets['select'] = 'id,name';
-$i_gets['order'] = 'id asc';
-$project_info = table("project")->getMap($i_gets,'name' );
+//$i_gets['select'] = 'id,name';
+//$i_gets['order'] = 'id asc';
+//$project_info = table("project")->getMap($i_gets,'name' );
 
 $i_gets['select'] = 'id,name,module_id';
 $i_gets['order'] = 'name asc';
@@ -39,42 +40,25 @@ foreach ($interface_tmp as $v)
     $mid2interface_id[$v['module_id']][$v['id']] = $v['id'];
 }
 
-$m_gets['select'] = 'id,name,project_id';
+$u_gets['select']= "id,username";
+$user = table("user")->getMap($u_gets,"username");
+
+
+$m_gets['select'] = 'id,name,owner_uid';
 $module_tmp = table("module")->gets($m_gets);
-$pid2mid = array();
 $module_info = array();
+$mid2username = array();
 foreach ($module_tmp as $v)
 {
     $module_info[$v['id']] = $v['name'];
-    $pid2mid[$v['project_id']][$v['id']] = $v['id'];
-}
-
-$pid2interface_id = array();
-foreach ($pid2mid as $pid => $mids)
-{
-    foreach ($mids as $mid)
+    if (!empty($v['owner_uid']))
     {
-        if (isset($mid2interface_id[$mid]) and !empty($mid2interface_id[$mid]))
+        $uids = explode(',',$v['owner_uid']);
+        foreach ($uids as $uid)
         {
-            $pid2interface_id[$pid][$mid] = $mid2interface_id[$mid];
+            $mid2username[$v['id']][] = $user[$uid]."@chelun.com";
         }
     }
-}
-
-$u_gets['where'][]= "project_id!=''";
-$user = table("user")->gets($u_gets);
-$pid2username = array();
-foreach ($user as $u)
-{
-    if (!empty($u['project_id']))
-    {
-        $pids = explode(',',$u['project_id']);
-        foreach ($pids as $pid)
-        {
-            $pid2username[$pid][] = $u['username']."@chelun.com";
-        }
-    }
-
 }
 
 foreach ($interface_info as $interface_id => $name)
@@ -82,7 +66,7 @@ foreach ($interface_info as $interface_id => $name)
     $res = save_interface_stats($interface_id,$name,$module_info);
 }
 
-foreach ($pid2interface_id as $pid => $interface_ids)
+foreach ($mid2interface_id as $mid => $interface_ids)
 {
     if (!empty($interface_ids))
     {
@@ -91,12 +75,13 @@ foreach ($pid2interface_id as $pid => $interface_ids)
         if ($content !== false)
         {
             $html = get_html($content);
-            $subject = "模块调用统计报表-".$project_info[$pid]."-".date("Y-m-d");
+            $subject = "模块调用统计报表-".$module_info[$mid]."-".date("Y-m-d",time()-3600*24);
             $addr = array(
                 'shiguangqi@chelun.com',
+                'hantianfeng@chelun.com',
             );
-            $user = $pid2username[$pid];
-            if (!empty($user = $pid2username[$pid]))
+            $user = $mid2username[$mid];
+            if (!empty($user))
             {
                 $res = $m->mail($addr,$subject,$html);
                 echo "send success $subject to ".json_encode($user)."\n";
@@ -114,6 +99,7 @@ foreach ($files as $file)
     }
 }
 $end = microtime(true);
+echo ("end report \n");
 $elapsed = $end-$start;
 echo ("elapsed time $elapsed s\n");
 //----functions-----------------------
@@ -121,18 +107,15 @@ function get_cache($interface_ids)
 {
     $files = scandir("./cache");
     $return = array();
-    foreach ($interface_ids as $m_id => $ids)
+    foreach ($interface_ids as $interface_id)
     {
-        foreach ($ids as $interface_id)
+        $file = "interface_cache_$interface_id";
+        if (in_array($file,$files))
         {
-            $file = "interface_cache_$interface_id";
-            if (in_array($file,$files))
+            $_interface = unserialize(file_get_contents("./cache/$file"));
+            if (!empty($_interface))
             {
-                $_interface = unserialize(file_get_contents("./cache/$file"));
-                if (!empty($_interface))
-                {
-                    $return[$_interface['interface_id']] = $_interface;
-                }
+                $return[$_interface['interface_id']] = $_interface;
             }
         }
     }
@@ -144,7 +127,7 @@ function get_cache($interface_ids)
 
 function save_interface_stats($interface_id,$name,$module_info)
 {
-    $table = "stats_". date('Ymd');
+    $table = "stats_". date('Ymd',time()-3600*24);
     //$table = "stats_20150818";
     $gets['order'] = 'time_key asc';
     $gets['interface_id'] = $interface_id;
