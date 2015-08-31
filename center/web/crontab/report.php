@@ -54,7 +54,7 @@ foreach ($pid2mid as $pid => $mids)
     {
         if (isset($mid2interface_id[$mid]) and !empty($mid2interface_id[$mid]))
         {
-            $pid2interface_id[$pid] = $mid2interface_id[$mid];
+            $pid2interface_id[$pid][$mid] = $mid2interface_id[$mid];
         }
     }
 }
@@ -85,6 +85,7 @@ foreach ($pid2interface_id as $pid => $interface_ids)
     if (!empty($interface_ids))
     {
         $content = get_cache($interface_ids);
+
         if ($content !== false)
         {
             $html = get_html($content);
@@ -116,15 +117,18 @@ function get_cache($interface_ids)
 {
     $files = scandir("./cache");
     $return = array();
-    foreach ($interface_ids as $interface_id)
+    foreach ($interface_ids as $m_id => $ids)
     {
-        $file = "interface_cache_$interface_id";
-        if (in_array($file,$files))
+        foreach ($ids as $interface_id)
         {
-            $_interface = unserialize(file_get_contents("./cache/$file"));
-            if (!empty($_interface))
+            $file = "interface_cache_$interface_id";
+            if (in_array($file,$files))
             {
-                $return[$_interface['interface_id']] = $_interface;
+                $_interface = unserialize(file_get_contents("./cache/$file"));
+                if (!empty($_interface))
+                {
+                    $return[$_interface['interface_id']] = $_interface;
+                }
             }
         }
     }
@@ -136,8 +140,8 @@ function get_cache($interface_ids)
 
 function save_interface_stats($interface_id,$name,$module_info)
 {
-    $table = "stats_". date('Ymd');
-    //$table = "stats_20150818";
+    //$table = "stats_". date('Ymd');
+    $table = "stats_20150818";
     $gets['order'] = 'time_key asc';
     $gets['interface_id'] = $interface_id;
     $res = table($table)->gets($gets);
