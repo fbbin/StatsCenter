@@ -78,7 +78,13 @@
                             <form class="smart-form" method="post">
                                 <fieldset>
                                     <section>
-                                        <label class="label">接口标识符（必填，建议“项目标识符-环境标识符”的格式，如“chelun-test”、“common-dev”，英文字母、数字组合）</label>
+                                        <label class="label">项目标识符（必填，如“chelun”、“common”，小写字母、数字、下划线组合）</label>
+                                        <label class="input">
+                                            <?=$form['identifier']?>
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">环境标识符（必填，如“test、dev”，小写英文字母、数字组合、下划线组合）</label>
                                         <label class="input">
                                             <?=$form['identifier']?>
                                         </label>
@@ -106,37 +112,6 @@
         </div>
     </div>
 
-    <div id="shortcut">
-        <ul>
-            <li>
-                <a href="#inbox.html" class="jarvismetro-tile big-cubes bg-color-blue"> <span class="iconbox"> <i
-                            class="fa fa-envelope fa-4x"></i> <span>Mail <span
-                                class="label pull-right bg-color-darken">14</span></span> </span> </a>
-            </li>
-            <li>
-                <a href="#calendar.html" class="jarvismetro-tile big-cubes bg-color-orangeDark"> <span class="iconbox"> <i
-                            class="fa fa-calendar fa-4x"></i> <span>Calendar</span> </span> </a>
-            </li>
-            <li>
-                <a href="#gmap-xml.html" class="jarvismetro-tile big-cubes bg-color-purple"> <span class="iconbox"> <i
-                            class="fa fa-map-marker fa-4x"></i> <span>Maps</span> </span> </a>
-            </li>
-            <li>
-                <a href="#invoice.html" class="jarvismetro-tile big-cubes bg-color-blueDark"> <span class="iconbox"> <i
-                            class="fa fa-book fa-4x"></i> <span>Invoice <span
-                                class="label pull-right bg-color-darken">99</span></span> </span> </a>
-            </li>
-            <li>
-                <a href="#gallery.html" class="jarvismetro-tile big-cubes bg-color-greenLight"> <span
-                        class="iconbox"> <i
-                            class="fa fa-picture-o fa-4x"></i> <span>Gallery </span> </span> </a>
-            </li>
-            <li>
-                <a href="javascript:void(0);" class="jarvismetro-tile big-cubes selected bg-color-pinkDark"> <span
-                        class="iconbox"> <i class="fa fa-user fa-4x"></i> <span>My Profile </span> </span> </a>
-            </li>
-        </ul>
-    </div>
     <?php include dirname(__DIR__) . '/include/javascript.php'; ?>
 </body>
     <script >
