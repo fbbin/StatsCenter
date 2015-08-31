@@ -136,8 +136,8 @@ function get_cache($interface_ids)
 
 function save_interface_stats($interface_id,$name,$module_info)
 {
-    //$table = "stats_". date('Ymd');
-    $table = "stats_20150818";
+    $table = "stats_". date('Ymd');
+    //$table = "stats_20150818";
     $gets['order'] = 'time_key asc';
     $gets['interface_id'] = $interface_id;
     $res = table($table)->gets($gets);
