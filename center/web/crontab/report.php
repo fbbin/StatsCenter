@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+//ini_set("memory_limit","1024M");
 define('DEBUG', 'off');
 define('WEBPATH', __DIR__);
 require dirname(__DIR__).'/../../framework/libs/lib_config.php';
@@ -14,13 +14,24 @@ elseif ($env == 'dev')
 {
     Swoole::$php->config->setPath(dirname(__DIR__).'/apps/configs/dev/');
 }
-
+else
+{
+    Swoole::$php->config->setPath(dirname(__DIR__).'/apps/configs/');
+}
 
 require dirname(__DIR__).'/apps/include/mail.php';
 $m = new \Apps\Mail();
-$content = get_content();
+$i_gets['select'] = 'id,name';
+$i_gets['order'] = 'id asc';
+$interface_info = table("interface")->getMap($i_gets,'name');
+$m_gets['select'] = 'id,name';
+$module_info = table("module")->getMap($i_gets,'name');
+foreach ($interface_info as $interface_id => $name)
+{
+    $res = save_interface_stats($interface_id,$name,$module_info);
+}
+$content = get_cache();
 $html = render($content);
-
 $subject = "模块调用统计报表-".date("Y-m-d");
 $addr = array(
     'shiguangqi@chelun.com',
@@ -29,8 +40,141 @@ $addr = array(
 $cc = array(
     'shiguangqi@chelun.com'
 );
-$res = $m->mail('shiguangqi@chelun.com',$subject,$html,$cc);
+$res = $m->mail($addr,$subject,$html,$cc);
+debug($res);
+function get_cache()
+{
+    $files = scandir("./cache");
+    $all = array();
+    foreach ($files as $file)
+    {
+        if (strpos($file,'.') === false)
+        {
 
+            $_interface = unserialize(file_get_contents("./cache/$file"));
+            if (!empty($_interface))
+            {
+                $all[$_interface['interface_id']] = $_interface;
+            }
+            unlink("./cache/$file");
+        }
+    }
+    return $all;
+}
+
+function save_interface_stats($interface_id,$name,$module_info)
+{
+    $table = "stats_". date('Ymd');
+    $gets['order'] = 'time_key asc';
+    $gets['interface_id'] = $interface_id;
+    $res = table($table)->gets($gets);
+    if (!empty($res))
+    {
+        $caculate = array();
+        foreach ($res as $v)
+        {
+            //基础接口信息
+            if (!isset($caculate['interface_id']))
+            {
+                $caculate['interface_id'] = $v['interface_id'];
+            }
+            //基础模块信息
+            if (!isset($caculate['module_id']))
+            {
+                $caculate['module_id'] = $v['module_id'];
+            }
+            //总数
+            if (!isset($caculate['total_count']))
+            {
+                $caculate['total_count'] = $v['total_count'];
+            }
+            else
+            {
+                $caculate['total_count'] += $v['total_count'];
+            }
+            //失败汇总
+            if (!isset($caculate['fail_count']))
+            {
+                $caculate['fail_count'] = $v['fail_count'];
+            }
+            else
+            {
+                $caculate['fail_count'] += $v['fail_count'];
+            }
+            //总时间汇总
+            if (!isset($caculate['total_time']))
+            {
+                $caculate['total_time'] = $v['total_time'];
+            }
+            else
+            {
+                $caculate['total_time'] += $v['total_time'];
+            }
+            //总失败时间汇总 total_fail_time
+            if (!isset($caculate['total_fail_time']))
+            {
+                $caculate['total_fail_time'] = $v['total_fail_time'];
+            }
+            else
+            {
+                $caculate['total_fail_time'] += $v['total_fail_time'];
+            }
+
+            //获取最大时间
+            if (!isset($caculate['max_time']))
+            {
+                $caculate['max_time'] = $v['max_time'];
+            }
+            elseif($caculate['max_time'] < $v['max_time'])
+            {
+                $caculate['max_time'] = $v['max_time'];
+            }
+            //获取最小时间
+            if (!isset($caculate['min_time']))
+            {
+                $caculate['min_time'] = $v['min_time'];
+            }
+            elseif($caculate['min_time'] > $v['min_time'])
+            {
+                $caculate['min_time'] = $v['min_time'];
+            }
+        }
+
+        //平均响应时间
+        if ($caculate['total_count'] != 0)
+        {
+            $caculate['avg_time'] = number_format($caculate['total_time'] / $caculate['total_count'],2);
+            $caculate['succ_rate'] = number_format(($caculate['total_count']-$caculate['fail_count']) /
+                    $caculate['total_count'],2)*100;
+        }
+        else
+        {
+            $caculate['avg_time'] = 0;
+            $caculate['succ_rate'] = 0;
+        }
+        //平均失败响应时间
+        if ($caculate['fail_count'] != 0)
+        {
+            $caculate['avg_fail_time'] = number_format($caculate['total_fail_time'] / $caculate['fail_count'],2);
+        }
+        else
+        {
+            $caculate['avg_fail_time'] = 0;
+        }
+        $caculate['succ_count'] = $caculate['total_count'] - $caculate['fail_count'];
+
+        \Swoole\Filter::safe($name);
+        $caculate['interface_name'] = $name;
+        $module_name = isset($module_info[$caculate['module_id']])?$module_info[$caculate['module_id']]:'';
+        \Swoole\Filter::safe($module_name);
+        $caculate['module_name'] = $module_name;
+        return file_put_contents("./cache/interface_cache_{$interface_id}",serialize($caculate));
+    }
+    else
+    {
+        return false;
+    }
+}
 
 function get_content()
 {
