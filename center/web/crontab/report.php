@@ -20,6 +20,8 @@ else
 }
 
 require dirname(__DIR__).'/apps/include/mail.php';
+$start = microtime(true);
+
 $m = new \Apps\Mail();
 $i_gets['select'] = 'id,name';
 $i_gets['order'] = 'id asc';
@@ -111,7 +113,9 @@ foreach ($files as $file)
         unlink("./cache/$file");
     }
 }
-
+$end = microtime(true);
+$elapsed = $end-$start;
+echo ("elapsed time $elapsed s\n");
 //----functions-----------------------
 function get_cache($interface_ids)
 {
