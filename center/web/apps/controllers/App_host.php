@@ -179,6 +179,8 @@ class App_host extends \App\LoginController
                 return $this->display_edit_rule_page($type, $uid, $openudid, $project_id, $env_id, $error);
             }
 
+            $project_id = strtolower($project_id);
+            $env_id = strtolower($env_id);
             if ($type === 'uid' && !empty($uid))
             {
                 $key = "uid:{$uid}-{$project_id}";
