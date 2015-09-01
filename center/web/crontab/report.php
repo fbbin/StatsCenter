@@ -21,7 +21,7 @@ else
 
 require dirname(__DIR__).'/apps/include/mail.php';
 $start = microtime(true);
-echo ("start to report \n");
+echo ("[".date("Y-m-d H:i:s")."] start to report \n");
 
 $m = new \Apps\Mail();
 //$i_gets['select'] = 'id,name';
@@ -84,15 +84,11 @@ foreach ($mid2interface_id as $mid => $interface_ids)
         {
             $html = get_html($content);
             $subject = "模块调用统计报表-".date("Y-m-d",time()-3600*24).":".$module_info[$mid];
-            $addr = array(
-                'shiguangqi@chelun.com',
-                //'hantianfeng@chelun.com',
-            );
             $user = $mid2username['addr'][$mid];
             $cc = $mid2username['cc'][$mid];
             if (!empty($user))
             {
-                $res = $m->mail($addr,$subject,$html);
+                $res = $m->mail($user,$subject,$html,$cc);
                 if ($res)
                 {
                     echo "send success $subject to ".json_encode($user)." cc to ".json_encode($cc)."\n";
@@ -115,9 +111,10 @@ foreach ($files as $file)
     }
 }
 $end = microtime(true);
-echo ("end report \n");
+echo ("[".date("Y-m-d H:i:s")."] end report \n");
 $elapsed = $end-$start;
-echo ("elapsed time $elapsed s\n");
+echo ("[".date("Y-m-d H:i:s")."] elapsed time $elapsed s\n");
+
 //----functions-----------------------
 function get_cache($interface_ids)
 {
