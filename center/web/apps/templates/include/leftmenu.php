@@ -64,6 +64,40 @@
     <li>
         <a href="/user/passwd/"><i class="fa fa-lg fa-fw fa-key"></i> <span class="menu-item-parent">修改密码</span></a>
     </li>
+    <?php if ($this->userinfo['usertype'] == 0) : ?>
+    <li>
+        <a href="#">
+            <i class="fa fa-lg fa-fw fa-mobile"></i>
+            <span class="menu-item-parent">App接口下发</span>
+        </a>
+        <ul>
+            <!-- <li <?php if ($this->isActiveMenu('app_host', 'add_project')){ ?>
+            class="active" <?php } ?>>
+            <a href="/app_host/add_project/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">新增项目</span></a>
+            </li>
+            <li <?php if ($this->isActiveMenu('app_host', 'project_list')){ ?>
+            class="active" <?php } ?>>
+            <a href="/app_host/project_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">项目列表</span></a>
+            </li> -->
+            <li <?php if ($this->isActiveMenu('app_host', 'add_host')){ ?>
+                class="active" <?php } ?>>
+                <a href="/app_host/add_host/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">新增App接口</span></a>
+            </li>
+            <li <?php if ($this->isActiveMenu('app_host', 'host_list')){ ?>
+                class="active" <?php } ?>>
+                <a href="/app_host/host_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">App接口列表</span></a>
+            </li>
+            <li <?php if ($this->isActiveMenu('app_host', 'add_rule')){ ?>
+                class="active" <?php } ?>>
+                <a href="/app_host/add_rule/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">指定设备接口</span></a>
+            </li>
+            <li <?php if ($this->isActiveMenu('app_host', 'rule_list')){ ?>
+                class="active" <?php } ?>>
+                <a href="/app_host/rule_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">指定列表</span></a>
+            </li>
+        </ul>
+    </li>
+    <?php endif; ?>
     <li>
         <a href="#">
             <i class="fa fa-lg fa-fw fa-link"></i>
