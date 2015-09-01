@@ -61,25 +61,47 @@
                 <div class="jarviswidget jarviswidget-sortable" id="wid-id-0" data-widget-togglebutton="false"
                      data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false"
                      data-widget-deletebutton="false" role="widget" style="width: 800px">
+                    <?php if ($view === 'add_rule') : ?>
                     <header role="heading">
                         <ul class="nav nav-tabs pull-left in">
-                            <li class="active">
-                                <a href="#s1" data-toggle="tab">
+                            <li<?php if ($type === 'uid') : ?> class="active"<?php endif; ?>>
+                                <a href="/app_host/add_rule?type=uid">
                                     <span class="hidden-mobile hidden-tablet">按UID指定</span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="#s2" data-toggle="tab">
+                            <li<?php if ($type === 'openudid') : ?> class="active"<?php endif; ?>>
+                                <a href="/app_host/add_rule?type=openudid">
                                     <span class="hidden-mobile hidden-tablet">按OpenUDID指定</span>
                                 </a>
                             </li>
                         </ul>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
                     </header>
+                    <?php elseif ($view === 'edit_rule') : ?>
+                    <header role="heading">
+                        <ul class="nav nav-tabs pull-left in">
+                            <?php if ($type === 'uid') : ?>
+                                <li class="active">
+                                    <a href="/app_host/add_rule?type=uid">
+                                        <span class="hidden-mobile hidden-tablet">按UID指定</span>
+                                    </a>
+                                </li>
+                            <?php elseif ($type === 'openudid') : ?>
+                                <li class="active">
+                                    <a href="/app_host/add_rule?type=openudid">
+                                        <span class="hidden-mobile hidden-tablet">按OpenUDID指定</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                    </header>
+                    <?php endif; ?>
 
                     <!-- widget div-->
                     <div class="no-padding tab-content" role="content">
-                        <div class="widget-body tab-pane fade in active" id="s1">
+                        <?php if ($type === 'uid') : ?>
+                        <div class="widget-body">
                             <form class="smart-form" method="post">
                                 <fieldset>
                                     <section>
@@ -89,13 +111,20 @@
                                         </label>
                                     </section>
                                     <section>
-                                        <label class="label">接口标识符（必填）</label>
+                                        <label class="label">项目标识符（必填）</label>
                                         <label class="input">
-                                            <?=$form['identifier']?>
+                                            <?=$form['project_id']?>
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">环境标识符（必填，同“UID+项目”只可指定一个环境，重复指定会覆盖）</label>
+                                        <label class="input">
+                                            <?=$form['env_id']?>
                                         </label>
                                     </section>
                                 </fieldset>
                                 <footer>
+                                    <input type="hidden" name="type" value="uid">
                                     <button type="submit" class="btn btn-primary">
                                         提交
                                     </button>
@@ -106,23 +135,32 @@
                             </form>
                         </div>
 
-                        <div class="widget-body tab-pane fade" id="s2">
+                        <?php else : ?>
+
+                        <div class="widget-body">
                             <form class="smart-form" method="post">
                                 <fieldset>
                                     <section>
                                         <label class="label">OpenUDID（必填）</label>
                                         <label class="input">
-                                            <?=$form['openUDID']?>
+                                            <?=$form['openudid']?>
                                         </label>
                                     </section>
                                     <section>
-                                        <label class="label">接口标识符（必填）</label>
+                                        <label class="label">项目标识符（必填）</label>
                                         <label class="input">
-                                            <?=$form['identifier']?>
+                                            <?=$form['project_id']?>
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">环境标识符（必填，同“OpenUDID+项目”只可指定一个环境，重复指定会覆盖）</label>
+                                        <label class="input">
+                                            <?=$form['env_id']?>
                                         </label>
                                     </section>
                                 </fieldset>
                                 <footer>
+                                    <input type="hidden" name="type" value="openudid">
                                     <button type="submit" class="btn btn-primary">
                                         提交
                                     </button>
@@ -132,43 +170,14 @@
                                 </footer>
                             </form>
                         </div>
+
+                        <?php endif; ?>
                     </div>
                 </div>
             </article>
         </div>
     </div>
 
-    <div id="shortcut">
-        <ul>
-            <li>
-                <a href="#inbox.html" class="jarvismetro-tile big-cubes bg-color-blue"> <span class="iconbox"> <i
-                            class="fa fa-envelope fa-4x"></i> <span>Mail <span
-                                class="label pull-right bg-color-darken">14</span></span> </span> </a>
-            </li>
-            <li>
-                <a href="#calendar.html" class="jarvismetro-tile big-cubes bg-color-orangeDark"> <span class="iconbox"> <i
-                            class="fa fa-calendar fa-4x"></i> <span>Calendar</span> </span> </a>
-            </li>
-            <li>
-                <a href="#gmap-xml.html" class="jarvismetro-tile big-cubes bg-color-purple"> <span class="iconbox"> <i
-                            class="fa fa-map-marker fa-4x"></i> <span>Maps</span> </span> </a>
-            </li>
-            <li>
-                <a href="#invoice.html" class="jarvismetro-tile big-cubes bg-color-blueDark"> <span class="iconbox"> <i
-                            class="fa fa-book fa-4x"></i> <span>Invoice <span
-                                class="label pull-right bg-color-darken">99</span></span> </span> </a>
-            </li>
-            <li>
-                <a href="#gallery.html" class="jarvismetro-tile big-cubes bg-color-greenLight"> <span
-                        class="iconbox"> <i
-                            class="fa fa-picture-o fa-4x"></i> <span>Gallery </span> </span> </a>
-            </li>
-            <li>
-                <a href="javascript:void(0);" class="jarvismetro-tile big-cubes selected bg-color-pinkDark"> <span
-                        class="iconbox"> <i class="fa fa-user fa-4x"></i> <span>My Profile </span> </span> </a>
-            </li>
-        </ul>
-    </div>
     <?php include dirname(__DIR__) . '/include/javascript.php'; ?>
 </body>
     <script >

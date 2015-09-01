@@ -90,7 +90,7 @@
                                         </label>
                                     </section>
                                     <section>
-                                        <label class="label">接口地址（必填，必须包括“http://”）</label>
+                                        <label class="label">接口地址（必填，必须包括“http://”，末尾不带“/”）</label>
                                         <label class="input">
                                             <?=$form['host']?>
                                         </label>

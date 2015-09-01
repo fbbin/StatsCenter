@@ -64,6 +64,7 @@
     <li>
         <a href="/user/passwd/"><i class="fa fa-lg fa-fw fa-key"></i> <span class="menu-item-parent">修改密码</span></a>
     </li>
+    <?php if ($this->userinfo['usertype'] == 0) : ?>
     <li>
         <a href="#">
             <i class="fa fa-lg fa-fw fa-mobile"></i>
@@ -96,6 +97,7 @@
             </li>
         </ul>
     </li>
+    <?php endif; ?>
     <li>
         <a href="#">
             <i class="fa fa-lg fa-fw fa-link"></i>
