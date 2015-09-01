@@ -44,7 +44,7 @@ $u_gets['select']= "id,username";
 $user = table("user")->getMap($u_gets,"username");
 
 
-$m_gets['select'] = 'id,name,owner_uid';
+$m_gets['select'] = 'id,name,owner_uid,backup_uids';
 $module_tmp = table("module")->gets($m_gets);
 $module_info = array();
 $mid2username = array();
@@ -56,7 +56,15 @@ foreach ($module_tmp as $v)
         $uids = explode(',',$v['owner_uid']);
         foreach ($uids as $uid)
         {
-            $mid2username[$v['id']][] = $user[$uid]."@chelun.com";
+            $mid2username['addr'][$v['id']][] = $user[$uid]."@chelun.com";
+        }
+    }
+    if (!empty($v['backup_uids']))
+    {
+        $cc_uids = explode(',',$v['backup_uids']);
+        foreach ($cc_uids as $uid)
+        {
+            $mid2username['cc'][$v['id']][] = $user[$uid]."@chelun.com";
         }
     }
 }
@@ -80,17 +88,18 @@ foreach ($mid2interface_id as $mid => $interface_ids)
                 'shiguangqi@chelun.com',
                 //'hantianfeng@chelun.com',
             );
-            $user = $mid2username[$mid];
+            $user = $mid2username['addr'][$mid];
+            $cc = $mid2username['cc'][$mid];
             if (!empty($user))
             {
                 $res = $m->mail($addr,$subject,$html);
                 if ($res)
                 {
-                    echo "send success $subject to ".json_encode($user)."\n";
+                    echo "send success $subject to ".json_encode($user)." cc to ".json_encode($cc)."\n";
                 }
                 else
                 {
-                    echo "send failed $subject to ".json_encode($user)."\n";
+                    echo "send failed $subject to ".json_encode($user)." cc to ".json_encode($cc)."\n";
                 }
             }
         }
@@ -134,8 +143,8 @@ function get_cache($interface_ids)
 
 function save_interface_stats($interface_id,$name,$module_info)
 {
-    //$table = "stats_". date('Ymd',time()-3600*24);
-    $table = "stats_20150818";
+    $table = "stats_". date('Ymd',time()-3600*24);
+    //$table = "stats_20150818";
     $gets['order'] = 'time_key asc';
     $gets['interface_id'] = $interface_id;
     $res = table($table)->gets($gets);
