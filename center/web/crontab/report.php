@@ -75,16 +75,23 @@ foreach ($mid2interface_id as $mid => $interface_ids)
         if ($content !== false)
         {
             $html = get_html($content);
-            $subject = "模块调用统计报表-".$module_info[$mid]."-".date("Y-m-d",time()-3600*24);
+            $subject = "模块调用统计报表-".date("Y-m-d",time()-3600*24).":".$module_info[$mid];
             $addr = array(
                 'shiguangqi@chelun.com',
-                'hantianfeng@chelun.com',
+                //'hantianfeng@chelun.com',
             );
             $user = $mid2username[$mid];
             if (!empty($user))
             {
                 $res = $m->mail($addr,$subject,$html);
-                echo "send success $subject to ".json_encode($user)."\n";
+                if ($res)
+                {
+                    echo "send success $subject to ".json_encode($user)."\n";
+                }
+                else
+                {
+                    echo "send failed $subject to ".json_encode($user)."\n";
+                }
             }
         }
     }
@@ -127,8 +134,8 @@ function get_cache($interface_ids)
 
 function save_interface_stats($interface_id,$name,$module_info)
 {
-    $table = "stats_". date('Ymd',time()-3600*24);
-    //$table = "stats_20150818";
+    //$table = "stats_". date('Ymd',time()-3600*24);
+    $table = "stats_20150818";
     $gets['order'] = 'time_key asc';
     $gets['interface_id'] = $interface_id;
     $res = table($table)->gets($gets);

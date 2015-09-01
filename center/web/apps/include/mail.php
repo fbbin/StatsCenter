@@ -5,8 +5,8 @@ require __DIR__.'/PHPMailer/PHPMailerAutoload.php';
 class Mail
 {
     private $host = "smtp.qq.com";
-    private $username = 'shiguangqi@chelun.com';
-    private $password = 'sgq198766';
+    private $username = 'report@chelun.com';
+    private $password = '123qwe';
     private $secure = 'ssl';
     private $port = 465;
 
@@ -27,8 +27,8 @@ class Mail
         $this->mail->Port = $this->port;
         $this->mail->CharSet = "utf-8";
 
-        $this->mail->From = 'shiguangqi@chelun.com';
-        $this->mail->FromName = 'shiguangqi';
+        $this->mail->From = 'report@chelun.com';
+        $this->mail->FromName = 'reporter';
         $this->mail->isHTML(true);
     }
 
