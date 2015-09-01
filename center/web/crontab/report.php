@@ -22,8 +22,6 @@ else
 require dirname(__DIR__).'/apps/include/mail.php';
 $start = microtime(true);
 echo ("[".date("Y-m-d H:i:s")."] start to report \n");
-
-$m = new \Apps\Mail();
 //$i_gets['select'] = 'id,name';
 //$i_gets['order'] = 'id asc';
 //$project_info = table("project")->getMap($i_gets,'name' );
@@ -88,7 +86,9 @@ foreach ($mid2interface_id as $mid => $interface_ids)
             $cc = $mid2username['cc'][$mid];
             if (!empty($user))
             {
+                $m = new \Apps\Mail();
                 $res = $m->mail($user,$subject,$html,$cc);
+                unset($m);
                 if ($res)
                 {
                     echo "send success $subject to ".json_encode($user)." cc to ".json_encode($cc)."\n";
