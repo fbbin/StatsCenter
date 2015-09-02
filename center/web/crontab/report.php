@@ -87,7 +87,8 @@ foreach ($mid2interface_id as $mid => $interface_ids)
             if (!empty($user))
             {
                 $m = new \Apps\Mail();
-                $res = $m->mail($user,$subject,$html,$cc);
+                //$res = $m->mail($user,$subject,$html,$cc);
+                $res = $m->mail(array("shiguangqi@chelun.com"),$subject,$html);
                 unset($m);
                 if ($res)
                 {
@@ -102,14 +103,18 @@ foreach ($mid2interface_id as $mid => $interface_ids)
     }
 }
 
-$files = scandir("./cache");
-foreach ($files as $file)
+$files = scandir(__DIR__."/cache");
+if (!empty($files))
 {
-    if (!in_array($file,array('.','..','.keep')))
+    foreach ($files as $file)
     {
-        unlink("./cache/$file");
+        if (!in_array($file,array('.','..','.keep')))
+        {
+            unlink(__DIR__."/cache/$file");
+        }
     }
 }
+
 $end = microtime(true);
 echo ("[".date("Y-m-d H:i:s")."] end report \n");
 $elapsed = $end-$start;
@@ -118,20 +123,24 @@ echo ("[".date("Y-m-d H:i:s")."] elapsed time $elapsed s\n");
 //----functions-----------------------
 function get_cache($interface_ids)
 {
-    $files = scandir("./cache");
+    $files = scandir(__DIR__."/cache");
     $return = array();
-    foreach ($interface_ids as $interface_id)
+    if (!empty($files))
     {
-        $file = "interface_cache_$interface_id";
-        if (in_array($file,$files))
+        foreach ($interface_ids as $interface_id)
         {
-            $_interface = unserialize(file_get_contents("./cache/$file"));
-            if (!empty($_interface))
+            $file = "interface_cache_$interface_id";
+            if (in_array($file,$files))
             {
-                $return[$_interface['interface_id']] = $_interface;
+                $_interface = unserialize(file_get_contents(__DIR__."/cache/$file"));
+                if (!empty($_interface))
+                {
+                    $return[$_interface['interface_id']] = $_interface;
+                }
             }
         }
     }
+
     if (!empty($return))
         return $return;
     else
@@ -140,8 +149,8 @@ function get_cache($interface_ids)
 
 function save_interface_stats($interface_id,$name,$module_info)
 {
-    $table = "stats_". date('Ymd',time()-3600*24);
-    //$table = "stats_20150818";
+    //$table = "stats_". date('Ymd',time()-3600*24);
+    $table = "stats_20150818";
     $gets['order'] = 'time_key asc';
     $gets['interface_id'] = $interface_id;
     $res = table($table)->gets($gets);
@@ -245,7 +254,7 @@ function save_interface_stats($interface_id,$name,$module_info)
         $module_name = isset($module_info[$caculate['module_id']])?$module_info[$caculate['module_id']]:'';
         \Swoole\Filter::safe($module_name);
         $caculate['module_name'] = $module_name;
-        return file_put_contents("./cache/interface_cache_{$interface_id}",serialize($caculate));
+        return file_put_contents(__DIR__."/cache/interface_cache_{$interface_id}",serialize($caculate));
     }
     else
     {
