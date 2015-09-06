@@ -87,8 +87,8 @@ foreach ($mid2interface_id as $mid => $interface_ids)
             if (!empty($user))
             {
                 $m = new \Apps\Mail();
-                //$res = $m->mail($user,$subject,$html,$cc);
-                $res = $m->mail(array("shiguangqi@chelun.com"),$subject,$html);
+                $res = $m->mail($user,$subject,$html,$cc);
+                //$res = $m->mail(array("shiguangqi@chelun.com"),$subject,$html);
                 unset($m);
                 if ($res)
                 {
