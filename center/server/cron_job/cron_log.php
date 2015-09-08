@@ -98,21 +98,40 @@ function del_log()
  */
 function del_stats()
 {
-    $time_key = date("Y-m-d", time() - 3600 * 24 * 30);
-    $tables = array('stats', 'stats_client', 'stats_server');
-    foreach ($tables as $table)
+    $last = date("Y-m-d", time() - 3600 * 24 * 30);
+    $sql = "show tables like 'stats_server_%'";
+    $res = Swoole::$php->db->query($sql)->fetchall();
+    if (!empty($res))
     {
-        while(true)
+        foreach ($res as $re)
         {
-            $sql1 = "DELETE FROM `" . $table . "` where date_key < '$time_key' limit 1000";
-            echo $sql1."\n";
-            $res = Swoole::$php->db->query($sql1);
-            if ($res === false) break;
+            list($table_name) = $re;
+            list(, $date) = explode('-', $table_name);
+
+            if ($date < $last)
+            {
+                $sql = "DROP TABLE IF EXISTS `$table_name`";
+                //$res = Swoole::$php->db->query($sql);
+                echo $sql;
+                if ($res)
+                {
+                    echo ' success ' . PHP_EOL;
+                }
+                else
+                {
+                    echo ' failed ' . PHP_EOL;
+                }
+
+            }
         }
+    }
+    else
+    {
+        echo "no table to delete ".PHP_EOL;
     }
 }
 
 $cron = new Cron();
-$cron->set_job('del_log');
+//$cron->set_job('del_log');
 $cron->set_job('del_stats');
 $cron->run();
