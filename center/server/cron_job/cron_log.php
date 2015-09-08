@@ -58,32 +58,18 @@ class Cron
  */
 function del_log()
 {
-    //\Swoole\Error::dbd();
-    $now = date("Y-m-d",time()-3600*24*30);
-    $sql = "show tables like 'logs2_%'";
+    $last = date("Ymd", time() - 3600 * 24 * 30);
+    $sql = "show tables like 'log2_%'";
     $res = Swoole::$php->db->query($sql)->fetchall();
     if (!empty($res))
     {
         foreach ($res as $re)
         {
-            foreach ($re as $r)
+            list($table_name) = array_values($re);
+            list(, $date) = explode('_', $table_name);
+            if ($date < $last)
             {
-                $tmp = explode('_',$r);
-                if ($tmp[1] < $now)
-                {
-                    $sql = "DROP TABLE IF EXISTS `$r`";
-                    $res = Swoole::$php->db->query($sql);
-                    echo $sql;
-                    if ($res)
-                    {
-                        echo ' success '.PHP_EOL;
-                    }
-                    else
-                    {
-                        echo ' failed '.PHP_EOL;
-                    }
-
-                }
+                dropTable($table_name);
             }
         }
     }
@@ -137,6 +123,6 @@ function dropTable($table)
 }
 
 $cron = new Cron();
-//$cron->set_job('del_log');
+$cron->set_job('del_log');
 $cron->set_job('del_stats');
 $cron->run();
