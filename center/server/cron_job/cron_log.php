@@ -98,36 +98,41 @@ function del_log()
  */
 function del_stats()
 {
-    $last = date("Y-m-d", time() - 3600 * 24 * 30);
-    $sql = "show tables like 'stats_server_%'";
+    $last = date("Ymd", time() - 3600 * 24 * 30);
+    $sql = "show tables like 'stats_client_%'";
     $res = Swoole::$php->db->query($sql)->fetchall();
     if (!empty($res))
     {
         foreach ($res as $re)
         {
-            list($table_name) = $re;
-            list(, $date) = explode('-', $table_name);
-
+            list($table_name) = array_values($re);
+            list(, , $date) = explode('_', $table_name);
             if ($date < $last)
             {
-                $sql = "DROP TABLE IF EXISTS `$table_name`";
-                //$res = Swoole::$php->db->query($sql);
-                echo $sql;
-                if ($res)
-                {
-                    echo ' success ' . PHP_EOL;
-                }
-                else
-                {
-                    echo ' failed ' . PHP_EOL;
-                }
-
+                dropTable('stats_client_' . $date);
+                dropTable('stats_server_' . $date);
+                dropTable('stats_' . $date);
             }
         }
     }
     else
     {
         echo "no table to delete ".PHP_EOL;
+    }
+}
+
+function dropTable($table)
+{
+    $sql = "DROP TABLE IF EXISTS `$table`";
+    $del_res = Swoole::$php->db->query($sql);
+    echo $sql;
+    if ($del_res)
+    {
+        echo ' success ' . PHP_EOL;
+    }
+    else
+    {
+        echo ' failed ' . PHP_EOL;
     }
 }
 
