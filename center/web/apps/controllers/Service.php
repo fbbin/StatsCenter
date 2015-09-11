@@ -5,7 +5,11 @@ use Swoole;
 class Service
 {
     const KEY_PREFIX = 'aopnet:';
-    const ID_PREFIX = 'queue:config:';
+    public $services = array(
+        'service' => 'service:config:',//默认 服务化配置
+        'queue' => 'queue:config:'//队列服务 配置
+    );
+
     /**
      * 注册服务
      * method POST
@@ -20,21 +24,26 @@ class Service
             $return['msg'] = "params empty";
             goto failed;
         }
-
         if (empty($_POST['config_id']) or empty($_POST['env'])) {
             $return['msg'] = "config_id,env can not be empty";
             goto failed;
         }
-
         if (empty($_POST['data'])) {
             $return['msg'] = "data empty";
             goto failed;
         }
+        $service = trim($_POST['service']);
+        if (!array_key_exists($service,$this->services))
+        {
+            $return['msg'] = "service error";
+            goto failed;
+        }
+
         $config_id = trim($_POST['config_id']);
         $env = trim($_POST['env']);
         $data = (string)$_POST['data'];
-
-        $key = self::KEY_PREFIX . $env . ':' . self::ID_PREFIX . $config_id;
+        $config_id = $this->services[$service].$config_id;
+        $key = self::KEY_PREFIX . $env . ':' . $config_id;
         $res = \Swoole::$php->redis("cluster")->set($key,$data);
         if (!$res)
         {
@@ -63,9 +72,18 @@ class Service
             $return['msg'] = "config_id,env can not be empty";
             goto failed;
         }
+
+        $service = trim($_GET['service']);
+        if (!array_key_exists($service,$this->services))
+        {
+            $return['msg'] = "service error";
+            goto failed;
+        }
+
         $config_id = trim($_GET['config_id']);
         $env = trim($_GET['env']);
-        $key = self::KEY_PREFIX . $env . ':' . self::ID_PREFIX .$config_id;
+        $config_id = $this->services[$service].$config_id;
+        $key = self::KEY_PREFIX . $env . ':' . $config_id;
         $res = \Swoole::$php->redis("cluster")->get($key);
         if ($res)
         {
@@ -93,11 +111,18 @@ class Service
         }
         $config_ids = explode(",",trim($_GET['config_id']));
 
+        $service = trim($_GET['service']);
+        if (!array_key_exists($service,$this->services))
+        {
+            $return['msg'] = "service error";
+            goto failed;
+        }
         $env = trim($_GET['env']);
         $data = array();
         foreach ($config_ids as $config_id)
         {
-            $res = \Swoole::$php->redis("cluster")->get(self::KEY_PREFIX . $env . ':' . self::ID_PREFIX . $config_id);
+            $key = self::KEY_PREFIX . $env . ':' . $this->services[$service].$config_id;
+            $res = \Swoole::$php->redis("cluster")->get($key);
 
             if ($res)
             {

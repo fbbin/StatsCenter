@@ -12,9 +12,10 @@ if (get_cfg_var('env.name') == 'local' or get_cfg_var('env.name') == 'dev')
 
 $params['config_id'] = "master";
 $params['env'] = "dev";
+$params['service'] = "queue";
 $params['data'] = json_encode(array(
     'ip' =>'127.0.0.1',
-    'port' =>"9901",
+    'port' =>"9906",
 ));
 $c = new \Swoole\Client\CURL();
 $url = "http://local.stats.chelun.com/service/reg/";
