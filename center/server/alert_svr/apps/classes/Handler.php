@@ -79,7 +79,7 @@ class Handler
             $msg = array_merge($interface,$data);
             if ($this->is_ready($msg))
             {
-                $this->log("meet alert condition,move to alert stage".json_encode($data,JSON_UNESCAPED_UNICODE));
+                $this->log("meet alert condition,move to alert stage");
                 $this->_alert(array_merge($interface,$data));
                 \Swoole::$php->redis->hSet(ALert::PREFIX."::".$msg['interface_id'],'last_alert_time',time());
                 //$this->log("task worker {$this->worker_id} msg detials .".print_r($msg,1));
@@ -87,7 +87,7 @@ class Handler
         }
         else
         {
-            $this->log("alert condition do not meet,return to next loop".json_encode($interface,JSON_UNESCAPED_UNICODE));
+            $this->log("alert condition do not meet,return to next loop");
         }
     }
 
