@@ -82,7 +82,7 @@ class Alert
                 }
                 else
                 {
-                    $this->log("{$this->worker_id} interface condition not meet ".json_encode($tmp,JSON_UNESCAPED_UNICODE));
+                    $this->log("{$this->worker_id} interface {$key} condition not meet ");
                 }
             }
         }
