@@ -85,7 +85,7 @@ class User extends \App\LoginController
             $form['mobile'] = \Swoole\Form::input('mobile',$user['mobile']);
             $form['realname'] = \Swoole\Form::input('realname',$user['realname']);
             $form['username'] = \Swoole\Form::input('username',$user['username']);
-            $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], null, null, array('class' => 'select2'));
+            $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], $user['usertype'], null, array('class' => 'select2'));
             $form['id'] = \Swoole\Form::hidden('id',$user['id']);
             $this->assign('form', $form);
             $this->display();
