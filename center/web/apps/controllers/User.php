@@ -85,7 +85,7 @@ class User extends \App\LoginController
             $form['mobile'] = \Swoole\Form::input('mobile',$user['mobile']);
             $form['realname'] = \Swoole\Form::input('realname',$user['realname']);
             $form['username'] = \Swoole\Form::input('username',$user['username']);
-            $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], null, null, array('class' => 'select2'));
+            $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], $user['usertype'], null, array('class' => 'select2'));
             $form['id'] = \Swoole\Form::hidden('id',$user['id']);
             $this->assign('form', $form);
             $this->display();
@@ -95,8 +95,12 @@ class User extends \App\LoginController
             $id = (int)$_POST['id'];
             $inserts['realname'] = $_POST['realname'];
             $inserts['username'] = $_POST['username'];
-            $inserts['uid'] = (int)$_POST['uid'];
-            $inserts['project_id'] = implode(',',$_POST['project_id']);
+            // NOTE: 写死0，貌似目前没用到
+            $inserts['uid'] = 0;
+            $inserts['usertype']= (int) $_POST['usertype'];
+            if (!empty($_POST['project_id'])) {
+                $inserts['project_id'] = implode(',',$_POST['project_id']);
+            }
             $inserts['mobile'] = $_POST['mobile'];
 
             $res = table("user")->set($id,$inserts);
