@@ -625,6 +625,11 @@ class StatsServer extends Server
             $this->log("error package. data".$pkg_data);
             return;
         }
+        //耗时> 10s 标记时间为10s
+        if ($pkg['use_ms'] > 10000)
+        {
+            $pkg['use_ms'] = 10000;
+        }
 
         $pkg['server_ip'] = long2ip($pkg['server_ip']);
         $pkg['client_ip'] = $client_ip;

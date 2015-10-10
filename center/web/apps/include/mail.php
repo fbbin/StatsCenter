@@ -6,7 +6,7 @@ class Mail
 {
     private $host = "smtp.qq.com";
     private $username = 'report@chelun.com';
-    private $password = '123qwe';
+    private $password = 'rpt0716';
     private $secure = 'ssl';
     private $port = 465;
 

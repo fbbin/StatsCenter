@@ -82,7 +82,7 @@ class Alert
                 }
                 else
                 {
-                    $this->log("{$this->worker_id} interface condition not meet ".json_encode($tmp,JSON_UNESCAPED_UNICODE));
+                    $this->log("{$this->worker_id} interface {$key} condition not meet ");
                 }
             }
         }
@@ -118,7 +118,7 @@ class Alert
                     );
                     $this->handler->alert($interface,$fake);
                 }
-                $this->log("{$this->worker_id} on task data details mysql {$time_key} interface:".json_encode($interface,JSON_UNESCAPED_UNICODE).
+                $this->log("{$this->worker_id} on task data details mysql {$time_key} interface:".
                     "mysql data:".json_encode($tmp,JSON_UNESCAPED_UNICODE));
             }
             else
