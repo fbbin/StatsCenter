@@ -63,7 +63,7 @@ class LoginController extends \Swoole\Controller
         //从Session中获取
         else
         {
-            $res = $this->redis->get(self::PROJECT_ID_KEY.':'.$this->uid, $this->projectId);
+            $res = $this->redis->get(self::PROJECT_ID_KEY.':'.$this->uid);
             //第一个项目ID
             if (empty($res))
             {
