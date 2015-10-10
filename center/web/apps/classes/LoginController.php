@@ -8,6 +8,8 @@ class LoginController extends \Swoole\Controller
     protected $projectId;
     protected $projectInfo;
 
+    const PROJECT_ID_KEY = 'stats:web:user:project_id';
+
     function __construct(\Swoole $swoole)
     {
         parent::__construct($swoole);
@@ -55,26 +57,26 @@ class LoginController extends \Swoole\Controller
             }
             else
             {
-                $_SESSION['project'] = $this->projectId;
+                $this->redis->set(self::PROJECT_ID_KEY.':'.$this->uid, $this->projectId);
             }
         }
         //从Session中获取
-        elseif (!empty($_SESSION['project']))
-        {
-            $this->projectId = intval($_SESSION['project']);
-        }
-        //第一个项目ID
         else
         {
-            first_project:
-            $this->projectId = array_keys($projects)[0];
+            $res = $this->redis->get(self::PROJECT_ID_KEY.':'.$this->uid, $this->projectId);
+            //第一个项目ID
+            if (empty($res))
+            {
+                first_project:
+                $this->projectId = array_keys($projects)[0];
+                $this->redis->set(self::PROJECT_ID_KEY.':'.$this->uid, $this->projectId);
+            }
+            else
+            {
+                $this->projectId = intval($res);
+            }
         }
 
-        //修改Session记录中的project
-        if (!empty($_SESSION['project']) and $this->projectId != $_SESSION['project'])
-        {
-            $_SESSION['project'] = $this->projectId;
-        }
         $this->projectInfo = $projects[$this->projectId];
         $this->assign('_project_id', $this->projectId);
         $this->assign('_project_info', $this->projectInfo);
