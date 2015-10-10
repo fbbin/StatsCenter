@@ -115,8 +115,13 @@ class User extends \App\LoginController
         }
         else
         {
-            $inserts['realname'] = $_POST['realname'];
             $inserts['username'] = trim($_POST['username']);
+            if (table('user')->exists($inserts))
+            {
+                \Swoole\JS::js_goto("账户已存在",'/user/ulist//');
+                return;
+            }
+            $inserts['realname'] = $_POST['realname'];
             $inserts['uid'] = isset($_POST['uid']) ? (int) $_POST['uid'] : 0;
             $inserts['project_id'] = isset($_POST['project_id'])
                 ? implode(',',$_POST['project_id'])
