@@ -42,42 +42,33 @@
 
                         <div class="widget-body">
                             <p>短网址：<a href="<?=$tiny_url?>"><?=$tiny_url?></a></p>
-
-                            <p><a href="/url_shortener/stats?id=<?=$tiny_url_id?>&format=csv">导出 CSV 格式</a>（可以用 Excel、WPS表格 打开）</p>
+                            <p>日期：<?=$date?></p>
 
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>日期</th>
+                                        <th>国</th>
+                                        <th>省</th>
+                                        <th>市</th>
                                         <th>访问次数</th>
-                                        <th>按城市统计</th>
                                     </tr>
                                 </thead>
                                 <tbody id="data_table_body">
                                     <?php
-                                    foreach ($data as $d)
+                                    foreach ($data as $row)
                                     {
                                     ?>
                                         <tr height="32">
-                                            <td><?=$d['date']?></td>
-                                            <td><?=$d['visits']?></td>
-                                            <td><a href="/url_shortener/stats_by_city/?id=<?=$tiny_url_id?>&date=<?=$d['date']?>">查看</a></td>
+                                            <td><?=$row[0]?></td>
+                                            <td><?=$row[1]?></td>
+                                            <td><?=$row[2]?></td>
+                                            <td><?=$row['visits']?></td>
                                         </tr>
                                     <?php
                                     }
                                     ?>
                                 </tbody>
                             </table>
-                        </div>
-                        <div class="pager-box">
-                            <div class="pager">
-                                <?php if ($has_prev) : ?>
-                                    <a href="/url_shortener/stats?id=<?=$tiny_url_id?>&from=<?=$prev_from_date_str?>" class="">上一页</a>
-                                <?php endif; ?>
-                                <?php if ($has_next) : ?>
-                                    <a href="/url_shortener/stats?id=<?=$tiny_url_id?>&from=<?=$next_from_date_str?>" class="">下一页</a>
-                                <?php endif; ?>
-                            </div>
                         </div>
                         <!-- end widget content -->
 

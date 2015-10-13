@@ -225,6 +225,52 @@ class Url_shortener extends \App\LoginController
         }
     }
 
+    function stats_by_city()
+    {
+        if (isset($_GET['id']))
+        {
+            $date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+            $tiny_url_id = (int) $_GET['id'];
+            $tiny_url_info = table('tiny_url')->get($tiny_url_id)->get();
+
+            $symbol = $tiny_url_info['prefix'] . ShortUrl::encode($tiny_url_id);
+            $tiny_url = "http://chelun.com/url/{$symbol}";
+
+            $ret = $this->redis('cluster')->zRange("tiny-url:visits:{$symbol}:{$date}", 0, -1, true);
+
+            $data = array();
+            foreach ($ret as $location => $visits)
+            {
+                $data[] = array_merge(
+                    array_pad(array_filter(explode('-', $location)), 3, ''),
+                    array('visits' => $visits)
+                );
+            }
+
+            usort($data, function ($a, $b) {
+                for ($i = 0; $i < 3; $i++)
+                {
+                    $ret = strcmp($a[$i], $b[$i]);
+                    if ($ret !== 0)
+                    {
+                        return $ret;
+                    }
+                }
+
+                return $a['visits'] - $b['visits'];
+            });
+
+            $this->assign('date', $date);
+            $this->assign('tiny_url_id', $tiny_url_id);
+            $this->assign('tiny_url', $tiny_url);
+            $this->assign('data', $data);
+            $this->assign('has_prev', false);
+            $this->assign('has_next', false);
+
+            $this->display();
+        }
+    }
+
     private function output_csv_stats(array $data)
     {
         header('Content-Type: text/csv; charset=utf-8');
