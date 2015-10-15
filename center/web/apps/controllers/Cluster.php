@@ -19,7 +19,12 @@ class Cluster extends \App\LoginController
         foreach(self::$envs as $k => $v)
         {
             $key = 'aopnet:'.$k.':service:config:chelun';
-            $list[$k] = json_decode($this->redis('cluster')->get($key), true);
+            $res = $this->redis('cluster')->get($key);
+            if ($res === false)
+            {
+                continue;
+            }
+            $list[$k] = json_decode($res, true);
             $list[$k]['env.name'] = $v;
         }
         $this->assign('list', $list);
@@ -68,7 +73,7 @@ class Cluster extends \App\LoginController
             }
             $del = trim($_GET['del']);
             $id = array_search($del, $config['servers']);
-            if ($id)
+            if ($id !== false)
             {
                 unset($config['servers'][$id]);
                 if ($this->redis('cluster')->set($key, json_encode($config)) === false)
