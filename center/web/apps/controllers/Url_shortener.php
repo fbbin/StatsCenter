@@ -236,7 +236,7 @@ class Url_shortener extends \App\LoginController
             $symbol = $tiny_url_info['prefix'] . ShortUrl::encode($tiny_url_id);
             $tiny_url = "http://chelun.com/url/{$symbol}";
 
-            $ret = $this->redis('cluster')->zRange("tiny-url:visits:{$symbol}:{$date}", 0, -1, true);
+            $ret = $this->redis('cluster')->zRevRange("tiny-url:visits:{$symbol}:{$date}", 0, -1, true);
 
             $data = array();
             foreach ($ret as $location => $visits)
@@ -247,18 +247,19 @@ class Url_shortener extends \App\LoginController
                 );
             }
 
-            usort($data, function ($a, $b) {
-                for ($i = 0; $i < 3; $i++)
-                {
-                    $ret = strcmp($a[$i], $b[$i]);
-                    if ($ret !== 0)
-                    {
-                        return $ret;
-                    }
-                }
+            // 相同国、省、市排在一起，注释掉按访问次数从大到小排
+            // usort($data, function ($a, $b) {
+            //     for ($i = 0; $i < 3; $i++)
+            //     {
+            //         $ret = strcmp($a[$i], $b[$i]);
+            //         if ($ret !== 0)
+            //         {
+            //             return $ret;
+            //         }
+            //     }
 
-                return $a['visits'] - $b['visits'];
-            });
+            //     return $a['visits'] - $b['visits'];
+            // });
 
             $this->assign('date', $date);
             $this->assign('tiny_url_id', $tiny_url_id);
