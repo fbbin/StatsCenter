@@ -59,7 +59,7 @@
                 <li
                     <?php if ($this->isActiveMenu('cluster')){ ?>class="active"
                     <?php } ?>>
-                    <a href="/cluster/index/"
+                    <a href="/cluster/index/<?php if ($this->isActiveMenu('cluster')) echo "?p=$c_proj";?>"
                         ><i class="fa fa-lg fa-fw fa-user"></i> <span
                             class="menu-item-parent">Service集群</span></a>
                 </li>

@@ -13,18 +13,39 @@ class Cluster extends \App\LoginController
         'local' => '本机',
     ];
 
+    static $projects = [
+        'chelun' => ['name' => '车轮社区', 'namespace' => 'CheLun',],
+        'kaojiazhao' => ['name' => '考驾照', 'namespace' => 'KJZ',],
+    ];
+
+    protected function getProject()
+    {
+        $project = empty($_GET['p']) ? 'chelun' : trim($_GET['p']);
+        if (!isset(self::$projects[$project]))
+        {
+            $project = 'chelun';
+        }
+        $this->assign('c_projs', self::$projects);
+        $this->assign('c_proj', $project);
+        return $project;
+    }
+
     function index()
     {
+        $project = $this->getProject();
         $list = [];
         foreach(self::$envs as $k => $v)
         {
-            $key = 'aopnet:'.$k.':service:config:chelun';
+            $key = 'aopnet:'.$k.':service:config:'.$project;
             $res = $this->redis('cluster')->get($key);
             if ($res === false)
             {
-                continue;
+                $list[$k] = array('namespace' => self::$projects[$project]['namespace'], 'servers' => []);
             }
-            $list[$k] = json_decode($res, true);
+            else
+            {
+                $list[$k] = json_decode($res, true);
+            }
             $list[$k]['env.name'] = $v;
         }
         $this->assign('list', $list);
@@ -38,9 +59,19 @@ class Cluster extends \App\LoginController
             return "缺少参数";
         }
 
+        $project = $this->getProject();
         $env = $_GET['env'];
-        $key = 'aopnet:'.$env.':service:config:chelun';
-        $config = json_decode($this->redis('cluster')->get($key), true);
+        $key = 'aopnet:'.$env.':service:config:'.$project;
+
+        $res = $this->redis('cluster')->get($key);
+        if ($res)
+        {
+            $config = json_decode($res, true);
+        }
+        else
+        {
+            $config = array('namespace' => self::$projects[$project]['namespace'], 'servers' => []);
+        }
 
         if (!empty($_POST['ip']) and !empty($_POST['port']))
         {

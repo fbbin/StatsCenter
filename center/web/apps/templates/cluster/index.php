@@ -73,7 +73,11 @@
                         <div class="widget-body no-padding">
                             <div class="inbox-checkbox-triggered" style="margin: 5px;">
                                 <div class="btn-group">
-                                    <a href="javascript:void(0);" data-placement="bottom" class="btn btn-default">车轮社区</a>
+                                    <?php foreach($c_projs as $k => $v):?>
+                                    <a href="/cluster/index/?p=<?=$k?>" data-placement="bottom" class="btn
+                                    <?php if ($k == $c_proj) echo "active" ?>
+                                    btn-default"><?=$v['name']?></a>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
                             <table id="data_table_stats" class="table table-hover table-bordered table-striped">
@@ -102,7 +106,7 @@
                                             <a href="/cluster/modify/?env=<?= $e ?>"
                                                class="btn btn-info btn-xs">修改属性</a>
                                             &nbsp;&nbsp;
-                                            <a href="/cluster/node/?env=<?= $e ?>"
+                                            <a href="/cluster/node/?env=<?= $e ?>&p=<?=$c_proj?>"
                                                class="btn btn-info btn-xs">管理节点</a>
                                         </td>
                                     </tr>
