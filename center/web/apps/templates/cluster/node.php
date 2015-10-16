@@ -136,7 +136,7 @@
 
         $('.deleteNode').click(function (e) {
             JUI.confirm('确定从集群中移除?', function () {
-                location.href = '/cluster/node/?env=<?=$_GET['env']?>&del=' + encodeURI($(e.currentTarget).attr('data-value'));
+                location.href = '/cluster/node/?p=<?=$c_proj?>&env=<?=$_GET['env']?>&del=' + encodeURI($(e.currentTarget).attr('data-value'));
             });
         })
     });
