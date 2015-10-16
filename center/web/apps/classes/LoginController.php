@@ -91,10 +91,14 @@ class LoginController extends \Swoole\Controller
         return false;
     }
 
-    function isActiveMenu($m, $v)
+    function isActiveMenu($m, $v = '')
     {
-        if ($this->env['mvc']['controller'] == $m and $this->env['mvc']['view'] == $v)
+        if ($this->env['mvc']['controller'] == $m)
         {
+            if (!empty($v))
+            {
+                return $this->env['mvc']['view'] == $v;
+            }
             return true;
         }
         else

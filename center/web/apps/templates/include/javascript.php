@@ -52,3 +52,57 @@
         $('#logs2_index_link').attr('href', $('#logs2_index_link').attr('href') + '?module=' + window.localStorage.log_module_id);
     }
 </script>
+
+<!--<div id="dialog-message" title="">-->
+<!--    <p id="dialog-content"></p>-->
+<!--</div>-->
+
+<div id="AlertMessage" title="信息确认">
+    <p id="AlertMessageBody" class="msgbody"></p>
+</div>
+<div id="ConfirmMessage" title="信息提问">
+    <p id="ConfirmMessageBody" class="msgbody""></p>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#AlertMessage').dialog({
+            autoOpen: false,
+            width: 300,
+            modal: true,
+            buttons: {
+                "取消": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+        $('#ConfirmMessage').dialog({
+            autoOpen: false,
+            width: 300,
+            modal: true,
+            buttons: {
+                "取消": function () {
+                    $(this).dialog('close');
+                    mDialogCallback(false);
+                },
+                "确定": function () {
+                    $(this).dialog('close');
+                    mDialogCallback(true);
+                }
+            }
+        });
+    });
+    var mDialogCallback;
+    var JUI = {};
+    JUI.confirm = function (msg, callback) {
+        if (callback == null) {
+            $('#AlertMessageBody').html(msg);
+            $('#AlertMessage').dialog('open');
+        }
+        else {
+            mDialogCallback = callback;
+            $('#ConfirmMessageBody').html(msg);
+            $('#ConfirmMessage').dialog('open');
+        }
+    }
+</script>

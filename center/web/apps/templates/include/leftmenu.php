@@ -53,9 +53,22 @@
             </li>
         </ul>
         </li>
+        <li>
+            <a href="#"><i class="fa fa-lg fa-fw fa-cloud"></i> <span class="menu-item-parent">集群管理</span></a>
+            <ul>
+                <li
+                    <?php if ($this->isActiveMenu('cluster')){ ?>class="active"
+                    <?php } ?>>
+                    <a href="/cluster/index/"
+                        ><i class="fa fa-lg fa-fw fa-user"></i> <span
+                            class="menu-item-parent">Service集群</span></a>
+                </li>
+            </ul>
+        </li>
     <?php
     endif;
     ?>
+
     <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 1) : ?>
     <li>
         <a href="/logs2/index/" id="logs2_index_link"><i class="fa fa-lg fa-fw fa-list-alt"></i> <span class="menu-item-parent">日志系统</span></a>
