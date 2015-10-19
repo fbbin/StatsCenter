@@ -500,7 +500,7 @@ class Setting extends \App\LoginController
             {
                 $backup_uids = implode(',',$_POST['backup_uids']);
             }
-//            $in['backup_uids'] = $backup_uids;
+            $in['backup_uids'] = $backup_uids;
 //            $alert_uids = '';
 //            if (!empty($_POST['alert_uids']))
 //            {
