@@ -118,7 +118,7 @@ class Alert
                     );
                     $this->handler->alert($interface,$fake);
                 }
-                $this->log("{$this->worker_id} on task data details mysql {$time_key} interface:".
+                $this->log("{$this->worker_id} on task data details mysql {$time_key} interface {$interface['interface_id']}:".
                     "mysql data:".json_encode($tmp,JSON_UNESCAPED_UNICODE));
             }
             else
