@@ -395,6 +395,7 @@ class Setting extends \App\LoginController
             $form['intro'] = \Swoole\Form::text('intro');
             $form['owner_uid'] = \Swoole\Form::select('owner_uid',$user,'',null,array('class'=>'select2 select2-offscreen','style'=>"width:100%" ));
             $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]',$user,array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
+            $form['alert_uids'] = \Swoole\Form::muti_select('alert_uids[]',$user,array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
 
             $tmp = table('project')->gets(array("order"=>"id desc"));
             $project = array();
@@ -423,6 +424,7 @@ class Setting extends \App\LoginController
             $form['intro'] = \Swoole\Form::text('intro',$module['intro']);
             $form['owner_uid'] = \Swoole\Form::select('owner_uid',$user,$module['owner_uid'],null,array('class'=>'select2 select2-offscreen','style'=>"width:100%" ));
             $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]',$user,explode(',',$module['backup_uids']),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
+            $form['alert_uids'] = \Swoole\Form::muti_select('alert_uids[]',$user,explode(',',$module['alert_uids']),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
 
             $tmp = table('project')->gets(array("order"=>"id desc"));
             $project = array();
@@ -432,6 +434,7 @@ class Setting extends \App\LoginController
             }
             $form['project_id'] = \Swoole\Form::select('project_id',$project,$module['project_id'],null,array('class'=>'select2 select2-offscreen','style'=>"width:100%" ));
             $this->assign('form', $form);
+            $this->assign('data', $module);
             $this->display();
         }
         elseif (!empty($_POST) and empty($_POST['id']))
@@ -449,7 +452,18 @@ class Setting extends \App\LoginController
                 $backup_uids = implode(',',$_POST['backup_uids']);
             }
             $in['backup_uids'] = $backup_uids;
-//            $in['backup_name'] = trim($_POST['backup_name']);
+
+            $alert_uids = '';
+            if (!empty($_POST['alert_uids']))
+            {
+                $alert_uids = implode(',', $_POST['alert_uids']);
+            }
+            $in['alert_uids'] = $alert_uids;
+
+            $in['succ_hold'] = trim($_POST['succ_hold']);
+            $in['wave_hold'] = trim($_POST['wave_hold']);
+            $in['alert_int'] = trim($_POST['alert_int']);
+            $in['enable_alert'] = trim($_POST['enable_alert']);
             $in['intro'] = trim($_POST['intro']);
 
             $c = table('module')->count(array('name' => $in['name']));
@@ -462,6 +476,9 @@ class Setting extends \App\LoginController
                 $id = table('module')->put($in);
                 if ($id)
                 {
+                    //保存设置模块下所有接口的报警策略
+                    $in['module_id'] = $id;
+                    $this->_save_module($id, $in);
                     \Swoole\JS::js_goto("操作成功","/setting/add_module/");
                     \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} add module success $id : ". print_r($in,1));
                 }
@@ -484,6 +501,17 @@ class Setting extends \App\LoginController
                 $backup_uids = implode(',',$_POST['backup_uids']);
             }
             $in['backup_uids'] = $backup_uids;
+            $alert_uids = '';
+            if (!empty($_POST['alert_uids']))
+            {
+                $alert_uids = implode(',', $_POST['alert_uids']);
+            }
+            $in['alert_uids'] = $alert_uids;
+            $in['succ_hold'] = trim($_POST['succ_hold']);
+            $in['wave_hold'] = trim($_POST['wave_hold']);
+            $in['wave_hold'] = trim($_POST['wave_hold']);
+            $in['alert_int'] = trim($_POST['alert_int']);
+            $in['enable_alert'] = trim($_POST['enable_alert']);
             $in['intro'] = trim($_POST['intro']);
             $where['name'] = $in['name'];
             $where['where'][] = "id !=$id";
@@ -498,6 +526,8 @@ class Setting extends \App\LoginController
                 $res = table('module')->set($id,$in);
                 if ($res)
                 {
+                    $in['module_id'] = $id;
+                    $this->_save_module($id, $in);
                     \Swoole\JS::js_goto("操作成功","/setting/module_list/");
                     \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} modify module success $id : ". print_r($in,1));
                 }
@@ -548,6 +578,80 @@ class Setting extends \App\LoginController
             \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} add redis : interface_id-{$id} key-{$key} ". print_r($params,1));
         }
     }
+
+    //判断符合包就那报警条件的数据  转存入redis
+    function _save_module($id,$module)
+    {
+        $params = array();
+        if (  ($module['succ_hold'] > 0 or $module['wave_hold'] > 0)
+            and  (!empty($module['alert_uids']) and $module['alert_int'] > 0 )
+        )
+        {
+            $gets['select'] = 'id,mobile';
+            $tmp = table('user')->gets($gets);
+            $user = array();
+            foreach ($tmp as $t)
+            {
+                if (!empty($t['mobile']))
+                {
+                    $user[$t['id']] = $t['mobile'];
+                }
+            }
+
+            $params['module_id'] = $module['module_id'];
+            $params['module_name'] = $module['name'];
+            $res = table('interface')->gets(array('module_id'=>$module['module_id']));
+            foreach ($res as $re)
+            {
+                if (($re['enable_alert'] == 1 or $re['enable_alert'] == 2) and ($re['succ_hold'] > 0 or $re['wave_hold'] > 0)
+                    and  (!empty($re['alert_uids']) and $re['alert_int'] > 0))
+                {
+                    $params['enable_alert'] = $re['enable_alert'];
+                    $params['alert_uids'] = $re['alert_uids'];
+                    $params['alert_int'] = $re['alert_int'];
+                    $params['succ_hold'] = $re['succ_hold'];
+                    $params['wave_hold'] = $re['wave_hold'];
+
+                    $sets['enable_alert'] = $re['enable_alert'];
+                    $sets['alert_uids'] = $re['alert_uids'];
+                    $sets['alert_int'] = $re['alert_int'];
+                    $sets['succ_hold'] = $re['succ_hold'];
+                    $sets['wave_hold'] = $re['wave_hold'];
+
+
+                } else {
+                    $params['enable_alert'] = $module['enable_alert'];
+                    $params['alert_uids'] = $module['alert_uids'];
+                    $params['alert_int'] = $module['alert_int'];
+                    $params['succ_hold'] = $module['succ_hold'];
+                    $params['wave_hold'] = $module['wave_hold'];
+
+                    $sets['enable_alert'] = $params['enable_alert'];
+                    $sets['alert_uids'] = $params['alert_uids'];
+                    $sets['alert_int'] = $params['alert_int'];
+                    $sets['succ_hold'] = $params['succ_hold'];
+                    $sets['wave_hold'] = $params['wave_hold'];
+                }
+                table('interface')->sets($sets,array('module_id'=>$module['module_id']));
+                $params['interface_id'] = $re['id'];
+                $params['interface_name'] = $re['name'];
+
+                $alert_uids = explode(',',$params['alert_uids']);
+                $alert_mobiles = array();
+                foreach ($alert_uids as $uid)
+                {
+                    $alert_mobiles[$uid] = $user[$uid];
+                }
+
+                $params['alert_mobiles'] = implode(',',$alert_mobiles);
+                $key = $this->prefix."::".$re['id'];
+                \Swoole::$php->redis->hMset($key, $params);
+                \Swoole::$php->redis->sAdd($this->prefix, $re['id']);
+                \Swoole::$php->log->trace("{$_SESSION['userinfo']['username']}  redis : interface_id-{$re['id']} key-{$key} ". print_r($params,1));
+            }
+        }
+    }
+
 
     function module_list()
     {
