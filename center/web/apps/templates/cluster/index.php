@@ -60,8 +60,7 @@
                      data-widget-editbutton="false" role="widget" style="">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-
-                        <h2>接口列表</h2>
+                        <h2>Service管理</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div role="content">
                         <div id="delete_tip">
@@ -83,7 +82,8 @@
                             <table id="data_table_stats" class="table table-hover table-bordered table-striped">
                                 <thead>
                                 <tr>
-                                    <th style="width: 100px; overflow-x: hidden;">环境</th>
+                                    <th style="width: 100px; overflow-x: hidden;">环境名称</th>
+                                    <th style="width: 100px; overflow-x: hidden;">环境ID</th>
                                     <th style="width: 100px; overflow-x: hidden;">命名空间</th>
                                     <th style="width: 600px; overflow-x: hidden;">服务器</th>
                                     <th>操作</th>
@@ -96,6 +96,7 @@
                                 ?>
                                     <tr height="32">
                                         <td class=" "><?= $v['env.name'] ?></td>
+                                        <td class=" "><?= $e ?></td>
                                         <td class=" "><?= $v['namespace'] ?></td>
                                         <td class=" "><?php
                                             foreach($v['servers'] as $s){
