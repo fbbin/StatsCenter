@@ -91,12 +91,12 @@ class Setting extends \App\LoginController
                     $in['enable_alert'] = trim($_POST['enable_alert']);
                 }
 
-                $alert_uids = '';
-                if (!empty($_POST['alert_uids']))
-                {
-                    $alert_uids = implode(',', $_POST['alert_uids']);
-                }
-                $in['alert_uids'] = $alert_uids;
+//                $alert_uids = '';
+//                if (!empty($_POST['alert_uids']))
+//                {
+//                    $alert_uids = implode(',', $_POST['alert_uids']);
+//                }
+//                $in['alert_uids'] = $alert_uids;
 
                 $alert_types = '';
                 if (!empty($_POST['$alert_types']))
@@ -158,12 +158,12 @@ class Setting extends \App\LoginController
                 $in['alert_int'] = trim($_POST['alert_int']);
                 $in['enable_alert'] = trim($_POST['enable_alert']);
 
-                $alert_uids = '';
-                if (!empty($_POST['alert_uids']))
-                {
-                    $alert_uids = implode(',', $_POST['alert_uids']);
-                }
-                $in['alert_uids'] = $alert_uids;
+//                $alert_uids = '';
+//                if (!empty($_POST['alert_uids']))
+//                {
+//                    $alert_uids = implode(',', $_POST['alert_uids']);
+//                }
+//                $in['alert_uids'] = $alert_uids;
 
                 $alert_types = '';
                 if (!empty($_POST['alert_types']))
@@ -453,12 +453,12 @@ class Setting extends \App\LoginController
             }
             $in['backup_uids'] = $backup_uids;
 
-            $alert_uids = '';
-            if (!empty($_POST['alert_uids']))
-            {
-                $alert_uids = implode(',', $_POST['alert_uids']);
-            }
-            $in['alert_uids'] = $alert_uids;
+//            $alert_uids = '';
+//            if (!empty($_POST['alert_uids']))
+//            {
+//                $alert_uids = implode(',', $_POST['alert_uids']);
+//            }
+//            $in['alert_uids'] = $alert_uids;
 
             $in['succ_hold'] = trim($_POST['succ_hold']);
             $in['wave_hold'] = trim($_POST['wave_hold']);
@@ -500,13 +500,13 @@ class Setting extends \App\LoginController
             {
                 $backup_uids = implode(',',$_POST['backup_uids']);
             }
-            $in['backup_uids'] = $backup_uids;
-            $alert_uids = '';
-            if (!empty($_POST['alert_uids']))
-            {
-                $alert_uids = implode(',', $_POST['alert_uids']);
-            }
-            $in['alert_uids'] = $alert_uids;
+//            $in['backup_uids'] = $backup_uids;
+//            $alert_uids = '';
+//            if (!empty($_POST['alert_uids']))
+//            {
+//                $alert_uids = implode(',', $_POST['alert_uids']);
+//            }
+//            $in['alert_uids'] = $alert_uids;
             $in['succ_hold'] = trim($_POST['succ_hold']);
             $in['wave_hold'] = trim($_POST['wave_hold']);
             $in['wave_hold'] = trim($_POST['wave_hold']);
@@ -543,40 +543,9 @@ class Setting extends \App\LoginController
     //判断符合包就那报警条件的数据  转存入redis
     function _save_interface($id,$interface)
     {
-        $params = array();
-        if (  ($interface['succ_hold'] > 0 or $interface['wave_hold'] > 0)
-            and  (!empty($interface['alert_uids']) and $interface['alert_int'] > 0 )
-            )
-        {
-            $gets['select'] = 'id,mobile';
-            $gets['where'][] = 'id in ('.$interface['alert_uids'].')';
-            $tmp = table('user')->gets($gets);
-            $user = array();
-            foreach ($tmp as $t)
-            {
-                if (!empty($t['mobile']))
-                {
-                    $user[$t['id']] = $t['mobile'];
-                }
-            }
-
-            $params['module_id'] = $interface['module_id'];
-            $params['interface_id'] = $id;
-            $params['interface_name'] = $interface['name'];
-            $res = table('module')->get($interface['module_id'])->get();
-            $params['module_name'] = $res['name'];
-            $params['enable_alert'] = $interface['enable_alert'];
-            $params['alert_types'] = $interface['alert_types'];
-            $params['alert_uids'] = $interface['alert_uids'];
-            $params['alert_mobiles'] = implode(',',$user);
-            $params['alert_int'] = $interface['alert_int'];
-            $params['succ_hold'] = $interface['succ_hold'];
-            $params['wave_hold'] = $interface['wave_hold'];
-            $key = $this->prefix."::".$id;
-            \Swoole::$php->redis->hMset($key, $params);
-            \Swoole::$php->redis->sAdd($this->prefix, $id);
-            \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} add redis : interface_id-{$id} key-{$key} ". print_r($params,1));
-        }
+        //添加到报警集合
+        \Swoole::$php->redis->sAdd($this->prefix, $id);
+        \Swoole::$php->log->put("{$_SESSION['userinfo']['username']} add redis : interface_id-{$id}");
     }
 
     //判断符合包就那报警条件的数据  转存入redis
@@ -584,10 +553,20 @@ class Setting extends \App\LoginController
     {
         $params = array();
         if (  ($module['succ_hold'] > 0 or $module['wave_hold'] > 0)
-            and  (!empty($module['alert_uids']) and $module['alert_int'] > 0 )
+            and (!empty($module['backup_uids']) or !empty($module['owner_uid'])) and  $module['alert_int'] > 0
         )
         {
+            $alert_ids = '';
+            if (!empty($module['backup_uids'])) {
+                $alert_ids = $module['backup_uids'];
+            }
+            if (!empty($module['owner_uid'])) {
+                $alert_ids .= $module['owner_uid'];
+            }
+            $params['module_id'] = $id;
+            $params['module_name'] = $module['name'];
             $gets['select'] = 'id,mobile';
+            $gets['where'][] = 'id in ('.$alert_ids.')';
             $tmp = table('user')->gets($gets);
             $user = array();
             foreach ($tmp as $t)
@@ -598,57 +577,24 @@ class Setting extends \App\LoginController
                 }
             }
 
-            $params['module_id'] = $module['module_id'];
+            $params['module_id'] = $id;
             $params['module_name'] = $module['name'];
-            $res = table('interface')->gets(array('module_id'=>$module['module_id']));
+            $params['enable_alert'] = $module['enable_alert'];
+            $params['alert_uids'] = $alert_ids;
+            $params['alert_mobiles'] = implode(',',$user);
+            $params['alert_int'] = $module['alert_int'];
+            $params['succ_hold'] = $module['succ_hold'];
+            $params['wave_hold'] = $module['wave_hold'];
+
+            $res = table('interface')->gets(array('module_id'=>$id));
             foreach ($res as $re)
             {
-                if (($re['enable_alert'] == 1 or $re['enable_alert'] == 2) and ($re['succ_hold'] > 0 or $re['wave_hold'] > 0)
-                    and  (!empty($re['alert_uids']) and $re['alert_int'] > 0))
-                {
-                    $params['enable_alert'] = $re['enable_alert'];
-                    $params['alert_uids'] = $re['alert_uids'];
-                    $params['alert_int'] = $re['alert_int'];
-                    $params['succ_hold'] = $re['succ_hold'];
-                    $params['wave_hold'] = $re['wave_hold'];
 
-                    $sets['enable_alert'] = $re['enable_alert'];
-                    $sets['alert_uids'] = $re['alert_uids'];
-                    $sets['alert_int'] = $re['alert_int'];
-                    $sets['succ_hold'] = $re['succ_hold'];
-                    $sets['wave_hold'] = $re['wave_hold'];
-
-
-                } else {
-                    $params['enable_alert'] = $module['enable_alert'];
-                    $params['alert_uids'] = $module['alert_uids'];
-                    $params['alert_int'] = $module['alert_int'];
-                    $params['succ_hold'] = $module['succ_hold'];
-                    $params['wave_hold'] = $module['wave_hold'];
-
-                    $sets['enable_alert'] = $params['enable_alert'];
-                    $sets['alert_uids'] = $params['alert_uids'];
-                    $sets['alert_int'] = $params['alert_int'];
-                    $sets['succ_hold'] = $params['succ_hold'];
-                    $sets['wave_hold'] = $params['wave_hold'];
-                }
-                table('interface')->sets($sets,array('module_id'=>$module['module_id']));
-                $params['interface_id'] = $re['id'];
-                $params['interface_name'] = $re['name'];
-
-                $alert_uids = explode(',',$params['alert_uids']);
-                $alert_mobiles = array();
-                foreach ($alert_uids as $uid)
-                {
-                    $alert_mobiles[$uid] = $user[$uid];
-                }
-
-                $params['alert_mobiles'] = implode(',',$alert_mobiles);
-                $key = $this->prefix."::".$re['id'];
-                \Swoole::$php->redis->hMset($key, $params);
-                \Swoole::$php->redis->sAdd($this->prefix, $re['id']);
-                \Swoole::$php->log->trace("{$_SESSION['userinfo']['username']}  redis : interface_id-{$re['id']} key-{$key} ". print_r($params,1));
+                \Swoole::$php->redis->sAdd($this->prefix, $re['id']);//添加接口集合
             }
+            $key = $this->prefix."::MODULE::".$id;
+            \Swoole::$php->redis->hMset($key, $params);
+            \Swoole::$php->log->trace("{$_SESSION['userinfo']['username']}  redis : module-{$id} key-{$key} ". print_r($params,1));
         }
     }
 

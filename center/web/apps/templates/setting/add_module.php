@@ -121,14 +121,14 @@
                                         </label>
                                     </section>
                                 </fieldset>
-                                <fieldset>
-                                    <section>
-                                        <label class="label">报警人员</label>
-                                        <div class="form-group">
-                                            <?=$form['alert_uids']?>
-                                        </div>
-                                    </section>
-                                </fieldset>
+<!--                                <fieldset>-->
+<!--                                    <section>-->
+<!--                                        <label class="label">报警人员</label>-->
+<!--                                        <div class="form-group">-->
+<!--                                            --><?//=$form['alert_uids']?>
+<!--                                        </div>-->
+<!--                                    </section>-->
+<!--                                </fieldset>-->
                                 <fieldset>
                                     <section>
                                         <label class="label">负责人</label>
