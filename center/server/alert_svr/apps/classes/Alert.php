@@ -101,6 +101,8 @@ class Alert
                         $mobile[$uid] = $this->user[$uid];
                     }
                     $interface['alert_mobiles'] = implode(',',$mobile);
+                    $data = \Swoole::$php->redis->hGetAll(self::PREFIX."::".$interface['id']);
+                    $interface = array_merge($interface,$data);
                     $serv->task($interface);
                 }
                 else
@@ -117,6 +119,8 @@ class Alert
                         $interface['succ_hold'] = $module['succ_hold'];
                         $interface['wave_hold'] = $module['wave_hold'];
                         $interface['alert_int'] = $module['alert_int'];
+                        $data = \Swoole::$php->redis->hGetAll(self::PREFIX."::".$interface['id']);
+                        $interface = array_merge($interface,$data);
                         $serv->task($interface);
                     }
                     else {
