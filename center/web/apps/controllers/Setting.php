@@ -561,7 +561,7 @@ class Setting extends \App\LoginController
                 $alert_ids = $module['backup_uids'];
             }
             if (!empty($module['owner_uid'])) {
-                $alert_ids .= $module['owner_uid'];
+                $alert_ids .= ",".$module['owner_uid'];
             }
             $params['module_id'] = $id;
             $params['module_name'] = $module['name'];
