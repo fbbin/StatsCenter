@@ -69,6 +69,12 @@
                         ><i class="fa fa-lg fa-fw fa-user"></i> <span
                             class="menu-item-parent">Service集群</span></a>
                 </li>
+                <li
+                    <?php if ($this->isActiveMenu('cluster', 'config_list')){ ?>class="active"
+                    <?php } ?>>
+                    <a href="/cluster/config_list/"><i class="fa fa-lg fa-fw fa-check-square-o"></i> <span
+                            class="menu-item-parent">云端配置管理</span></a>
+                </li>
             </ul>
         </li>
     <?php

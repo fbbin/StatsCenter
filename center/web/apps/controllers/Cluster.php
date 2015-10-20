@@ -3,6 +3,9 @@ namespace App\Controller;
 
 use Swoole;
 
+require_once '/data/www/public/sdk/StatsCenter.php';
+require_once '/data/www/public/sdk/CloudConfig.php';
+
 class Cluster extends \App\LoginController
 {
     static $envs = [
@@ -115,5 +118,16 @@ class Cluster extends \App\LoginController
         }
         $this->assign('config', $config);
         $this->display();
+    }
+
+    function config_list()
+    {
+        $conf = \CloudConfig::getFromCloud('config:category', 'system');
+        $this->display();
+    }
+
+    function config_detail()
+    {
+
     }
 }
