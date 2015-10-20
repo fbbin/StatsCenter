@@ -129,11 +129,11 @@
                                         <label class="input" style="padding-bottom: 10px">
                                             <input type="text" class="input" name="alert_int"  value="<?= $this->value($data['data'], 'alert_int') ?>">
                                         </label>
-                                        <span class="note">(目前支持手机短信报警,请确认在本系统用户管理中绑定手机号正确)</span>
-                                        <label class="label">报警通知列表</label>
-                                        <div class="form-group">
-                                            <?=$form['alert_uids']?>
-                                        </div>
+<!--                                        <span class="note">(目前支持手机短信报警,请确认在本系统用户管理中绑定手机号正确)</span>-->
+<!--                                        <label class="label">报警通知列表</label>-->
+<!--                                        <div class="form-group">-->
+<!--                                            --><?//=$form['alert_uids']?>
+<!--                                        </div>-->
                                     </section>
                                 </fieldset>
                                 <fieldset>

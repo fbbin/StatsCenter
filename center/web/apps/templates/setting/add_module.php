@@ -88,6 +88,49 @@
                                 </fieldset>
                                 <fieldset>
                                     <section>
+                                        <label class="label">报警策略</label>
+                                        <label class="radio state-success" style="display: inline-block">
+                                            <input type="radio" name="enable_alert"
+                                                   value="1" <?php echo $this->value($data, 'enable_alert') == 1 ? 'checked' : ''; ?>>
+                                            <i></i>开启
+                                        </label>
+                                        <label class="radio state-error" style="display: inline-block">
+                                            <input type="radio" name="enable_alert"
+                                                   value="2" <?php echo $this->value($data, 'enable_alert') == 2 ? 'checked' : ''; ?>>
+                                            <i></i>关闭
+                                        </label>
+                                        <label class="label">报警间隔时间(分钟)</label>
+                                        <label class="input" style="padding-bottom: 10px">
+                                            <input type="text" class="input" name="alert_int"  value="<?= $this->value($data, 'alert_int') ?>">
+                                        </label>
+                                    </section>
+                                </fieldset>
+                                <fieldset>
+                                    <section>
+                                        <label class="label">成功率阀值(0-100)</label>
+                                        <label class="input">
+                                            <input type="text" class="input" name="succ_hold"  value="<?= $this->value($data, 'succ_hold') ?>">
+                                        </label>
+                                    </section>
+                                </fieldset>
+                                <fieldset>
+                                    <section>
+                                        <label class="label">调用量波动阀值(0-100)</label>
+                                        <label class="input">
+                                            <input type="text" class="input" name="wave_hold"  value="<?= $this->value($data, 'wave_hold') ?>">
+                                        </label>
+                                    </section>
+                                </fieldset>
+<!--                                <fieldset>-->
+<!--                                    <section>-->
+<!--                                        <label class="label">报警人员</label>-->
+<!--                                        <div class="form-group">-->
+<!--                                            --><?//=$form['alert_uids']?>
+<!--                                        </div>-->
+<!--                                    </section>-->
+<!--                                </fieldset>-->
+                                <fieldset>
+                                    <section>
                                         <label class="label">负责人</label>
                                         <div class="form-group">
                                             <?=$form['owner_uid']?>
@@ -110,7 +153,6 @@
                                         </label>
                                     </section>
                                 </fieldset>
-
                                 <footer>
                                     <button type="submit" class="btn btn-primary">
                                         Submit

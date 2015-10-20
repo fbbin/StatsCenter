@@ -16,6 +16,8 @@ class Alert
     protected $serv;
     protected $pid_file;
 
+    public $user;
+
     function __construct()
     {
         $this->handler = new \App\Handler($this);
@@ -50,8 +52,14 @@ class Alert
         if ($worker_id == 0)
         {
             $serv->addtimer(self::CHECK_TIME*60*1000);
-            //$serv->addtimer(5000);
             $this->log("{$this->worker_id} add timer min ".self::CHECK_TIME);
+        }
+        $gets['select'] = 'id,mobile';
+        $tmp = table('user')->gets($gets);
+        foreach ($tmp as $t)
+        {
+            if (!empty($t['mobile']))
+                $this->user[$t['id']] = $t['mobile'];
         }
     }
 
@@ -71,18 +79,53 @@ class Alert
         $interfaces = \Swoole::$php->redis->sMembers(self::PREFIX);
         if (!empty($interfaces))
         {
-            foreach ($interfaces as $in)
+            foreach ($interfaces as $id)
             {
-                $key = self::PREFIX."::".$in;
-                $tmp = \Swoole::$php->redis->hGetAll($key);
-//                $this->log("{$this->worker_id} interfaces detials  ".print_r($tmp,1));
-                if (!empty($tmp) and $tmp['enable_alert'] == 1 and !empty($tmp['alert_uids']))
+                $interface = table("interface")->get($id)->get();
+                $interface['interface_id'] = $interface['id'];
+                $interface['interface_name'] = $interface['name'];
+                if (!empty($interface) and $interface['enable_alert'] == 1 and (!empty($interface['succ_hold']) or !empty($interface['wave_hold']))
+                    and (!empty($interface['owner_uid']) or !empty($interface['backup_uids'])))
                 {
-                    $serv->task($tmp);
+                    $alert_ids = '';
+                    if (!empty($interface['backup_uids'])) {
+                        $alert_ids = $interface['backup_uids'];
+                    }
+                    if (!empty($module['owner_uid'])) {
+                        $alert_ids .= $module['owner_uid'];
+                    }
+                    $interface['alert_uids'] = explode(',',$alert_ids);
+                    $mobile = array();
+                    foreach ($interface['alert_uids'] as $uid)
+                    {
+                        $mobile[$uid] = $this->user[$uid];
+                    }
+                    $interface['alert_mobiles'] = implode(',',$mobile);
+                    $data = \Swoole::$php->redis->hGetAll(self::PREFIX."::".$interface['id']);
+                    $interface = array_merge($interface,$data);
+                    $serv->task($interface);
                 }
                 else
                 {
-                    $this->log("{$this->worker_id} interface {$key} condition not meet ");
+                    $module_id = $interface['module_id'];
+                    $module = \Swoole::$php->redis->hGetAll($key = self::PREFIX."::MODULE::".$module_id);
+                    if (!empty($module) and $module['enable_alert'] == 1 and (!empty($module['succ_hold']) or !empty($module['wave_hold']))
+                        and !empty($module['alert_uids']))
+                    {
+                        $interface['module_id'] = $module['module_id'];
+                        $interface['module_name'] = $module['module_name'];
+                        $interface['alert_uids'] = $module['alert_uids'];
+                        $interface['alert_mobiles'] = $module['alert_mobiles'];
+                        $interface['succ_hold'] = $module['succ_hold'];
+                        $interface['wave_hold'] = $module['wave_hold'];
+                        $interface['alert_int'] = $module['alert_int'];
+                        $data = \Swoole::$php->redis->hGetAll(self::PREFIX."::".$interface['id']);
+                        $interface = array_merge($interface,$data);
+                        $serv->task($interface);
+                    }
+                    else {
+                        $this->log("{$this->worker_id} interface {$id} condition not meet,do not report".print_r($interfaces,1));
+                    }
                 }
             }
         }
@@ -95,7 +138,7 @@ class Alert
         if ($time_key)
         {
             $gets['select'] = "total_count,fail_count,time_key";
-            $gets['interface_id'] = $interface['interface_id'];
+            $gets['interface_id'] = $interface['id'];
             $gets['module_id'] = $interface['module_id'];
             $gets['date_key'] = date('Y-m-d');
             $gets['time_key'] = $time_key;
@@ -118,7 +161,7 @@ class Alert
                     );
                     $this->handler->alert($interface,$fake);
                 }
-                $this->log("{$this->worker_id} on task data details mysql {$time_key} interface:".
+                $this->log("{$this->worker_id} on task data details mysql {$time_key} interface {$interface['id']}:".json_encode($interface,1).
                     "mysql data:".json_encode($tmp,JSON_UNESCAPED_UNICODE));
             }
             else
