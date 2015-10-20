@@ -51,6 +51,12 @@
                 <a href="/project/plist/"><i class="fa fa-lg fa-fw fa-reorder"></i>
                     <span class="menu-item-parent">项目列表</span></a>
             </li>
+
+            <li <?php if ($this->isActiveMenu('logs2', 'smslog')){ ?>
+                class="active" <?php } ?>>
+                <a href="/logs2/smslog/"><i class="fa fa-lg fa-fw fa-reorder"></i>
+                    <span class="menu-item-parent">短信记录</span></a>
+            </li>
         </ul>
         </li>
         <li>

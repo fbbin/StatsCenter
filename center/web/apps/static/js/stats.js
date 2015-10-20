@@ -385,7 +385,6 @@ StatsG.showDetail = function (interface_id) {
             continue;
         }
         StatsG.appendToTable(interface_id, o, {no_detail: true});
-        location.hash = "#detail";
     }
 }
 
@@ -396,11 +395,6 @@ function fillZero4Time(s) {
         return s;
     }
 }
-
-window.onload = window.onhashchange = function () {
-    var hashStr = location.hash.replace("#", "");
-    if (hashStr) $("#txt1").val(hashStr);
-};
 
 function getTimerStr(time_key) {
     var _h = time_key / 12.0;

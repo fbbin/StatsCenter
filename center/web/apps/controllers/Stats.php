@@ -21,6 +21,13 @@ class Stats extends \App\LoginController
         $this->display();
     }
 
+    function detail()
+    {
+        $this->assign('width', self::$width);
+        $this->getInterfaceInfo();
+        $this->display('stats/index.php');
+    }
+
     /**
      * 获取接口相关信息
      * @throws \Exception

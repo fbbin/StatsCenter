@@ -31,7 +31,7 @@
                      data-widget-editbutton="false" role="widget" style="">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-                        <h2>用户列表</h2>
+                        <h2>短信记录</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div role="content">
                         <div id="delete_tip">
@@ -47,27 +47,17 @@
                             <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
                                 <div class="dt-top-row">
                                     <div id="data_table_stats_length" style="position: absolute;left: 10px;top: -38px;">
-                                        <form id="form" class="smart-form" novalidate="novalidate" method="post">
+                                        <form id="form" class="smart-form" novalidate="novalidate" method="get">
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
-                                                        <input type="text" name="uid" id="uid" value="<?= $this->value($_GET, 'uid') ?>" placeholder="UID">
+                                                        <input type="text" name="mobile" id="mobile" value="<?= $this->value($_GET, 'mobile') ?>" placeholder="手机号码">
                                                 </div>
                                             </div>
-                                            <div class="form-group" style="width: 200px;">
-                                                <div class="form-group">
-                                                    <label class="input" style="height: 34px;">
-                                                        <input type="text" name="username" id="username" value="<?= $this->value($_GET, 'username') ?>" placeholder="用户名">
-                                                </div>
-                                            </div>
-                                            <div class="form-group" style="width: 200px;">
-                                                <div class="form-group">
-                                                    <label class="input" style="height: 34px;">
-                                                        <input type="text" name="realname" id="realname" value="<?=  $this->value($_GET, 'realname')  ?>" placeholder="真实姓名">
-                                                </div>
-                                            </div>
-                                            <div class='form-group' style="padding-left: 100px">
-                                                <a id='submit' class='btn btn-success' style='padding:6px 12px' href='javascript:void(0)'>提交查询</a>
+                                            <div class='form-group'>
+                                                <button type="submit" id='submit' class='btn btn-success'
+                                                        style='padding:6px 12px'>提交查询
+                                                </button>
                                             </div>
                                         </form>
                                     </div>
@@ -77,42 +67,22 @@
                                     <table id="data_table_stats" class="table table-hover table-bordered table-striped">
                                         <thead>
                                         <tr>
-                                            <th style="width: 50px; overflow-x: hidden;">ID</th>
-                                            <th>用户名</th>
-                                            <th>真实姓名</th>
-                                            <th>手机</th>
-                                            <th>添加时间</th>
-                                            <th>操作</th>
+                                            <th width="140">发送时间</th>
+                                            <th width="100">手机号码</th>
+                                            <th width="60">通道ID</th>
+                                            <th>短信内容</th>
                                         </tr>
                                         </thead>
                                         <tbody id="data_table_body">
                                         <?php
-                                        foreach ($data as $d)
-                                        {
-                                            ?>
-                                            <tr height="32">
-                                                <td><?= $d['id'] ?></td>
-                                                <td><?= $d['username'] ?></td>
-                                                <td><?= $d['realname'] ?>
-                                                    <?php if ($d['usertype'] == 0)
-                                                    {
-                                                        echo "<span style='color: red;'>(超级管理员)</span>";
-                                                    }
-                                                    ?>
-                                                </td>
-                                                <td><?= $d['mobile'] ?></td>
-                                                <td><?= $d['addtime'] ?></td>
-                                                <td>
-                                                    <a href="/user/add/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改</a>
-                                                    <?php if ($this->userinfo['usertype'] == 0):?>
-                                                    <a onclick="return confirm('确定要重置用户密码');" href="/user/reset_passwd/?id=<?= $d['id'] ?>"
-                                                       class="btn btn-danger btn-xs">重置密码</a>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
-                                        <?php
-                                        }
-                                        ?>
+                                        foreach ($data as $d) { ?>
+                                        <tr height="32">
+                                            <td><?= $d['addtime']?></td>
+                                            <td><?= $d['mobile']?></td>
+                                            <td><?= $d['channel'] ?></td>
+                                            <td><?= $d['content'] ?></td>
+                                        </tr>
+                                        <?php } ?>
                                         </tbody>
                                     </table>
                             </div>
@@ -186,6 +156,10 @@ you can add as many as you like
 <script>
     $(function() {
         pageSetUp();
+//        ListsG.getListsData();
+        $("#submit").click(function(){
+            $("#form").submit();
+        });
     });
 </script>
 
