@@ -47,12 +47,18 @@
                             <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
                                 <div class="dt-top-row">
                                     <div id="data_table_stats_length" style="position: absolute;left: 10px;top: -38px;">
-                                        <form id="form" class="smart-form" novalidate="novalidate" method="get">
+                                        <form id="form_smslog" class="smart-form" novalidate="novalidate" method="get">
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
-                                                    <label class="input" style="height: 34px;">
+                                                    <label class="input">
                                                         <input type="text" name="mobile" id="mobile" value="<?= $this->value($_GET, 'mobile') ?>" placeholder="手机号码">
                                                 </div>
+                                            </div>
+                                            <div class="form-group" style="width: 120px;">
+                                                <label class="input">
+                                                <input type="text" class="input form-control datepicker" name="date"
+                                                       data-dateformat="yy-mm-dd" id="date_input" value="<?= $_GET['date'] ?>"/>
+                                                    </label>
                                             </div>
                                             <div class='form-group'>
                                                 <button type="submit" id='submit' class='btn btn-success'
@@ -64,7 +70,7 @@
                                 </div>
                             </div>
 
-                                    <table id="data_table_stats" class="table table-hover table-bordered table-striped">
+                                    <table class="table table-hover table-bordered table-striped">
                                         <thead>
                                         <tr>
                                             <th width="140">发送时间</th>
@@ -156,9 +162,8 @@ you can add as many as you like
 <script>
     $(function() {
         pageSetUp();
-//        ListsG.getListsData();
-        $("#submit").click(function(){
-            $("#form").submit();
+        $('#date_input').change(function(){
+            $("#form_smslog").submit();
         });
     });
 </script>
