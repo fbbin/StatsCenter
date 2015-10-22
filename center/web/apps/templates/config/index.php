@@ -72,11 +72,14 @@
                         <div class="widget-body no-padding">
                             <div class="inbox-checkbox-triggered" style="margin: 5px;">
                                 <div class="btn-group">
-                                    <?php foreach($c_projs as $k => $v):?>
-                                    <a href="/cluster/index/?p=<?=$k?>" data-placement="bottom" class="btn
-                                    <?php if ($k == $c_proj) echo "active" ?>
-                                    btn-default"><?=$v['name']?></a>
+                                    <?php foreach($categorys as $k => $v):?>
+                                    <a href="/cluster/config_list/?category=<?=$k?>" data-placement="bottom" class="btn
+                                    <?php if ($k == $category) echo "active" ?>
+                                    btn-default"><?=$v?></a>
                                     <?php endforeach; ?>
+                                </div>
+                                <div class="btn-group">
+                                    <button type="button" id="create_button" class="btn btn-success">创建新配置</button>
                                 </div>
                             </div>
                             <table id="data_table_stats" class="table table-hover table-bordered table-striped">
@@ -180,15 +183,47 @@ you can add as many as you like
         </li>
     </ul>
 </div>
+<div id="create_form" title="创建新配置">
+    <div style="padding: 10px;">
+    <fieldset>
+        <div class="form-group">
+            <label>配置ID（全英文字符串）</label>
+            <input class="form-control" id="config_id" value="" placeholder="配置ID" type="text">
+        </div>
+    </fieldset>
+    </div>
+</div>
 <?php include dirname(__DIR__) . '/include/javascript.php'; ?>
 <script src="<?=WEBROOT?>/apps/static/js/stats.js" type="text/javascript"></script>
 <script src="<?=WEBROOT?>/apps/static/js/list.js" type="text/javascript"></script>
 <script>
     $(function () {
         pageSetUp();
-//        ListsG.getListsData();
-        $("#submit").click(function () {
-            $("#form").submit();
+
+        var dialog = $("#create_form").dialog({
+            autoOpen : false,
+            width : 600,
+            resizable : false,
+            modal : true,
+            buttons : [{
+                html : "<i class='fa fa-times'></i>&nbsp; 取消",
+                "class" : "btn btn-default",
+                click : function() {
+                    $(this).dialog("close");
+                }
+            }, {
+
+                html : "<i class='fa fa-plus'></i>&nbsp; 确认",
+                "class" : "btn btn-danger",
+                click : function() {
+                    location.href ="/config/entity/?new=1&category=<?=$category?>&key=" + encodeURI($('#config_id').val());
+                    $(this).dialog("close");
+                }
+            }]
+        });
+
+        $("#create_button").button().click(function() {
+            dialog.dialog("open");
         });
     });
 </script>

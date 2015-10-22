@@ -21,7 +21,7 @@ class User extends \App\LoginController
             unset($_POST['id']);
             if (!empty($_POST['password']))
             {
-                $_POST['password'] = Swoole\Auth::mkpasswd($user_info['username'], trim($_POST['password']));
+                $_POST['password'] = Swoole\Auth::makePasswordHash($user_info['username'], trim($_POST['password']));
             }
             $res = table("user")->set($id, $_POST);
             if ($res)
@@ -128,7 +128,7 @@ class User extends \App\LoginController
                 : '';
             $inserts['mobile'] = $_POST['mobile'];
             //默认密码
-            $inserts['password'] = Swoole\Auth::mkpasswd($inserts['username'], '123456');
+            $inserts['password'] = Swoole\Auth::makePasswordHash($inserts['username'], '123456');
 
             $res = table("user")->put($inserts);
             if ($res)

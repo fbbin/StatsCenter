@@ -119,15 +119,4 @@ class Cluster extends \App\LoginController
         $this->assign('config', $config);
         $this->display();
     }
-
-    function config_list()
-    {
-        $conf = \CloudConfig::getFromCloud('config:category', 'system');
-        $this->display();
-    }
-
-    function config_detail()
-    {
-
-    }
 }
