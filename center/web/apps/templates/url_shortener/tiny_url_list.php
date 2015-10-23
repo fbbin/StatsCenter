@@ -31,7 +31,7 @@
                      data-widget-editbutton="false" role="widget" style="">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-                        <h2>用户列表</h2>
+                        <h2>短网址列表</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div role="content">
                         <div id="delete_tip">
