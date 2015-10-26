@@ -38,11 +38,11 @@ class LoginController extends \Swoole\Controller
         $project_ids = $this->userinfo['project_id'];
         if ($project_ids)
         {
-            $projects = table('project')->getMap(array('in' => array('id', $project_ids)));
+            $projects = table('project', 'platform')->getMap(array('in' => array('id', $project_ids)));
         }
         else
         {
-            $projects = table('project')->getMap(array('limit' => 100));
+            $projects = table('project', 'platform')->getMap(array('limit' => 100));
         }
 
         $this->assign('_projects', $projects);

@@ -54,7 +54,7 @@ class User extends \App\LoginController
         //\Swoole::$php->db->debug = true;
         if (empty($_GET) and empty($_POST))
         {
-            $tmp = table('project')->gets(array("order"=>"id desc"));
+            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
             $project = array();
             foreach ($tmp as $t)
             {
@@ -74,7 +74,7 @@ class User extends \App\LoginController
             $id = (int)$_GET['id'];
             $user = table('user', 'platform')->get($id)->get();
 
-            $tmp = table('project')->gets(array("order"=>"id desc"));
+            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
             $project = array();
             foreach ($tmp as $t)
             {

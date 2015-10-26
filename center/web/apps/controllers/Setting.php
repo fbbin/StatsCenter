@@ -397,7 +397,7 @@ class Setting extends \App\LoginController
             $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]',$user,array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
             $form['alert_uids'] = \Swoole\Form::muti_select('alert_uids[]',$user,array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
 
-            $tmp = table('project')->gets(array("order"=>"id desc"));
+            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
             $project = array();
             foreach ($tmp as $t)
             {
@@ -426,7 +426,7 @@ class Setting extends \App\LoginController
             $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]',$user,explode(',',$module['backup_uids']),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
             $form['alert_uids'] = \Swoole\Form::muti_select('alert_uids[]',$user,explode(',',$module['alert_uids']),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
 
-            $tmp = table('project')->gets(array("order"=>"id desc"));
+            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
             $project = array();
             foreach ($tmp as $t)
             {

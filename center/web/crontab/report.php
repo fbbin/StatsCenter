@@ -24,7 +24,7 @@ $start = microtime(true);
 echo ("[".date("Y-m-d H:i:s")."] start to report \n");
 //$i_gets['select'] = 'id,name';
 //$i_gets['order'] = 'id asc';
-//$project_info = table("project")->getMap($i_gets,'name' );
+//$project_info = table('project', 'platform')->getMap($i_gets,'name' );
 
 $i_gets['select'] = 'id,name,module_id';
 $i_gets['order'] = 'name asc';

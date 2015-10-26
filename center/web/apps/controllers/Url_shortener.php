@@ -385,7 +385,7 @@ class Url_shortener extends \App\LoginController
 
     private function display_edit_category_page($title = '', $project_id = null, $name = null, $error = null)
     {
-        $projects = table('project')->gets(array(
+        $projects = table('project', 'platform')->gets(array(
             'select' => 'id, name',
             'order' => 'id desc'
         ));
@@ -551,7 +551,7 @@ class Url_shortener extends \App\LoginController
             $project_id = null;
         }
 
-        $projects = table('project')->gets(array(
+        $projects = table('project', 'platform')->gets(array(
             'select' => 'id, name',
             'order' => 'id desc'
         ));
