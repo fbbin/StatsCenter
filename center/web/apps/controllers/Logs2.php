@@ -201,6 +201,7 @@ class Logs2 extends App\LoginController
 
     function smslog()
     {
+        $this->db('platform')->debug = true;
         $gets["order"] = 'id desc';
         $gets['page'] = !empty($_GET['page']) ? $_GET['page'] : 1;
         $gets['pagesize'] = 20;

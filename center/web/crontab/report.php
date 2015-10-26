@@ -39,8 +39,7 @@ foreach ($interface_tmp as $v)
 }
 
 $u_gets['select']= "id,username";
-$user = table("user")->getMap($u_gets,"username");
-
+$user = table("user", 'platform')->getMap($u_gets,"username");
 
 $m_gets['select'] = 'id,name,owner_uid,backup_uids';
 $module_tmp = table("module")->gets($m_gets);
