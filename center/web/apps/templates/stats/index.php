@@ -99,7 +99,7 @@
                                 <thead>
                                 <tr>
                                     <th style="width: 300px;">接口名称</th>
-                                    <th style="width: 75px;">时间</th>
+                                    <th style="width: 80px;">时间</th>
                                     <th style="width: 70px;" class="order" data-value="total_count">调用次数</th>
                                     <th style="width: 70px;" class="order" data-value="succ_count">成功次数</th>
                                     <th style="width: 70px;" class="order" data-value="fail_count">失败次数</th>
@@ -256,16 +256,19 @@ you can add as many as you like
         $("#module_id").change(function (e) {
             var module_id = e.currentTarget.value.split(':')[0];
             window.localStorage.module_id = module_id;
+            delete StatsG.filter.page;
             StatsG.filter.module_id = window.localStorage.module_id;
             StatsG.go();
         });
         $("#data_key").change(function(){
             window.localStorage.date_key = $(this).val();
+            delete StatsG.filter.page;
             StatsG.filter.date_key = window.localStorage.date_key;
             StatsG.go();
         });
         $("#interface_id").change(function (e) {
             StatsG.filter.interface_id = e.currentTarget.value.split(':')[0];
+            delete StatsG.filter.page;
             StatsG.go();
         });
     });
