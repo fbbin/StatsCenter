@@ -1,26 +1,27 @@
 <?php include __DIR__.'/../include/header.php'; ?>
+<!-- END NAVIGATION -->
 
 <!-- MAIN PANEL -->
 <div id="main" role="main">
 
-    <!-- RIBBON -->
-    <div id="ribbon">
+<!-- RIBBON -->
+<div id="ribbon">
 
     <span class="ribbon-button-alignment">
         <span id="refresh" class="btn btn-ribbon" data-title="refresh" rel="tooltip"
-              data-placement="bottom"
-              data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
-              data-html="true"><i class="fa fa-refresh"></i></span> </span>
+                                                 data-placement="bottom"
+                                                 data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
+                                                 data-html="true"><i class="fa fa-refresh"></i></span> </span>
 
-        <!-- breadcrumb -->
-        <ol class="breadcrumb">
-            <li>Home</li>
-            <li>Dashboard</li>
-        </ol>
+    <!-- breadcrumb -->
+    <ol class="breadcrumb">
+        <li>Home</li>
+        <li>Dashboard</li>
+    </ol>
 
-    </div>
+</div>
 
-    <div id="content">
+<div id="content">
         <!-- row -->
         <div class="row">
 
@@ -53,7 +54,8 @@
                                                     <option value="25" selected="selected">25</option>
                                                     <option value="50">50</option>
                                                     <option value="100">100</option>
-                                                </select><i></i></label></span></div>
+                                                </select><i></i></label></span>
+                                    </div>
                                     <div class="dataTables_filter" style="margin-left: 185px;">
                                         <?php include dirname(__DIR__) . '/include/filter.php'; ?>
                                         <div class="form-group">
@@ -61,56 +63,56 @@
                                             <input type="text" class="form-control datepicker"
                                                    data-dateformat="yy-mm-dd" id="data_key"
                                                    readonly="readonly" value="<?= $_GET['date_key'] ?>"
-                                                   onchange="StatsG.filter.date_key = this.value;StatsG.go();"
                                                 />
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <table id="data_table_stats" class="table table-striped table-bordered table-hover dataTable">
-                                <thead>
-                                <tr>
-                                    <th>机器IP</th>
-                                    <th>调用比例</th>
-                                    <th>失败比例</th>
-                                    <th>调用总数</th>
-                                    <th>成功总数</th>
-                                    <th>失败次数</th>
-                                    <th>成功率</th>
-                                    <th>响应最大值</th>
-                                    <th>响应最小值</th>
-                                    <th>平均响应时间</th>
-                                    <th>失败平均时间</th>
-                                </tr>
-                                </thead>
-                                <tbody id="data_table_body"></tbody>
-                            </table>
+                                    <table id="data_table_stats" class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 300px;">接口名称</th>
+                                            <th style="width: 100px;">时间</th>
+                                            <th style="width: 70px;">调用次数</th>
+                                            <th style="width: 70px;">成功次数</th>
+                                            <th style="width: 70px;">失败次数</th>
+                                            <th style="width: 70px;">成功率</th>
+                                            <th style="width: 70px;">响应最大值</th>
+                                            <th style="width: 70px;">响应最小值</th>
+                                            <th style="width: 70px;">平均响应时间</th>
+                                            <th style="width: 70px;">失败平均时间</th>
+                                            <th style="width: 260px;">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="data_table_body"></tbody>
+                                    </table>
+
+                            </div>
+
                         </div>
+                        <!-- end widget content -->
 
                     </div>
-                    <!-- end widget content -->
+                    <!-- end widget div -->
 
                 </div>
-                <!-- end widget div -->
+                <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1"
+                     data-widget-editbutton="false" role="widget" style="">
 
+
+                </div>
+                <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-2"
+                     data-widget-editbutton="false" role="widget" style="">
+
+                </div>
+                <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-3"
+                     data-widget-editbutton="false" role="widget" style="">
+
+                </div>
+            </article>
+            <!-- WIDGET END -->
         </div>
-        <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1"
-             data-widget-editbutton="false" role="widget" style="">
-
-
-        </div>
-        <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-2"
-             data-widget-editbutton="false" role="widget" style="">
-
-        </div>
-        <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-3"
-             data-widget-editbutton="false" role="widget" style="">
-
-        </div>
-        </article>
-        <!-- WIDGET END -->
-    </div>
 </div>
 <!-- END MAIN CONTENT -->
 
@@ -159,18 +161,29 @@ you can add as many as you like
     StatsG.filter.hour_end = 23;
     $(function() {
         pageSetUp();
-        StatsG.url = '/stats/detail_data/';
+
         StatsG.filter = <?php echo json_encode($_GET);?>;
-        if (StatsG.filter.hour_start > 0) {
-            $('#filter_hour_s').val(fillZero4Time(StatsG.filter.hour_start));
-        }
-        if (StatsG.filter.hour_end < 23) {
-            $('#filter_hour_e').val(fillZero4Time(StatsG.filter.hour_end));
-        }
-        StatsG.showDetailStats();
+        StatsG.getStatsData();
+
         $("#datepicker").datepicker("option",
             $.datepicker.regional[ 'zh-CN' ]);
 
+        $("#module_id").change(function(e) {
+            var module_id = e.currentTarget.value.split(':')[0];
+            window.localStorage.module_id = module_id;
+            location.href = "/stats/index/?module_id=" + module_id + '&date_key' + '=<?=$_GET['date_key']?>';
+        });
+
+        $("#data_key").change(function(){
+            window.localStorage.date_key = $(this).val();
+            StatsG.filter.date_key = window.localStorage.date_key;
+            StatsG.go();
+        });
+        $("#interface_id").change(function(e) {
+            StatsG.filter.interface_id = e.currentTarget.value.split(':')[0];
+            StatsG.filter.interface_name = e.currentTarget.value.split(':')[1];
+            getStatsData();
+        });
     });
 </script>
 

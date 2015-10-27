@@ -8,7 +8,7 @@
         <?php endforeach; ?>
     </select>
 </div>
-<div class="form-group" style="width: 300px;">
+<div class="form-group" style="width: 400px;">
     <select id="interface_id" class="select2">
         <option value="">所有接口</option>
         <?php foreach ($interfaces as $m): ?>

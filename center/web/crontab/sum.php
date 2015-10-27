@@ -40,6 +40,9 @@ class StatsSum
   PRIMARY KEY (`interface_id`,`module_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
         Swoole::$php->db->query($sql1);
+
+        $sql2 = "ALTER TABLE `{$table}` ADD INDEX( `module_id`);";
+        Swoole::$php->db->query($sql2);
     }
 
     function save($interface_id, $name, $module_info)
