@@ -118,10 +118,11 @@
                                     <tr style="background-color: <?=$bg_color?>;">
                                         <td><?= $td['interface_name'] ?></td>
                                         <td>00:00 ~ 23:55</td>
-                                        <td><?= $td['total_count'] ?></td>
-                                        <td><a href="javascript: StatsG.openSuccPage(<?=$td['module_id']?>,<?=$td['interface_id']?>)" style="color: green "><?= $td['succ_count'] ?></a></td>
+                                        <td><?= number_format($td['total_count']) ?></td>
+                                        <td><a href="javascript: StatsG.openSuccPage(<?=$td['module_id']?>,<?=$td['interface_id']?>)" style="color: green">
+                                                <?= number_format($td['succ_count']) ?></a></td>
                                         <td><a href="javascript: StatsG.openFailPage(<?=$td['module_id']?>,<?=$td['interface_id']?>)"
-                                               style="color: <?=$td['fail_count'] > 0? "red" :'black'?>"><?= $td['fail_count'] ?></a></td>
+                                               style="color: <?=$td['fail_count'] > 0? "red" :'black'?>"><?= number_format($td['fail_count']) ?></a></td>
                                         <td style="color: green"><?= $td['succ_rate'] ?>%</td>
                                         <td><?= $td['max_time'] ?>ms</td>
                                         <td><?= $td['min_time'] ?>ms</td>
