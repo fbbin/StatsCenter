@@ -24,4 +24,5 @@ $db['platform'] = array(
     'charset' => "utf8",
     'setname' => true,
 );
+
 return $db;
