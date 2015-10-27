@@ -43,7 +43,7 @@ class Stats extends \App\LoginController
     {
         $this->assign('width', self::$width);
         $this->getInterfaceInfo();
-        $this->display('stats/detail_ip.php');
+        $this->display('stats/detail_interface.php');
     }
 
     /**

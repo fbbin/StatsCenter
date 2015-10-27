@@ -161,38 +161,19 @@ you can add as many as you like
     StatsG.filter.hour_end = 23;
     $(function() {
         pageSetUp();
-        StatsG.filter = <?php echo json_encode($_GET);?>;
 
-        getStatsData();
+        StatsG.filter = <?php echo json_encode($_GET);?>;
+        StatsG.getStatsData();
+
         $("#datepicker").datepicker("option",
             $.datepicker.regional[ 'zh-CN' ]);
 
         $("#module_id").change(function(e) {
             var module_id = e.currentTarget.value.split(':')[0];
             window.localStorage.module_id = module_id;
-            StatsG.filter.module_id = window.localStorage.module_id;
-//            $.ajax({
-//                url: '/stats/getInterface/?module_id='+module_id,
-//                dataType : 'json',
-//                beforeSend: function() {
-//                    $("#interface_id").html('');
-//                },
-//                success: function(data) {
-//                    if (data.status == 200)
-//                    {
-//                        var line = '';
-//                        var content = data.data;
-//                        for ( id in content)
-//                        {
-//                            line = line + "<option value='" + id + "'>" + content[id] + "</option>";
-//                        }
-//                        $("#interface_id").html(line);
-//                    }
-//                }
-//            });
-            //location.href = '/stats/index/?module_id=' + module_id;
-            StatsG.go();
+            location.href = "/stats/index/?module_id=" + module_id + '&date_key' + '=<?=$_GET['date_key']?>';
         });
+
         $("#data_key").change(function(){
             window.localStorage.date_key = $(this).val();
             StatsG.filter.date_key = window.localStorage.date_key;
