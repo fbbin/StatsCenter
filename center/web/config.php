@@ -21,5 +21,5 @@ elseif ($env == 'dev')
 }
 else
 {
-    Swoole::$php->config->setPath(__DIR__ . '/apps/configs/');
+    Swoole::$php->config->setPath(__DIR__ . '/apps/configs/product');
 }
