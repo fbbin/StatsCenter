@@ -27,6 +27,18 @@ class Stats extends \App\LoginController
             'page' => empty($_GET['page']) ? 1 : intval($_GET['page']),
         ];
 
+        if (!empty($_GET['orderby']))
+        {
+            $gets['order'] = $_GET['orderby'];
+            if (empty($_GET['desc']))
+            {
+                $gets['order'] .= ' asc';
+            }
+            else
+            {
+                $gets['order'] .= ' desc';
+            }
+        }
 
         if (!empty($_GET['interface_id']))
         {

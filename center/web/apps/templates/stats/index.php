@@ -4,6 +4,21 @@
 <!-- MAIN PANEL -->
 <div id="main" role="main">
 
+    <style>
+        .order {
+            cursor: pointer;
+        }
+        .order_none {
+            background: url("/static/smartadmin/img/sort_both.png") no-repeat center right;
+        }
+        .order_desc {
+            background: url("/static/smartadmin/img/sort_desc.png") no-repeat center right;
+        }
+        .order_asc {
+            background: url("/static/smartadmin/img/sort_asc.png") no-repeat center right;
+        }
+    </style>
+
     <!-- RIBBON -->
     <div id="ribbon">
 
@@ -80,19 +95,19 @@
                                 </div>
                             </div>
 
-                            <table id="data_table_stats" class="table table-bordered">
+                            <table class="table table-bordered table-hover dataTables_wrapper">
                                 <thead>
                                 <tr>
                                     <th style="width: 300px;">接口名称</th>
                                     <th style="width: 75px;">时间</th>
-                                    <th style="width: 70px;">调用次数</th>
-                                    <th style="width: 70px;" >成功次数</th>
-                                    <th style="width: 70px;">失败次数</th>
-                                    <th style="width: 70px;">成功率</th>
+                                    <th style="width: 70px;" class="order" data-value="total_count">调用次数</th>
+                                    <th style="width: 70px;" class="order" data-value="succ_count">成功次数</th>
+                                    <th style="width: 70px;" class="order" data-value="fail_count">失败次数</th>
+                                    <th style="width: 70px;" class="order" data-value="succ_rate">成功率</th>
                                     <th style="width: 70px;">响应最大值</th>
                                     <th style="width: 70px;">响应最小值</th>
-                                    <th style="width: 70px;">平均响应时间</th>
-                                    <th style="width: 70px;">失败平均时间</th>
+                                    <th style="width: 90px;" class="order" data-value="avg_time">平均响应时间</th>
+                                    <th style="width: 90px;" class="order" data-value="avg_fail_time">失败平均时间</th>
                                     <th style="width: 260px;">操作</th>
                                 </tr>
                                 </thead>
@@ -200,7 +215,39 @@ you can add as many as you like
 <script>
     StatsG.filter.hour_start = 0;
     StatsG.filter.hour_end = 23;
+
+    var TableOrder = {
+        "desc": <?=empty($_GET['desc'])?0:1?>,
+        "orderby": "<?=empty($_GET['orderby'])?'':$_GET['orderby']?>"
+    };
+
     $(function() {
+        $('.order').click(function (e) {
+            var o = $(e.currentTarget);
+            var orderby = o.attr('data-value');
+            if (orderby != TableOrder.orderby) {
+                StatsG.filter.orderby = orderby;
+                StatsG.filter.desc = 1;
+            } else {
+                StatsG.filter.desc = 1 - TableOrder.desc;
+            }
+            delete StatsG.filter.page;
+            StatsG.go();
+        });
+
+        $('.order').each(function(_o, e){
+            var o = $(e);
+            if (o.attr('data-value') == TableOrder.orderby) {
+                if (TableOrder.desc) {
+                    o.addClass('order_desc');
+                } else {
+                    o.addClass('order_asc');
+                }
+            } else {
+                o.addClass('order_none');
+            }
+        });
+
         pageSetUp();
         StatsG.filter = <?php echo json_encode($_GET);?>;
         $("#datepicker").datepicker("option", $.datepicker.regional[ 'zh-CN' ]);
