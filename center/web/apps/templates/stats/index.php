@@ -84,7 +84,7 @@
                                 <thead>
                                 <tr>
                                     <th style="width: 300px;">接口名称</th>
-                                    <th style="width: 70px;">时间</th>
+                                    <th style="width: 75px;">时间</th>
                                     <th style="width: 70px;">调用次数</th>
                                     <th style="width: 70px;" >成功次数</th>
                                     <th style="width: 70px;">失败次数</th>
