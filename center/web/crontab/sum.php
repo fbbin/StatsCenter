@@ -10,7 +10,9 @@ echo("[" . date("Y-m-d H:i:s") . "] start to sum \n");
 //$project_info = table('project', 'platform')->getMap($i_gets,'name' );
 
 //Swoole::$php->db->debug = true;
-$program = new StatsSum();
+
+$date = empty($argv[1]) ? '' : $argv[1];
+$program = new StatsSum($date);
 $program->sum();
 
 $end = microtime(true);
@@ -20,6 +22,20 @@ echo("[" . date("Y-m-d H:i:s") . "] elapsed time $elapsed s\n");
 
 class StatsSum
 {
+    protected $date;
+
+    function __construct($date = null)
+    {
+        if (!$date)
+        {
+            $this->date = date('Ymd');
+        }
+        else
+        {
+            $this->date = $date;
+        }
+    }
+
     function createTable($table)
     {
         $sql1 = "CREATE TABLE IF NOT EXISTS `" . $table . "` (
@@ -47,9 +63,9 @@ class StatsSum
 
     function save($interface_id, $name, $module_info)
     {
-        $today =  date('Ymd');
-        $table = "stats_" .$today;
-        $sum_table = table('stats_sum_'.$today);
+        $today = $this->date;
+        $table = "stats_" . $today;
+        $sum_table = table('stats_sum_' . $today);
 
         //$table = "stats_20150818";
         $gets['order'] = 'time_key asc';
@@ -181,9 +197,14 @@ class StatsSum
         }
     }
 
+    function getLockFile()
+    {
+        return __DIR__ . '/' . $this->date . '.sum.lock';
+    }
+
     function sum()
     {
-        $lock_file = __DIR__.'/sum.lock';
+        $lock_file = $this->getLockFile();
         if (is_file($lock_file))
         {
             die("StatsSum program is running.");
