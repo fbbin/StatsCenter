@@ -139,10 +139,7 @@
                         </div>
                         <div class="dt-row dt-bottom-row">
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" id="data_table_stats_info">总计：20 ，当前：1 到 20</div>
-                                </div>
-                                <div class="col-sm-6 text-right">
+                                <div class="col-sm-6 text-left">
                                     <?=$pager?>
                                 </div>
                             </div>

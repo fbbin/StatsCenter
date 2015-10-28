@@ -614,6 +614,7 @@ class Setting extends \App\LoginController
             $gets['where'][] = "name like '%{$name}%'";
             $_GET['name'] = $name;
         }
+
         $users['select'] = '*';
         $tmp = table('user', 'platform')->gets($users);
         $user = array();
@@ -622,10 +623,15 @@ class Setting extends \App\LoginController
             $name = !empty($t['realname']) ? $t['realname'] : '';
             $user[$t['id']] = "{$name} [{$t['username']}]";
         }
+
+        if (!empty($_GET['project']))
+        {
+            $gets['project_id'] = intval($_GET['project']);
+        }
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
         $gets['order'] = 'id desc';
-        $data = table('module')->gets($gets,$pager);
+        $data = table('module')->gets($gets, $pager);
         foreach ($data as $k => $v)
         {
             $back_names = array();
