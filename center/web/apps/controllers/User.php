@@ -23,6 +23,11 @@ class User extends \App\LoginController
             {
                 $_POST['password'] = Swoole\Auth::makePasswordHash($user_info['username'], trim($_POST['password']));
             }
+            $user['username'] = $user_info['username'];
+            $user['realname'] = trim($_POST['realname']);
+            $user['weixinid'] = trim($_POST['weixinid']);
+            $user['mobile'] = trim($_POST['mobile']);
+            $this->addWeiXin($user);
             $res = table("user", 'platform')->set($id, $_POST);
             if ($res)
             {
@@ -38,6 +43,7 @@ class User extends \App\LoginController
             //展示
             $form['id'] = \Swoole\Form::hidden('id', $user_info['id']);
             $form['mobile'] = \Swoole\Form::input('mobile', $user_info['mobile']);
+            $form['weixinid'] = \Swoole\Form::input('weixinid', $user_info['weixinid']);
             $form['realname'] = \Swoole\Form::input('realname', $user_info['realname'], array('type' => 'tel'));
         }
         $this->assign('form', $form);

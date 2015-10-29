@@ -61,7 +61,18 @@
                                             报警绑定手机号
                                         </div>
                                     </section>
+                                    <section>
+                                        <label class="label">微信号</label>
+                                        <label class="input"> <i class="icon-prepend fa fa-user"></i>
+                                            <?=$form['weixinid']?>
+                                        </label>
+                                        <div class="note">
+                                            绑定报警微信
+                                        </div>
+                                    </section>
                                 </fieldset>
+
+
                                 <footer>
                                     <button type="submit" class="btn btn-primary">
                                         Submit
