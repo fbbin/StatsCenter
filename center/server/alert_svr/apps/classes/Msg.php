@@ -31,6 +31,7 @@ class Msg
         if (!empty($mobiles))
         {
             $msg = $this->handler->build_msg($msg);
+            $this->sendWeiXin($msg);
             $this->_send($mobiles,$msg);
         }
         else

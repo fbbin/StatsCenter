@@ -124,7 +124,7 @@ class Alert
                         $serv->task($interface);
                     }
                     else {
-                        $this->log("{$this->worker_id} interface {$id} condition not meet,do not report".print_r($interfaces,1));
+                        $this->log("{$this->worker_id} interface {$id} condition not meet,do not report");
                     }
                 }
             }
