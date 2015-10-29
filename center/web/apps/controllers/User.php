@@ -169,7 +169,8 @@ class User extends \App\LoginController
                 );
 
                 $url = "https://qyapi.weixin.qq.com/cgi-bin/user/create?access_token={$token}";
-                $res = $this->ch->post($url,json_encode($data,JSON_UNESCAPED_UNICODE));
+                $ch = new \Swoole\Client\CURL();
+                $res = $ch->post($url,json_encode($data,JSON_UNESCAPED_UNICODE));
                 $res = json_encode($res,1);
                 //'{"errcode":60102,"errmsg":"userid existed"}'
                 if ($res['errcode'] == 60102) {

@@ -25,13 +25,15 @@ class Msg
 
     function alert($msg)
     {
-        $this->sendWeiXin($msg);
         $this->worker_id = $this->handler->alert->worker_id;
+        if (!empty($msg['alert_weixins']))
+        {
+            $this->sendWeiXin($msg['alert_weixins'],$msg);
+        }
         $mobiles = explode(',',$msg['alert_mobiles']);
         if (!empty($mobiles))
         {
             $msg = $this->handler->build_msg($msg);
-            $this->sendWeiXin($msg);
             $this->_send($mobiles,$msg);
         }
         else
@@ -40,14 +42,14 @@ class Msg
         }
     }
 
-    function sendWeiXin($msg)
+    function sendWeiXin($weixin_ids,$msg)
     {
         //增加微信发送
         $token = $this->getToken();
         if ($token) {
             $msg_url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={$token}";
             $data = array(
-                'touser' => '@all',
+                'touser' => $weixin_ids,
                 'toparty' => '',
                 'totag' => '',
                 'msgtype' => 'text',
@@ -57,8 +59,9 @@ class Msg
                 ),
                 'safe' => 0
             );
-            $res = $this->ch->post($msg_url,json_encode($data,JSON_UNESCAPED_UNICODE));
-            $this->log("wei xin send msg {$msg}".var_export($res,1));
+            $str = json_encode($data,JSON_UNESCAPED_UNICODE);
+            $res = $this->ch->post($msg_url,$str);
+            $this->log("wei xin send msg {$str}".var_export($res,1));
         } else {
             $this->log("wei xin get token failed");
         }

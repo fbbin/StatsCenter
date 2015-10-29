@@ -116,6 +116,7 @@ class Alert
                         $interface['module_name'] = $module['module_name'];
                         $interface['alert_uids'] = $module['alert_uids'];
                         $interface['alert_mobiles'] = $module['alert_mobiles'];
+                        $interface['alert_weixins'] = $module['alert_weixins'];
                         $interface['succ_hold'] = $module['succ_hold'];
                         $interface['wave_hold'] = $module['wave_hold'];
                         $interface['alert_int'] = $module['alert_int'];

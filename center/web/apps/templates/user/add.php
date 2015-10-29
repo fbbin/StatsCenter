@@ -109,7 +109,7 @@
                                     <section>
                                         <label class="label">微信号</label>
                                         <label class="input"> <i class="icon-prepend fa fa-user"></i>
-                                            <?=$form['mobile']?>
+                                            <?=$form['weixinid']?>
                                         </label>
                                         <div class="note">
                                             绑定报警微信
