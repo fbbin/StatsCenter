@@ -61,6 +61,7 @@ class User extends \App\LoginController
                 $project[$t['id']] = $t['name'];
             }
             $form['project_id'] = \Swoole\Form::muti_select('project_id[]',$project,array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
+            $form['rules'] = \Swoole\Form::text('rules');
             $form['uid'] = \Swoole\Form::input('uid');
             $form['mobile'] = \Swoole\Form::input('mobile');
             $form['realname'] = \Swoole\Form::input('realname');
@@ -82,11 +83,12 @@ class User extends \App\LoginController
                 $project[$t['id']] = $t['name'];
             }
             $form['project_id'] = \Swoole\Form::muti_select('project_id[]',$project,explode(',',$user['project_id']),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
+            $form['rules'] = \Swoole\Form::text('rules', $user['rules']);
             $form['uid'] = \Swoole\Form::input('uid',$user['uid']);
-            $form['mobile'] = \Swoole\Form::input('mobile',$user['mobile']);
-            $form['realname'] = \Swoole\Form::input('realname',$user['realname']);
-            $form['username'] = \Swoole\Form::input('username',$user['username']);
-            $form['weixinid'] = \Swoole\Form::input('weixinid',$user['weixinid']);
+            $form['mobile'] = \Swoole\Form::input('mobile', $user['mobile']);
+            $form['realname'] = \Swoole\Form::input('realname', $user['realname']);
+            $form['username'] = \Swoole\Form::input('username', $user['username']);
+            $form['weixinid'] = \Swoole\Form::input('weixinid', $user['weixinid']);
             $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], $user['usertype'], null, array('class' => 'select2'));
             $form['id'] = \Swoole\Form::hidden('id',$user['id']);
             $this->assign('form', $form);
@@ -101,9 +103,11 @@ class User extends \App\LoginController
             // NOTE: 写死0，貌似目前没用到
             $inserts['uid'] = 0;
             $inserts['usertype']= (int) $_POST['usertype'];
-            if (!empty($_POST['project_id'])) {
-                $inserts['project_id'] = implode(',',$_POST['project_id']);
+            if (!empty($_POST['project_id']))
+            {
+                $inserts['project_id'] = implode(',', $_POST['project_id']);
             }
+            $inserts['rules'] = $_POST['rules'];
             $inserts['mobile'] = $_POST['mobile'];
 
             $res = table("user", 'platform')->set($id,$inserts);
