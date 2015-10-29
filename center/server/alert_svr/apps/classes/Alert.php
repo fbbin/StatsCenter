@@ -55,7 +55,7 @@ class Alert
             $this->log("{$this->worker_id} add timer min ".self::CHECK_TIME);
         }
         $gets['select'] = 'id,mobile';
-        $tmp = table('user')->gets($gets);
+        $tmp = table('user',"platform")->gets($gets);
         foreach ($tmp as $t)
         {
             if (!empty($t['mobile']))
