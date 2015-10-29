@@ -89,11 +89,11 @@
     <li>
         <a href="/user/passwd/"><i class="fa fa-lg fa-fw fa-key"></i> <span class="menu-item-parent">修改密码</span></a>
     </li>
-    <?php if ($this->userinfo['usertype'] == 0) : ?>
+    <?php if (strstr($this->userinfo['rules'], 'app') !== false) : ?>
     <li>
         <a href="#">
             <i class="fa fa-lg fa-fw fa-mobile"></i>
-            <span class="menu-item-parent">App接口下发</span>
+            <span class="menu-item-parent">APP云端控制</span>
         </a>
         <ul>
             <!-- <li <?php if ($this->isActiveMenu('app_host', 'add_project')){ ?>
@@ -119,6 +119,10 @@
             <li <?php if ($this->isActiveMenu('app_host', 'rule_list')){ ?>
                 class="active" <?php } ?>>
                 <a href="/app_host/rule_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">指定列表</span></a>
+            </li>
+            <li <?php if ($this->isActiveMenu('app_script', 'index')){ ?>
+                class="active" <?php } ?>>
+                <a href="/app_script/index/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">JS脚本下发</span></a>
             </li>
         </ul>
     </li>

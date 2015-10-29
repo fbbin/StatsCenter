@@ -2,11 +2,11 @@
 <html lang="en-us">
 <head>
     <meta charset="utf-8">
-    <title><?=Swoole::$php->config['common']['site_name']?></title>
+    <title><?= Swoole::$php->config['common']['site_name'] ?></title>
     <meta name="description" content="">
     <meta name="author" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <?php include __DIR__.'/../include/css.php'; ?>
+    <?php include __DIR__ . '/../include/css.php'; ?>
 </head>
 <body class="">
 <header style="background: #E4E4E4;color: #22201F" id="header">
@@ -14,7 +14,7 @@
 </header>
 <aside id="left-panel">
     <!--            --><?php //include __DIR__.'/../include/login_info.php'; ?>
-    <?php include __DIR__.'/../include/leftmenu.php'; ?>
+    <?php include __DIR__ . '/../include/leftmenu.php'; ?>
     <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
 </aside>
 <!-- END NAVIGATION -->
@@ -42,10 +42,11 @@
     <div id="content">
         <div class="row">
             <?php if (!empty($error)) : ?>
-            <div class="alert alert-block alert-warning">
-                <a class="close" data-dismiss="alert" href="#">×</a>
-                <p><?=$error?></p>
-            </div>
+                <div class="alert alert-block alert-warning">
+                    <a class="close" data-dismiss="alert" href="#">×</a>
+
+                    <p><?= $error ?></p>
+                </div>
             <?php endif; ?>
 
             <article class="col-sm-12 sortable-grid ui-sortable">
@@ -56,7 +57,7 @@
                         <ul class="nav nav-tabs pull-left in">
                             <li class="active">
                                 <a><i class="fa fa-clock-o"></i>
-                                    <span class="hidden-mobile hidden-tablet">接口编辑</span>
+                                    <span class="hidden-mobile hidden-tablet">新增脚本</span>
                                 </a>
                             </li>
                         </ul>
@@ -69,21 +70,21 @@
                             <form class="smart-form" method="post">
                                 <fieldset>
                                     <section>
-                                        <label class="label">项目标识符（必填，如“chelun”、“common”，小写字母、数字、下划线组合）</label>
+                                        <label class="label">APP名称（必填，如“chelun”、“common”，小写字母、数字、下划线组合）</label>
                                         <label class="input">
-                                            <?=$form['project_id']?>
+                                            <?=$form['name']?>
                                         </label>
                                     </section>
                                     <section>
-                                        <label class="label">环境标识符（必填，如“test、dev”，小写英文字母、数字组合、下划线组合）</label>
+                                        <label class="label">版本号（必填，如“3.2.0”）</label>
                                         <label class="input">
-                                            <?=$form['env_id']?>
+                                            <input type="text" name="version" class="input" value="<?=$entity['version']?>"/>
                                         </label>
                                     </section>
                                     <section>
-                                        <label class="label">接口地址（必填，必须包括“http://”，末尾不带“/”）</label>
-                                        <label class="input">
-                                            <?=$form['host']?>
+                                        <label class="label">JS脚本内容</label>
+                                        <label class="textarea">
+                                            <textarea rows="30" name="content"><?=$entity['content']?></textarea>
                                         </label>
                                     </section>
                                 </fieldset>
@@ -102,10 +103,8 @@
             </article>
         </div>
     </div>
-
     <?php include dirname(__DIR__) . '/include/javascript.php'; ?>
-
-    <script >
+    <script>
         pageSetUp();
     </script>
 </body>
