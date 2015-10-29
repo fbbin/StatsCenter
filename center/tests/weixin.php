@@ -16,13 +16,13 @@ $t = json_decode($res,1);
 $token = $t['access_token'];
 $msg_url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={$token}";
 $msg = array(
-    'touser' => '@all',
+    'touser' => 'shiguangqi',
     'toparty' => '',
     'totag' => '',
     'msgtype' => 'text',
     'agentid' => 0,
     'text' => array(
-        'content' => '你好3333',
+        'content' => '单独发送',
     ),
     'safe' => 0
 );

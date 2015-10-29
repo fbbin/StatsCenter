@@ -65,6 +65,7 @@ class User extends \App\LoginController
             $form['mobile'] = \Swoole\Form::input('mobile');
             $form['realname'] = \Swoole\Form::input('realname');
             $form['username'] = \Swoole\Form::input('username');
+            $form['weixinid'] = \Swoole\Form::input('weixinid');
             $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], null, null, array('class' => 'select2'));
             $this->assign('form', $form);
             $this->display();
@@ -85,6 +86,7 @@ class User extends \App\LoginController
             $form['mobile'] = \Swoole\Form::input('mobile',$user['mobile']);
             $form['realname'] = \Swoole\Form::input('realname',$user['realname']);
             $form['username'] = \Swoole\Form::input('username',$user['username']);
+            $form['weixinid'] = \Swoole\Form::input('weixinid',$user['weixinid']);
             $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], $user['usertype'], null, array('class' => 'select2'));
             $form['id'] = \Swoole\Form::hidden('id',$user['id']);
             $this->assign('form', $form);
@@ -95,6 +97,7 @@ class User extends \App\LoginController
             $id = (int)$_POST['id'];
             $inserts['realname'] = $_POST['realname'];
             $inserts['username'] = $_POST['username'];
+            $inserts['weixinid'] = $_POST['weixinid'];
             // NOTE: 写死0，貌似目前没用到
             $inserts['uid'] = 0;
             $inserts['usertype']= (int) $_POST['usertype'];
@@ -106,6 +109,7 @@ class User extends \App\LoginController
             $res = table("user", 'platform')->set($id,$inserts);
             if ($res)
             {
+                $this->addWeiXin($inserts);
                 \Swoole\JS::js_goto("修改成功",'/user/ulist/');
             }
             else
@@ -121,6 +125,7 @@ class User extends \App\LoginController
                 \Swoole\JS::js_goto("账户已存在",'/user/ulist//');
                 return;
             }
+            $inserts['weixinid'] = $_POST['weixinid'];
             $inserts['realname'] = $_POST['realname'];
             $inserts['uid'] = isset($_POST['uid']) ? (int) $_POST['uid'] : 0;
             $inserts['gid'] = 0;
@@ -134,12 +139,68 @@ class User extends \App\LoginController
             $res = table("user", 'platform')->put($inserts);
             if ($res)
             {
+                $this->addWeiXin($inserts);
                 \Swoole\JS::js_goto("添加成功",'/user/ulist//');
             }
             else
             {
                 \Swoole\JS::js_goto("添加失败",'/user/ulist/');
             }
+        }
+    }
+
+    function addWeiXin($params)
+    {
+        if (!empty($params['username']) and !empty($params['realname']) and !empty($params['weixinid']) and !empty($params['mobile']))
+        {
+            $token = $this->getToken();
+            if ($token) {
+                $data = array(
+                    'userid' => $params['username'],
+                    'name' => $params['realname'],
+                    'department' => array(1),
+                    'position' => '开发',
+                    'mobile' => $params['mobile'],
+                    'gender' => 1,
+                    'email' => '',
+                    'weixinid' => $params['weixinid'],
+//    "avatar_mediaid"=> "2-G6nrLmr5EC3MNb_-zL1dDdzkd0p7cNliYu9V5w7o8K0"
+
+                );
+
+                $url = "https://qyapi.weixin.qq.com/cgi-bin/user/create?access_token={$token}";
+                $ch = new \Swoole\Client\CURL();
+                $res = $ch->post($url,json_encode($data,JSON_UNESCAPED_UNICODE));
+                $res = json_encode($res,1);
+                //'{"errcode":60102,"errmsg":"userid existed"}'
+                if ($res['errcode'] == 60102) {
+                    $url = "https://qyapi.weixin.qq.com/cgi-bin/user/update?access_token={$token}";
+                    $res = $this->ch->post($url,json_encode($data,JSON_UNESCAPED_UNICODE));
+                }
+            }
+        }
+    }
+
+    function getToken()
+    {
+        $key = "weixin_token";
+        $token = \Swoole::$php->redis->get($key);
+        if (!empty($token))
+        {
+            return $token;
+        } else {
+            $url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=wxc45d2ffe103e99c1&corpsecret=7T5TQbFHCYT5J2Z23qPKH3OaefjAIdO3FJjcap_28KUUFAbI0exS5lL4yI2fHKp1";
+
+            $res = $this->ch->get($url);
+            $t = json_decode($res,1);
+            if (!empty($t['access_token']))
+            {
+                $token = $t['access_token'];
+                \Swoole::$php->redis->set($key,$token,$t['expires_in']-100);
+                return $token;
+            }
+            return false;
+
         }
     }
 

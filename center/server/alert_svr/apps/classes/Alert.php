@@ -55,7 +55,7 @@ class Alert
             $this->log("{$this->worker_id} add timer min ".self::CHECK_TIME);
         }
         $gets['select'] = 'id,mobile';
-        $tmp = table('user')->gets($gets);
+        $tmp = table('user',"platform")->gets($gets);
         foreach ($tmp as $t)
         {
             if (!empty($t['mobile']))
@@ -116,6 +116,7 @@ class Alert
                         $interface['module_name'] = $module['module_name'];
                         $interface['alert_uids'] = $module['alert_uids'];
                         $interface['alert_mobiles'] = $module['alert_mobiles'];
+                        $interface['alert_weixins'] = $module['alert_weixins'];
                         $interface['succ_hold'] = $module['succ_hold'];
                         $interface['wave_hold'] = $module['wave_hold'];
                         $interface['alert_int'] = $module['alert_int'];
@@ -124,7 +125,7 @@ class Alert
                         $serv->task($interface);
                     }
                     else {
-                        $this->log("{$this->worker_id} interface {$id} condition not meet,do not report".print_r($interfaces,1));
+                        $this->log("{$this->worker_id} interface {$id} condition not meet,do not report");
                     }
                 }
             }

@@ -570,11 +570,16 @@ class Setting extends \App\LoginController
             $gets['where'][] = 'id in ('.$alert_ids.')';
             $tmp = table('user', 'platform')->gets($gets);
             $user = array();
+            $weixin = array();
             foreach ($tmp as $t)
             {
                 if (!empty($t['mobile']))
                 {
                     $user[$t['id']] = $t['mobile'];
+                }
+                if (!empty($t['weixinid']))
+                {
+                    $weixin[$t['id']] = $t['weixinid'];
                 }
             }
 
@@ -583,6 +588,7 @@ class Setting extends \App\LoginController
             $params['enable_alert'] = $module['enable_alert'];
             $params['alert_uids'] = $alert_ids;
             $params['alert_mobiles'] = implode(',',$user);
+            $params['alert_weixins'] = implode('|',$weixin);
             $params['alert_int'] = $module['alert_int'];
             $params['succ_hold'] = $module['succ_hold'];
             $params['wave_hold'] = $module['wave_hold'];
