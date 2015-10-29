@@ -196,8 +196,8 @@ class User extends \App\LoginController
             return $token;
         } else {
             $url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=wxc45d2ffe103e99c1&corpsecret=7T5TQbFHCYT5J2Z23qPKH3OaefjAIdO3FJjcap_28KUUFAbI0exS5lL4yI2fHKp1";
-
-            $res = $this->ch->get($url);
+            $ch = new \Swoole\Client\CURL();
+            $res = $ch->get($url);
             $t = json_decode($res,1);
             if (!empty($t['access_token']))
             {
