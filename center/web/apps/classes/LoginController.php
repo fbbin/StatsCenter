@@ -1,6 +1,8 @@
 <?php
 namespace App;
 
+use mobilemsg\service\Filter;
+
 class LoginController extends \Swoole\Controller
 {
     protected $uid;
@@ -82,13 +84,29 @@ class LoginController extends \Swoole\Controller
         $this->assign('_project_info', $this->projectInfo);
     }
 
-    function isAllow($optype, $id)
+    /**
+     * 检查是否允许
+     * @param $optype
+     * @param $id
+     * @return bool
+     */
+    function isAllow($optype, $id = 0)
     {
-        if ($_SESSION['userinfo']['usertype'] == 0)
+        if ($this->userinfo['usertype'] == 0)
         {
             return true;
         }
-        return false;
+        else
+        {
+            if (empty($this->userinfo['rules']))
+            {
+                return false;
+            }
+            else
+            {
+                return strstr($this->userinfo['rules'], $optype) !== false;
+            }
+        }
     }
 
     function isActiveMenu($m, $v = '')

@@ -89,7 +89,7 @@
     <li>
         <a href="/user/passwd/"><i class="fa fa-lg fa-fw fa-key"></i> <span class="menu-item-parent">修改密码</span></a>
     </li>
-    <?php if (strstr($this->userinfo['rules'], 'app') !== false) : ?>
+    <?php if ($this->isAllow('app')) : ?>
     <li>
         <a href="#">
             <i class="fa fa-lg fa-fw fa-mobile"></i>
