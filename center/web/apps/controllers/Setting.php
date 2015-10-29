@@ -566,7 +566,7 @@ class Setting extends \App\LoginController
             }
             $params['module_id'] = $id;
             $params['module_name'] = $module['name'];
-            $gets['select'] = 'id,mobile';
+            $gets['select'] = 'id,mobile,weixinid';
             $gets['where'][] = 'id in ('.$alert_ids.')';
             $tmp = table('user', 'platform')->gets($gets);
             $user = array();
