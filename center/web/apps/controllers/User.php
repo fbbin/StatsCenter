@@ -13,7 +13,7 @@ class User extends \App\LoginController
             \Swoole\JS::js_back("操作不合法");
         }
 
-        $user_info = table("user")->get($id)->get();
+        $user_info = table("user", 'platform')->get($id)->get();
         if (!empty($_POST))
         {
             //编辑
@@ -21,9 +21,9 @@ class User extends \App\LoginController
             unset($_POST['id']);
             if (!empty($_POST['password']))
             {
-                $_POST['password'] = Swoole\Auth::mkpasswd($user_info['username'], trim($_POST['password']));
+                $_POST['password'] = Swoole\Auth::makePasswordHash($user_info['username'], trim($_POST['password']));
             }
-            $res = table("user")->set($id, $_POST);
+            $res = table("user", 'platform')->set($id, $_POST);
             if ($res)
             {
                 \Swoole\JS::js_goto("更新成功",'/user/edit/');
@@ -54,7 +54,7 @@ class User extends \App\LoginController
         //\Swoole::$php->db->debug = true;
         if (empty($_GET) and empty($_POST))
         {
-            $tmp = table('project')->gets(array("order"=>"id desc"));
+            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
             $project = array();
             foreach ($tmp as $t)
             {
@@ -72,9 +72,9 @@ class User extends \App\LoginController
         elseif (!empty($_GET['id']) and empty($_POST))
         {
             $id = (int)$_GET['id'];
-            $user = table('user')->get($id)->get();
+            $user = table('user', 'platform')->get($id)->get();
 
-            $tmp = table('project')->gets(array("order"=>"id desc"));
+            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
             $project = array();
             foreach ($tmp as $t)
             {
@@ -103,7 +103,7 @@ class User extends \App\LoginController
             }
             $inserts['mobile'] = $_POST['mobile'];
 
-            $res = table("user")->set($id,$inserts);
+            $res = table("user", 'platform')->set($id,$inserts);
             if ($res)
             {
                 \Swoole\JS::js_goto("修改成功",'/user/ulist/');
@@ -116,21 +116,22 @@ class User extends \App\LoginController
         else
         {
             $inserts['username'] = trim($_POST['username']);
-            if (table('user')->exists($inserts))
+            if (table('user', 'platform')->exists($inserts))
             {
                 \Swoole\JS::js_goto("账户已存在",'/user/ulist//');
                 return;
             }
             $inserts['realname'] = $_POST['realname'];
             $inserts['uid'] = isset($_POST['uid']) ? (int) $_POST['uid'] : 0;
+            $inserts['gid'] = 0;
             $inserts['project_id'] = isset($_POST['project_id'])
                 ? implode(',',$_POST['project_id'])
                 : '';
             $inserts['mobile'] = $_POST['mobile'];
             //默认密码
-            $inserts['password'] = Swoole\Auth::mkpasswd($inserts['username'], '123456');
+            $inserts['password'] = Swoole\Auth::makePasswordHash($inserts['username'], '123456');
 
-            $res = table("user")->put($inserts);
+            $res = table("user", 'platform')->put($inserts);
             if ($res)
             {
                 \Swoole\JS::js_goto("添加成功",'/user/ulist//');
@@ -196,13 +197,13 @@ class User extends \App\LoginController
         }
 
         $uid = intval($_GET['id']);
-        $user = table('user')->get($uid);
+        $user = table('user', 'platform')->get($uid);
         if (!$user->exist())
         {
             return \Swoole\JS::js_back("用户不存在");
         }
 
-        $user->password = Swoole\Auth::mkpasswd($user->username, '123456');
+        $user->password = Swoole\Auth::makePasswordHash($user->username, '123456');
         if ($user->save())
         {
             return \Swoole\JS::js_back("重置密码成功");
@@ -243,7 +244,7 @@ class User extends \App\LoginController
         $gets["order"] = 'addtime desc';
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
-        $data = table("user")->gets($gets,$pager);
+        $data = table("user", 'platform')->gets($gets,$pager);
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $this->assign('data', $data);
         $this->display();

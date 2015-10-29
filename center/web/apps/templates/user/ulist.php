@@ -67,7 +67,7 @@
                                                 </div>
                                             </div>
                                             <div class='form-group' style="padding-left: 100px">
-                                                <a id='submit' class='btn btn-success' style='padding:6px 12px' href='javascript:void(0)'>提交查询</a>
+                                                <button type="submit" id='submit' class='btn btn-success' style='padding:6px 12px'>提交查询</button>
                                             </div>
                                         </form>
                                     </div>
@@ -186,10 +186,6 @@ you can add as many as you like
 <script>
     $(function() {
         pageSetUp();
-//        ListsG.getListsData();
-        $("#submit").click(function(){
-            $("#form").submit();
-        });
     });
 </script>
 

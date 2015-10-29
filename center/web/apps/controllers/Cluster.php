@@ -3,6 +3,9 @@ namespace App\Controller;
 
 use Swoole;
 
+require_once '/data/www/public/sdk/StatsCenter.php';
+require_once '/data/www/public/sdk/CloudConfig.php';
+
 class Cluster extends \App\LoginController
 {
     static $envs = [

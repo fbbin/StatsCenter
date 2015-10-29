@@ -385,7 +385,6 @@ StatsG.showDetail = function (interface_id) {
             continue;
         }
         StatsG.appendToTable(interface_id, o, {no_detail: true});
-        location.hash = "#detail";
     }
 }
 
@@ -396,11 +395,6 @@ function fillZero4Time(s) {
         return s;
     }
 }
-
-window.onload = window.onhashchange = function () {
-    var hashStr = location.hash.replace("#", "");
-    if (hashStr) $("#txt1").val(hashStr);
-};
 
 function getTimerStr(time_key) {
     var _h = time_key / 12.0;
@@ -457,9 +451,7 @@ StatsG.openSuccPage = function (module_id,interface_id, time_key, date_key) {
     location.href = url;
 };
 
-
-function getStatsData() {
-    StatsG.refresh = getStatsData;
+StatsG.getStatsData = function () {
     $.ajax({
         url: StatsG.url,
         dataType : 'json',
@@ -570,15 +562,20 @@ function getStatsData() {
 //                console.log(data.stats[i]['total_time']);
 //                console.log(stats[interface_id]['total_fail_time']);
                 //console.log(stats[interface_id]['total_time']);
+                StatsG.showDetail(interface_id);
             }
-            for (i = 0; i < data.interface.length; i++) {
-                interface_id = data.interface[i].id;
-                StatsG.appendToTable(interface_id, stats[interface_id], {});
-            }
-            StatsG.dataTable = $('#data_table_stats').dataTable(StatsG.config.data_table);
         }
     });
-}
+};
+
+StatsG.showSummaryStats = function () {
+    data = StatsG.data;
+    for (i = 0; i < data.interface.length; i++) {
+        interface_id = data.interface[i].id;
+        StatsG.appendToTable(interface_id, stats[interface_id], {});
+    }
+    StatsG.dataTable = $('#data_table_stats').dataTable(StatsG.config.data_table);
+};
 
 StatsG.showDetailStats = function() {
     StatsG.page_url = location.pathname;

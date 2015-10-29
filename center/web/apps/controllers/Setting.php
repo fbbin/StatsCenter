@@ -19,7 +19,7 @@ class Setting extends \App\LoginController
     function add_interface()
     {
         $gets['select'] = 'id,username,realname,mobile';
-        $tmp = table('user')->gets($gets);
+        $tmp = table('user', 'platform')->gets($gets);
         $user = array();
         $mobile = array();
         foreach ($tmp as $t)
@@ -333,7 +333,7 @@ class Setting extends \App\LoginController
             $_GET['name'] = $name;
         }
         $users['select'] = 'id,username,realname';
-        $tmp = table('user')->gets($users);
+        $tmp = table('user', 'platform')->gets($users);
         $user = array();
         foreach ($tmp as $t)
         {
@@ -384,7 +384,7 @@ class Setting extends \App\LoginController
         if (empty($_GET['id']) and empty($_POST))
         {
             $gets['select'] = 'id,username,realname';
-            $tmp = table('user')->gets($gets);
+            $tmp = table('user', 'platform')->gets($gets);
             $user = array();
             foreach ($tmp as $t)
             {
@@ -397,7 +397,7 @@ class Setting extends \App\LoginController
             $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]',$user,array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
             $form['alert_uids'] = \Swoole\Form::muti_select('alert_uids[]',$user,array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
 
-            $tmp = table('project')->gets(array("order"=>"id desc"));
+            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
             $project = array();
             foreach ($tmp as $t)
             {
@@ -412,7 +412,7 @@ class Setting extends \App\LoginController
             $id = (int)$_GET['id'];
             $module = table("module")->get($id)->get();
             $gets['select'] = '*';
-            $tmp = table('user')->gets($gets);
+            $tmp = table('user', 'platform')->gets($gets);
             $user = array();
             foreach ($tmp as $t)
             {
@@ -426,7 +426,7 @@ class Setting extends \App\LoginController
             $form['backup_uids'] = \Swoole\Form::muti_select('backup_uids[]',$user,explode(',',$module['backup_uids']),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
             $form['alert_uids'] = \Swoole\Form::muti_select('alert_uids[]',$user,explode(',',$module['alert_uids']),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
 
-            $tmp = table('project')->gets(array("order"=>"id desc"));
+            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
             $project = array();
             foreach ($tmp as $t)
             {
@@ -567,7 +567,7 @@ class Setting extends \App\LoginController
             $params['module_name'] = $module['name'];
             $gets['select'] = 'id,mobile';
             $gets['where'][] = 'id in ('.$alert_ids.')';
-            $tmp = table('user')->gets($gets);
+            $tmp = table('user', 'platform')->gets($gets);
             $user = array();
             foreach ($tmp as $t)
             {
@@ -614,18 +614,24 @@ class Setting extends \App\LoginController
             $gets['where'][] = "name like '%{$name}%'";
             $_GET['name'] = $name;
         }
+
         $users['select'] = '*';
-        $tmp = table('user')->gets($users);
+        $tmp = table('user', 'platform')->gets($users);
         $user = array();
         foreach ($tmp as $t)
         {
             $name = !empty($t['realname']) ? $t['realname'] : '';
             $user[$t['id']] = "{$name} [{$t['username']}]";
         }
+
+        if (!empty($_GET['project']))
+        {
+            $gets['project_id'] = intval($_GET['project']);
+        }
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
         $gets['order'] = 'id desc';
-        $data = table('module')->gets($gets,$pager);
+        $data = table('module')->gets($gets, $pager);
         foreach ($data as $k => $v)
         {
             $back_names = array();

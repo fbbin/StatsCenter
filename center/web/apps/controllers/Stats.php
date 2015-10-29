@@ -16,9 +16,46 @@ class Stats extends \App\LoginController
 
     function index()
     {
+        $this->getInterfaceInfo();
+        $table = table('stats_sum_'.str_replace('-', '', $_GET['date_key']));
+        $pager = null;
+
+        $gets = [
+            'module_id' => $_GET['module_id'],
+            'order' => 'interface_id',
+            'pagesize' => 20,
+            'page' => empty($_GET['page']) ? 1 : intval($_GET['page']),
+        ];
+
+        if (!empty($_GET['orderby']))
+        {
+            $gets['order'] = $_GET['orderby'];
+            if (empty($_GET['desc']))
+            {
+                $gets['order'] .= ' asc';
+            }
+            else
+            {
+                $gets['order'] .= ' desc';
+            }
+        }
+
+        if (!empty($_GET['interface_id']))
+        {
+            $gets['interface_id'] = intval($_GET['interface_id']);
+        }
+
+        $data = $table->gets($gets, $pager);
+        $this->assign('pager', $pager->render());
+        $this->assign('data', $data);
+        $this->display();
+    }
+
+    function detail()
+    {
         $this->assign('width', self::$width);
         $this->getInterfaceInfo();
-        $this->display();
+        $this->display('stats/detail_interface.php');
     }
 
     /**
@@ -121,7 +158,7 @@ class Stats extends \App\LoginController
         $_GET['type'] = 'client';
         $this->assign('force_reload', true);
         $this->getInterfaceInfo();
-        $this->display('stats/detail.php');
+        $this->display('stats/detail_ip.php');
     }
 
     function server()
@@ -129,7 +166,7 @@ class Stats extends \App\LoginController
         $_GET['type'] = 'server';
         $this->assign('force_reload', true);
         $this->getInterfaceInfo();
-        $this->display('stats/detail.php');
+        $this->display('stats/detail_ip.php');
     }
 
     function getTableName($date_key, $type = 3)

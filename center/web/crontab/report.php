@@ -1,30 +1,14 @@
 <?php
 ini_set("memory_limit","1024M");
-define('DEBUG', 'off');
-define('WEBPATH', __DIR__);
-require dirname(__DIR__).'/../../framework/libs/lib_config.php';
-require dirname(__DIR__).'/apps/include/functions.php';
-$env = get_cfg_var('env.name');
-
-if ($env == 'local')
-{
-    Swoole::$php->config->setPath(dirname(__DIR__).'/apps/configs/local/');
-}
-elseif ($env == 'dev')
-{
-    Swoole::$php->config->setPath(dirname(__DIR__).'/apps/configs/dev/');
-}
-else
-{
-    Swoole::$php->config->setPath(dirname(__DIR__).'/apps/configs/');
-}
+define('SWOOLE_SERVER', true);
+require_once dirname(__DIR__).'/config.php';
 
 require dirname(__DIR__).'/apps/include/mail.php';
 $start = microtime(true);
 echo ("[".date("Y-m-d H:i:s")."] start to report \n");
 //$i_gets['select'] = 'id,name';
 //$i_gets['order'] = 'id asc';
-//$project_info = table("project")->getMap($i_gets,'name' );
+//$project_info = table('project', 'platform')->getMap($i_gets,'name' );
 
 $i_gets['select'] = 'id,name,module_id';
 $i_gets['order'] = 'name asc';
@@ -39,13 +23,13 @@ foreach ($interface_tmp as $v)
 }
 
 $u_gets['select']= "id,username";
-$user = table("user")->getMap($u_gets,"username");
-
+$user = table("user", 'platform')->getMap($u_gets,"username");
 
 $m_gets['select'] = 'id,name,owner_uid,backup_uids';
 $module_tmp = table("module")->gets($m_gets);
 $module_info = array();
 $mid2username = array();
+
 foreach ($module_tmp as $v)
 {
     $module_info[$v['id']] = $v['name'];

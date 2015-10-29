@@ -10,7 +10,7 @@ class Url_shortener extends Swoole\Model
 
     function get_category_list()
     {
-        $projects = table('project')->gets(array(
+        $projects = table('project', 'platform')->gets(array(
             'select' => 'id, name',
             'order' => 'id desc'
         ));

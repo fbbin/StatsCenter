@@ -31,7 +31,7 @@
                      data-widget-editbutton="false" role="widget" style="">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-                        <h2>短网址列表</h2>
+                        <h2>短信记录</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div role="content">
                         <div id="delete_tip">
@@ -47,61 +47,48 @@
                             <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
                                 <div class="dt-top-row">
                                     <div id="data_table_stats_length" style="position: absolute;left: 10px;top: -38px;">
-                                        <form id="form" class="smart-form" novalidate="novalidate" method="post">
+                                        <form id="form_smslog" class="smart-form" novalidate="novalidate" method="get">
                                             <div class="form-group" style="width: 200px;">
-                                                <label class="input" style="height: 34px;">
-                                                    <?=$form['id']?>
-                                                </label>
+                                                <div class="form-group">
+                                                    <label class="input">
+                                                        <input type="text" name="mobile" id="mobile" value="<?= $this->value($_GET, 'mobile') ?>" placeholder="手机号码">
+                                                </div>
                                             </div>
-                                            <div class="form-group" style="width: 200px;">
-                                                <label class="input" style="height: 34px;">
-                                                    <?=$form['name']?>
-                                                </label>
+                                            <div class="form-group" style="width: 120px;">
+                                                <label class="input">
+                                                <input type="text" class="input form-control datepicker" name="date"
+                                                       data-dateformat="yy-mm-dd" id="date_input" value="<?= $_GET['date'] ?>"/>
+                                                    </label>
                                             </div>
-                                            <div class="form-group" style="width: 200px;">
-                                                <?=$form['category_id']?>
-                                            </div>
-                                            <div class='form-group' style="padding-left: 100px">
-                                                <a id='submit' class='btn btn-success' style='padding:6px 12px' href='javascript:void(0)'>提交查询</a>
+                                            <div class='form-group'>
+                                                <button type="submit" id='submit' class='btn btn-success'
+                                                        style='padding:6px 12px'>提交查询
+                                                </button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
 
-                                    <table id="data_table_stats" class="table table-hover table-bordered table-striped">
+                                    <table class="table table-hover table-bordered table-striped">
                                         <thead>
                                         <tr>
-                                            <th style="width: 50px; overflow-x: hidden;">ID</th>
-                                            <th>短网址名称</th>
-                                            <th>短网址</th>
-                                            <th>所属分类</th>
-                                            <th>总访问次数<!--2015.7.23号以后--></th>
-                                            <th>添加时间</th>
-                                            <th>操作</th>
+                                            <th width="140">发送时间</th>
+                                            <th width="100">手机号码</th>
+                                            <th width="60">通道ID</th>
+                                            <th>短信内容</th>
                                         </tr>
                                         </thead>
                                         <tbody id="data_table_body">
-                                            <?php
-                                                foreach ($data as $d)
-                                                {
-                                            ?>
-                                                    <tr height="32">
-                                                        <td><?=$d['id']?></td>
-                                                        <td><?=$d['name']?></td>
-                                                        <td><a href="<?=$d['tiny_url']?>"><?=$d['tiny_url']?></a></td>
-                                                        <td><a href="/url_shortener/tiny_url_list?category_id=<?=$d['category_id']?>"><?=$d['category_name']?></a></td>
-                                                        <td><?=$d['total_visits']?></td>
-                                                        <td><?=$d['add_time']?></td>
-                                                        <td>
-                                                            <a href="/url_shortener/stats/?id=<?=$d['id']?>" class="btn btn-info btn-xs">查看统计</a>
-                                                            <a href="/url_shortener/edit/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
-                                                            <a href="/url_shortener/delete/?id=<?=$d['id']?>" class="btn btn-warning btn-xs delete-tiny-url">删除</a>
-                                                        </td>
-                                                    </tr>
-                                            <?php
-                                                }
-                                            ?>
+                                        <?php
+                                        foreach ($data as $d) { ?>
+                                        <tr height="32">
+                                            <td><?= $d['addtime']?></td>
+                                            <td><?= $d['mobile']?></td>
+                                            <td><?= $d['channel'] ?></td>
+                                            <td><?= $d['content'] ?></td>
+                                        </tr>
+                                        <?php } ?>
                                         </tbody>
                                     </table>
                             </div>
@@ -174,14 +161,9 @@ you can add as many as you like
 <?php include dirname(__DIR__).'/include/javascript.php'; ?>
 <script>
     $(function() {
-        $('.delete-tiny-url').click(function () {
-            return confirm('确认删除？');
-        });
-
         pageSetUp();
-//        ListsG.getListsData();
-        $("#submit").click(function(){
-            $("#form").submit();
+        $('#date_input').change(function(){
+            $("#form_smslog").submit();
         });
     });
 </script>

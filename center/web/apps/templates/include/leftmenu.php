@@ -51,17 +51,29 @@
                 <a href="/project/plist/"><i class="fa fa-lg fa-fw fa-reorder"></i>
                     <span class="menu-item-parent">项目列表</span></a>
             </li>
+
+            <li <?php if ($this->isActiveMenu('logs2', 'smslog')){ ?>
+                class="active" <?php } ?>>
+                <a href="/logs2/smslog/"><i class="fa fa-lg fa-fw fa-reorder"></i>
+                    <span class="menu-item-parent">短信记录</span></a>
+            </li>
         </ul>
         </li>
         <li>
             <a href="#"><i class="fa fa-lg fa-fw fa-cloud"></i> <span class="menu-item-parent">集群管理</span></a>
             <ul>
                 <li
-                    <?php if ($this->isActiveMenu('cluster')){ ?>class="active"
+                    <?php if ($this->isActiveMenu('cluster', 'index') or $this->isActiveMenu('cluster', 'node')){ ?>class="active"
                     <?php } ?>>
                     <a href="/cluster/index/<?php if ($this->isActiveMenu('cluster')) echo "?p=$c_proj";?>"
                         ><i class="fa fa-lg fa-fw fa-user"></i> <span
                             class="menu-item-parent">Service集群</span></a>
+                </li>
+                <li
+                    <?php if ($this->isActiveMenu('config')){ ?>class="active"
+                    <?php } ?>>
+                    <a href="/config/index/"><i class="fa fa-lg fa-fw fa-check-square-o"></i> <span
+                            class="menu-item-parent">云端配置管理</span></a>
                 </li>
             </ul>
         </li>

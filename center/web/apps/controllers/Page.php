@@ -65,13 +65,13 @@ class Page extends Swoole\Controller
     function collect_user()
     {
         $uid = $_COOKIE['yyuid'];
-        if (!table('user')->exists(array('uid' => $uid)))
+        if (!table('user', 'platform')->exists(array('uid' => $uid)))
         {
             $puts['uid'] = $uid;
             $puts['username'] = $_COOKIE['username'];
             if (isset($_COOKIE['sysop_privilege_nick_name']) and !empty($_COOKIE['sysop_privilege_nick_name']))
                 $puts['realname'] = urldecode($_COOKIE['sysop_privilege_nick_name']);
-            table('user')->put($puts);
+            table('user', 'platform')->put($puts);
         }
     }
 }
