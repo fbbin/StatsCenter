@@ -340,6 +340,7 @@ class Setting extends \App\LoginController
             $name = !empty($t['realname'])?$t['realname']:'';
             $user[$t['id']] = "{$name} [{$t['username']}]";
         }
+
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
         $gets['order'] = 'id desc';
@@ -598,7 +599,6 @@ class Setting extends \App\LoginController
         }
     }
 
-
     function module_list()
     {
         //Swoole\Error::dbd();
@@ -623,10 +623,13 @@ class Setting extends \App\LoginController
             $name = !empty($t['realname']) ? $t['realname'] : '';
             $user[$t['id']] = "{$name} [{$t['username']}]";
         }
-
         if (!empty($_GET['project']))
         {
             $gets['project_id'] = intval($_GET['project']);
+        }
+        else
+        {
+            $gets['project_id'] = $this->projectId;
         }
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
