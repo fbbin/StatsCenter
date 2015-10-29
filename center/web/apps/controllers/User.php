@@ -203,7 +203,7 @@ class User extends \App\LoginController
             return \Swoole\JS::js_back("用户不存在");
         }
 
-        $user->password = Swoole\Auth::mkpasswd($user->username, '123456');
+        $user->password = Swoole\Auth::makePasswordHash($user->username, '123456');
         if ($user->save())
         {
             return \Swoole\JS::js_back("重置密码成功");
