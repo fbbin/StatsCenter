@@ -26,6 +26,7 @@ class Msg
     function alert($msg)
     {
         $this->worker_id = $this->handler->alert->worker_id;
+        $msg = $this->handler->build_msg($msg);
         if (!empty($msg['alert_weixins']))
         {
             $this->sendWeiXin($msg['alert_weixins'],$msg);
@@ -33,7 +34,6 @@ class Msg
         $mobiles = explode(',',$msg['alert_mobiles']);
         if (!empty($mobiles))
         {
-            $msg = $this->handler->build_msg($msg);
             $this->_send($mobiles,$msg);
         }
         else
