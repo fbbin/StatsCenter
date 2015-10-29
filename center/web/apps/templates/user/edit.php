@@ -110,6 +110,7 @@
         </ul>
     </div>
     <?php include dirname(__DIR__) . '/include/javascript.php'; ?>
+</div>
 </body>
     <script >
         pageSetUp();
