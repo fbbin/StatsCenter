@@ -50,6 +50,12 @@ class User extends \App\LoginController
         $this->display();
     }
 
+    static $roles = array(
+        'app' => '客户端控制',
+        'stats' => '模调统计',
+        'url' => '短链接系统',
+    );
+
     function add()
     {
         //不是超级用户不能查看修改用户
@@ -66,8 +72,8 @@ class User extends \App\LoginController
             {
                 $project[$t['id']] = $t['name'];
             }
-            $form['project_id'] = \Swoole\Form::muti_select('project_id[]',$project,array(),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
-            $form['rules'] = \Swoole\Form::text('rules');
+            $form['project_id'] = \Swoole\Form::muti_select('project_id[]', $project, array(), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+            $form['rules'] = \Swoole\Form::muti_select('rules[]', self::$roles, [], null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
             $form['uid'] = \Swoole\Form::input('uid');
             $form['mobile'] = \Swoole\Form::input('mobile');
             $form['realname'] = \Swoole\Form::input('realname');
@@ -88,9 +94,9 @@ class User extends \App\LoginController
             {
                 $project[$t['id']] = $t['name'];
             }
-            $form['project_id'] = \Swoole\Form::muti_select('project_id[]',$project,explode(',',$user['project_id']),null,array('class'=>'select2 select2-offscreen','multiple'=>"1",'style'=>"width:100%" ),false);
-            $form['rules'] = \Swoole\Form::text('rules', $user['rules']);
-            $form['uid'] = \Swoole\Form::input('uid',$user['uid']);
+            $form['project_id'] = \Swoole\Form::muti_select('project_id[]', $project, explode(',', $user['project_id']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+            $form['rules'] = \Swoole\Form::muti_select('rules[]', self::$roles, explode(',', $user['rules']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+            $form['uid'] = \Swoole\Form::input('uid', $user['uid']);
             $form['mobile'] = \Swoole\Form::input('mobile', $user['mobile']);
             $form['realname'] = \Swoole\Form::input('realname', $user['realname']);
             $form['username'] = \Swoole\Form::input('username', $user['username']);
@@ -113,7 +119,7 @@ class User extends \App\LoginController
             {
                 $inserts['project_id'] = implode(',', $_POST['project_id']);
             }
-            $inserts['rules'] = $_POST['rules'];
+            $inserts['rules'] = implode(',', $_POST['rules']);
             $inserts['mobile'] = $_POST['mobile'];
 
             $res = table("user", 'platform')->set($id,$inserts);
@@ -135,6 +141,7 @@ class User extends \App\LoginController
                 \Swoole\JS::js_goto("账户已存在",'/user/ulist//');
                 return;
             }
+            $inserts['rules'] = implode(',', $_POST['rules']);
             $inserts['weixinid'] = $_POST['weixinid'];
             $inserts['realname'] = $_POST['realname'];
             $inserts['uid'] = isset($_POST['uid']) ? (int) $_POST['uid'] : 0;
@@ -292,6 +299,30 @@ class User extends \App\LoginController
         {
             return "access deny";
         }
+
+        if (!empty($_GET['del']))
+        {
+            if (table("user", 'platform')->del(intval($_GET['del'])))
+            {
+                return Swoole\JS::js_goto("删除成功", '/user/ulist/');
+            }
+        }
+        elseif (!empty($_GET['block']))
+        {
+            if (isset($_GET['unblock']))
+            {
+                $set = ['blocking' => 0];
+            }
+            else
+            {
+                $set = ['blocking' => 1];
+            }
+            if (table('user', 'platform')->set(intval($_GET['block']), $set))
+            {
+                return Swoole\JS::js_goto("操作成功", '/user/ulist/');
+            }
+        }
+
         $gets = array();
         if (!empty($_POST['uid']))
         {

@@ -32,6 +32,10 @@ class LoginController extends \Swoole\Controller
         {
             $this->uid = $this->user->getUid();
             $this->userinfo = $_SESSION['userinfo'];
+            if (!empty($this->userinfo['blocking']))
+            {
+                $this->http->finish("<h2>您的账户已被禁用！</h2><hr/><p>请联系：韩天峰/石光启/严春昊</p>");
+            }
         }
 
         /**

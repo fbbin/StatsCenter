@@ -9,17 +9,23 @@
     </li>
     <li>
     </li>
+
     <li>
-        <a href="/setting/add_interface/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">新增接口</span></a>
-    </li>
-    <li>
-        <a href="/setting/interface_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">接口列表</span></a>
-    </li>
-    <li>
-        <a href="/setting/add_module/"><i class="fa fa-lg fa-fw fa-plus-circle"></i> <span class="menu-item-parent">新增模块</span></a>
-    </li>
-    <li>
-        <a href="/setting/module_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">模块列表</span></a>
+        <a href="#"><i class="fa fa-lg fa-fw fa-bell"></i> <span class="menu-item-parent">模调管理</span></a>
+        <ul>
+            <li <?php if ($this->isActiveMenu('setting', 'add_interface')){ ?>class="active"<?php } ?>>
+                <a href="/setting/add_interface/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">新增接口</span></a>
+            </li>
+            <li <?php if ($this->isActiveMenu('setting', 'interface_list')){ ?>class="active"<?php } ?>>
+                <a href="/setting/interface_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">接口列表</span></a>
+            </li>
+            <li <?php if ($this->isActiveMenu('setting', 'add_module')){ ?>class="active"<?php } ?>>
+                <a href="/setting/add_module/"><i class="fa fa-lg fa-fw fa-plus-circle"></i> <span class="menu-item-parent">新增模块</span></a>
+            </li>
+            <li <?php if ($this->isActiveMenu('setting', 'module_list')){ ?>class="active"<?php } ?>>
+                <a href="/setting/module_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">模块列表</span></a>
+            </li>
+        </ul>
     </li>
     <?php endif; ?>
     <?php
