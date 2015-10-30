@@ -34,10 +34,11 @@ class App_script extends \App\LoginController
     }
 
     static $appList = [
-        'chelun' => '车轮(chelun)',
-        'kaojiazhao' => '考驾照(kaojiazhao)',
-        'chaweizhang' => '查违章(chaweizhang)',
-        'fulidaquan' => '福利大全(fulidaquan)',
+        'Chelun' => '车轮社区(Chelun)',
+        'QueryViolations' => '车轮查违章(QueryViolations)',
+        'ChelunWelfare' => '车主福利大全(ChelunWelfare)',
+        'DrivingTest' => '车轮考驾照-学员端(DrivingTest)',
+        'Coach' => '车轮考驾照-教练端(Coach)',
     ];
 
     protected function entity($id = 0)

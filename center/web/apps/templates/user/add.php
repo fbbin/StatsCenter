@@ -89,14 +89,19 @@
                                         </label>
                                     </section>
                                     <section>
-                                        <label class="label">可参与项目</label>
+                                        <label class="label">可参与项目（为空表示可以参与全部项目）</label>
                                         <label class="input"> <i class="icon-prepend fa fa-phone"></i>
-                                            <?=$form['project_id']?>
+                                            <?= $form['project_id'] ?>
                                         </label>
-                                        <div class="note">
-                                            为空表示可以参与全部项目
-                                        </div>
                                     </section>
+                                    <section>
+                                        <label class="label">特殊权限分配（使用逗号分割）</label>
+                                        <label class="textarea">
+                                            <?= $form['rules'] ?>
+                                        </label>
+                                    </section>
+                                </fieldset>
+                                <fieldset>
                                     <section>
                                         <label class="label">手机号码</label>
                                         <label class="input"> <i class="icon-prepend fa fa-phone"></i>
