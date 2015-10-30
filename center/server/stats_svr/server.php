@@ -5,7 +5,7 @@ $env = get_cfg_var('env.name');
 if ($env == 'dev' or $env == 'test' or $env == 'local')
 {
     $worker_num = 1;
-    $setting['daemonize'] = false;
+    $setting['daemonize'] = 1;
 }
 else
 {

@@ -20,7 +20,7 @@ foreach ($modules as $module)
         $params['module_id'] = $module['id'];
         $params['module_name'] = $module['name'];
         $gets = array();
-        $gets['select'] = 'id,mobile,weixinid';
+        $gets['select'] = 'id,mobile,weixinid,username';
         $gets['where'][] = 'id in (' . $alert_ids . ')';
         $tmp = table('user', 'platform')->gets($gets);
         $user = array();
@@ -30,7 +30,7 @@ foreach ($modules as $module)
                 $user[$t['id']] = $t['mobile'];
             }
             if (!empty($t['weixinid'])) {
-                $weixin[$t['id']] = $t['weixinid'];
+                $weixin[$t['id']] = $t['username'];
             }
         }
 
