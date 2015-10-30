@@ -87,7 +87,7 @@ class Handler
         }
         else
         {
-            $this->log("alert condition do not meet,return to next loop");
+            $this->log("alert condition do not meet,{$interface['interface_id']}return to next loop");
         }
     }
 

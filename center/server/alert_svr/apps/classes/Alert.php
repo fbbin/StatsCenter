@@ -167,7 +167,7 @@ class Alert
             }
             else
             {
-                $this->log("{$this->worker_id} on task {$table} is not exists");
+                $this->log("{$this->worker_id} {$time_key} on task {$table} is not exists");
             }
         }
     }
