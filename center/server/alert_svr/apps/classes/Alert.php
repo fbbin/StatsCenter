@@ -17,6 +17,7 @@ class Alert
     protected $pid_file;
 
     public $user;
+    public $weixin;
 
     function __construct()
     {
@@ -54,13 +55,6 @@ class Alert
             $serv->addtimer(self::CHECK_TIME*60*1000);
             \Swoole::$php->log->trace("{$this->worker_id} add timer min ".self::CHECK_TIME);
         }
-        $gets['select'] = 'id,mobile';
-        $tmp = table('user',"platform")->gets($gets);
-        foreach ($tmp as $t)
-        {
-            if (!empty($t['mobile']))
-                $this->user[$t['id']] = $t['mobile'];
-        }
     }
 
     /**
@@ -79,6 +73,16 @@ class Alert
         $interfaces = \Swoole::$php->redis->sMembers(self::PREFIX);
         if (!empty($interfaces))
         {
+            $gets['select'] = 'id,mobile';
+            $tmp = table('user',"platform")->gets($gets);
+            foreach ($tmp as $t)
+            {
+                if (!empty($t['mobile']))
+                    $this->user[$t['id']] = $t['mobile'];
+                if (!empty($t['weixinid']))
+                    $this->weixin[$t['id']] = $t['username'];
+            }
+
             foreach ($interfaces as $id)
             {
                 $interface = table("interface")->get($id)->get();
@@ -96,10 +100,14 @@ class Alert
                     }
                     $interface['alert_uids'] = explode(',',$alert_ids);
                     $mobile = array();
+                    $weixin = array();
                     foreach ($interface['alert_uids'] as $uid)
                     {
                         $mobile[$uid] = $this->user[$uid];
+                        $weixin[$uid] = $this->weixin[$uid];
                     }
+                    if (!empty($weixin))
+                        $interface['alert_weixins'] = implode('|', $weixin);
                     $interface['alert_mobiles'] = implode(',',$mobile);
                     $data = \Swoole::$php->redis->hGetAll(self::PREFIX."::".$interface['id']);
                     $interface = array_merge($interface,$data);
