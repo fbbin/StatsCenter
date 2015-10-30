@@ -85,7 +85,7 @@ class Handler
         }
         else
         {
-            \Swoole::$php->log->trace("alert condition do not meet,{$interface['interface_id']}return to next loop".print_r($msg,1));
+            \Swoole::$php->log->trace("alert condition do not meet,{$interface['interface_id']}return to next loop");
         }
     }
 

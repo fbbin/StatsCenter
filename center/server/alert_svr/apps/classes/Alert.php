@@ -162,8 +162,7 @@ class Alert
                     );
                     $this->handler->alert($interface,$fake);
                 }
-                \Swoole::$php->log->trace("{$this->worker_id} on task data details mysql {$time_key} interface {$interface['id']}:".json_encode($interface,1).
-                    "mysql data:".json_encode($tmp,JSON_UNESCAPED_UNICODE));
+                \Swoole::$php->log->trace("{$this->worker_id} on task data details mysql {$time_key} interface {$interface['id']}: mysql data:".json_encode($tmp,JSON_UNESCAPED_UNICODE));
             }
             else
             {
