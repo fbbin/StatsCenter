@@ -57,9 +57,18 @@ class LogServer2 extends StatsCenter\Server
             table($table)->put($put);
         }
 
-        \Swoole::$php->redis->sAdd('logs2:client:' . $put['module'], $put['ip']);
-        \Swoole::$php->redis->sAdd('logs2:type:' . $put['module'], $put['type']);
-        \Swoole::$php->redis->sAdd('logs2:subtype:' . $put['module'], $put['subtype']);
+        if (!empty($put['ip']))
+        {
+            \Swoole::$php->redis->sAdd('logs2:client:' . $put['module'], $put['ip']);
+        }
+        if (!empty($put['type']))
+        {
+            \Swoole::$php->redis->sAdd('logs2:type:' . $put['module'], $put['type']);
+        }
+        if (!empty($put['subtype']))
+        {
+            \Swoole::$php->redis->sAdd('logs2:subtype:' . $put['module'], $put['subtype']);
+        }
     }
 
     /**
