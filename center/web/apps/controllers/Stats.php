@@ -19,8 +19,6 @@ class Stats extends \App\LoginController
     {
         $this->getInterfaceInfo();
         $table = table('stats_sum_'.str_replace('-', '', $_GET['date_key']));
-        $pager = null;
-
         $gets = [
             'module_id' => $_GET['module_id'],
             'order' => 'interface_id',
@@ -45,8 +43,12 @@ class Stats extends \App\LoginController
         {
             $gets['interface_id'] = intval($_GET['interface_id']);
         }
-
+        /**
+         * @var Swoole\Pager
+         */
+        $pager = null;
         $data = $table->gets($gets, $pager);
+        $this->assign('total', $pager->total);
         $this->assign('pager', $pager->render());
         $this->assign('data', $data);
         $this->display();

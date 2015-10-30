@@ -122,6 +122,9 @@
                         <div class="dt-row dt-bottom-row">
                             <div class="row">
                                 <div class="col-sm-6 text-left">
+                                    <div class="pager"><span>总<?=$total?>个</span></div>
+                                </div>
+                                <div class="col-sm-6 text-left">
                                     <?=$pager?>
                                 </div>
                             </div>
