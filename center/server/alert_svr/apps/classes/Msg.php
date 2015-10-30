@@ -25,6 +25,7 @@ class Msg
 
     function alert($msg)
     {
+        \Swoole::$php->log->trace("start to alert msg".json_encode($msg));
         $this->worker_id = $this->handler->alert->worker_id;
         $msg = $this->handler->build_msg($msg);
         if (!empty($msg['alert_weixins']))
