@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use Swoole;
+use App\RedisKey;
 
 require_once '/data/www/public/sdk/StatsCenter.php';
 require_once '/data/www/public/sdk/CloudConfig.php';
@@ -19,22 +20,42 @@ class Cluster extends \App\LoginController
     static $projects = [
         'chelun' => ['name' => '车轮社区', 'namespace' => 'CheLun',],
         'kaojiazhao' => ['name' => '考驾照', 'namespace' => 'KJZ',],
+        'bypass' => ['name' => '旁路系统', 'namespace' => 'ByPass',],
     ];
+
+    protected function getProjects()
+    {
+        foreach (self::$projects as $k => $v)
+        {
+            $this->redis('cluster')->hSet(RedisKey::CLUSTER_SERVICE_PROJECTS, $k, serialize($v));
+        }
+
+        $_tmp = [];
+        $res = $this->redis('cluster')->hGetAll(RedisKey::CLUSTER_SERVICE_PROJECTS);
+        foreach($res as $k => $v)
+        {
+            $_tmp[$k] = unserialize($v);
+        }
+
+        return $_tmp;
+    }
 
     protected function getProject()
     {
+        $projects = $this->getProjects();
         $project = empty($_GET['p']) ? 'chelun' : trim($_GET['p']);
-        if (!isset(self::$projects[$project]))
+        if (!isset($projects[$project]))
         {
             $project = 'chelun';
         }
-        $this->assign('c_projs', self::$projects);
+        $this->assign('c_projs', $projects);
         $this->assign('c_proj', $project);
         return $project;
     }
 
     function index()
     {
+        $projects = $this->getProjects();
         $project = $this->getProject();
         $list = [];
         foreach(self::$envs as $k => $v)
@@ -43,7 +64,7 @@ class Cluster extends \App\LoginController
             $res = $this->redis('cluster')->get($key);
             if ($res === false)
             {
-                $list[$k] = array('namespace' => self::$projects[$project]['namespace'], 'servers' => []);
+                $list[$k] = array('namespace' => $projects[$project]['namespace'], 'servers' => []);
             }
             else
             {
@@ -63,6 +84,7 @@ class Cluster extends \App\LoginController
         }
 
         $project = $this->getProject();
+        $projects = $this->getProjects();
         $env = $_GET['env'];
         $key = 'aopnet:'.$env.':service:config:'.$project;
 
@@ -73,7 +95,7 @@ class Cluster extends \App\LoginController
         }
         else
         {
-            $config = array('namespace' => self::$projects[$project]['namespace'], 'servers' => []);
+            $config = array('namespace' => $projects[$project]['namespace'], 'servers' => []);
         }
 
         if (!empty($_POST['ip']) and !empty($_POST['port']))
