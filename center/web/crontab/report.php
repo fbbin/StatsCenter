@@ -9,7 +9,10 @@ echo ("[".date("Y-m-d H:i:s")."] start to report \n");
 //$i_gets['select'] = 'id,name';
 //$i_gets['order'] = 'id asc';
 //$project_info = table('project', 'platform')->getMap($i_gets,'name' );
-
+$root = array(
+    'shiguangqi@chelun.com',
+    'hantianfeng@chelun.com',
+);
 $i_gets['select'] = 'id,name,module_id';
 $i_gets['order'] = 'name asc';
 $interface_tmp = table("interface")->gets($i_gets );
@@ -51,25 +54,41 @@ foreach ($module_tmp as $v)
     }
 }
 
-foreach ($interface_info as $interface_id => $name)
+$table = "stats_sum_". date('Ymd',time()-3600*24);
+$gets = array();
+$gets['order'] = 'fail_count asc';
+$res = table($table)->gets($gets);
+$content = array();
+foreach ($res as $r)
 {
-    $res = save_interface_stats($interface_id,$name,$module_info);
+    $content[$r['interface_id']] = $r;
+}
+
+function get_content($interface_ids,$content)
+{
+    $return = array();
+    foreach ($interface_ids as $id)
+    {
+        if (!empty($content[$id]))
+            $return[$id] = $content[$id];
+    }
+    return $return;
 }
 
 foreach ($mid2interface_id as $mid => $interface_ids)
 {
     if (!empty($interface_ids))
     {
-        $content = get_cache($interface_ids);
-
-        if ($content !== false)
+        $interface_content = get_content($interface_ids,$content);
+        if (!empty($interface_content))
         {
-            $html = get_html($content);
+            $html = get_html($interface_content);
             $subject = "模块调用统计报表-".date("Y-m-d",time()-3600*24).":".$module_info[$mid];
             $user = $mid2username['addr'][$mid];
             $cc = $mid2username['cc'][$mid];
             if (!empty($user))
             {
+                $cc  = array_merge($root,$cc);
                 $m = new \Apps\Mail();
                 $res = $m->mail($user,$subject,$html,$cc);
                 //$res = $m->mail(array("shiguangqi@chelun.com"),$subject,$html);
