@@ -96,7 +96,7 @@ class Stats extends \App\LoginController
             else
             {
                 $d['succ_count'] = $d['total_count'] - $d['fail_count'];
-                $d['succ_rate'] = ($d['succ_count'] / $d['total_count']) * 100;
+                $d['succ_rate'] = round(($d['succ_count'] / $d['total_count']) * 100, 2);
                 $d['time_str'] = App\StatsData::getTimerStr($d['time_key']) . ' ~ ' . App\StatsData::getTimerStr($d['time_key'] + 1);
             }
             $d['interface_name'] = $interfaceInfo['name'];
