@@ -1,6 +1,6 @@
 <?php
-$log = array(
+$log['master'] = array(
     'type' => 'FileLog',
-    'file' => '/home/shiguangqi/workspace/module_stats/web/web_op.log',
+    'file' => '/data/logs/swoole/web.log',
 );
 return $log;

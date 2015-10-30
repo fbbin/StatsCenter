@@ -31,13 +31,13 @@ class Alert
     function onManagerStart($server)
     {
         swoole_set_process_name(self::PROCESS_NAME.": manager");
-        $this->log("stats server start");
+        \Swoole::$php->log->trace("stats server start");
         file_put_contents($this->pid_file,$server->master_pid);
     }
 
     function onManagerStop($server)
     {
-        $this->log("stats server shutdown");
+        \Swoole::$php->log->trace("stats server shutdown");
         if (file_exists($this->pid_file))
         {
             unlink($this->pid_file);
@@ -46,13 +46,13 @@ class Alert
 
     function onWorkerStart(\swoole_server $serv, $worker_id)
     {
-        $this->log("worker start {$worker_id}");
+        \Swoole::$php->log->trace("worker start {$worker_id}");
         $this->worker_id = $worker_id;
         swoole_set_process_name(self::PROCESS_NAME.": worker #$worker_id");
         if ($worker_id == 0)
         {
             $serv->addtimer(self::CHECK_TIME*60*1000);
-            $this->log("{$this->worker_id} add timer min ".self::CHECK_TIME);
+            \Swoole::$php->log->trace("{$this->worker_id} add timer min ".self::CHECK_TIME);
         }
         $gets['select'] = 'id,mobile';
         $tmp = table('user',"platform")->gets($gets);
@@ -122,11 +122,10 @@ class Alert
                         $interface['alert_int'] = $module['alert_int'];
                         $data = \Swoole::$php->redis->hGetAll(self::PREFIX."::".$interface['id']);
                         $interface = array_merge($interface,$data);
-                        $this->log("{$this->worker_id} module {$module['module_id']} interface {$id} start to report".print_r($interface,1));
                         $serv->task($interface);
                     }
                     else {
-                        $this->log("{$this->worker_id} module {$module['module_id']} interface {$id} condition not meet,do not report".print_r($interface,1));
+                        \Swoole::$php->log->trace("{$this->worker_id} module {$module['module_id']} interface {$id} condition not meet,do not report".json_encode($interface));
                     }
                 }
             }
@@ -163,19 +162,19 @@ class Alert
                     );
                     $this->handler->alert($interface,$fake);
                 }
-                $this->log("{$this->worker_id} on task data details mysql {$time_key} interface {$interface['id']}:".json_encode($interface,1).
+                \Swoole::$php->log->trace("{$this->worker_id} on task data details mysql {$time_key} interface {$interface['id']}:".json_encode($interface,1).
                     "mysql data:".json_encode($tmp,JSON_UNESCAPED_UNICODE));
             }
             else
             {
-                $this->log("{$this->worker_id} {$time_key} on task {$table} is not exists");
+                \Swoole::$php->log->trace("{$this->worker_id} {$time_key} on task {$table} is not exists");
             }
         }
     }
 
     function onFinish($serv, $task_id, $data)
     {
-        $this->log("on fin ".print_r(json_decode($data,1),1));
+        \Swoole::$php->log->trace("on fin ".print_r(json_decode($data,1),1));
     }
 
     static function getMinute()
@@ -185,7 +184,7 @@ class Alert
 
     function log($msg)
     {
-        $this->log->info($msg);
+        $this->log->trace($msg);
     }
 
     function setLogger($log)

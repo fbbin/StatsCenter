@@ -25,21 +25,16 @@ class Msg
 
     function alert($msg)
     {
-        \Swoole::$php->log->trace("start to alert msg".json_encode($msg));
         $this->worker_id = $this->handler->alert->worker_id;
-        $msg = $this->handler->build_msg($msg);
+        $content = $this->handler->build_msg($msg);
         if (!empty($msg['alert_weixins']))
         {
-            $this->sendWeiXin($msg['alert_weixins'],$msg);
+            $this->sendWeiXin($msg['alert_weixins'],$content);
         }
         $mobiles = explode(',',$msg['alert_mobiles']);
         if (!empty($mobiles))
         {
-            $this->_send($mobiles,$msg);
-        }
-        else
-        {
-            $this->log("task worker {$this->worker_id} error.".print_r($msg,1));
+            $this->_send($mobiles,$content);
         }
     }
 
@@ -62,9 +57,9 @@ class Msg
             );
             $str = json_encode($data,JSON_UNESCAPED_UNICODE);
             $res = $this->ch->post($msg_url,$str);
-            $this->log("wei xin send msg {$str}".var_export($res,1));
+            \Swoole::$php->log->trace("weixin send msg {$str}".var_export($res,1));
         } else {
-            $this->log("wei xin get token failed");
+            \Swoole::$php->log->trace("weixin get token failed");
         }
 
     }
@@ -99,19 +94,12 @@ class Msg
             foreach ($mobiles as $number)
             {
                 $res = $this->service->call('Common\SMS::send', $number, $message)->getResult();
-                if ($res)
-                {
-                    $this->log("task worker {$this->worker_id} send msg success: $number  {$message}");
-                }
-                else
-                {
-                    $this->log("task worker {$this->worker_id} send msg failed: $number  {$message}");
-                }
+                \Swoole::$php->log->trace("task worker {$this->worker_id} send msg : $number  {$message}".var_export($res,1));
             }
         }
         else
         {
-            $this->log("task worker {$this->worker_id} mobiles empty ");
+            \Swoole::$php->log->trace("task worker {$this->worker_id} mobiles empty ");
         }
     }
 

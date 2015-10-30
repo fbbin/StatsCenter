@@ -78,15 +78,14 @@ class Handler
         {
             if ($this->is_ready($msg))
             {
-                $this->log("meet alert condition,move to alert stage".json_encode($msg));
+                \Swoole::$php->log->trace("meet alert condition,move to alert stage".json_encode($msg));
                 $this->_alert($msg);
                 \Swoole::$php->redis->hSet(ALert::PREFIX."::".$msg['interface_id'],'last_alert_time',time());
-                //$this->log("task worker {$this->worker_id} msg detials .".print_r($msg,1));
             }
         }
         else
         {
-            $this->log("alert condition do not meet,{$interface['interface_id']}return to next loop".print_r($msg,1));
+            \Swoole::$php->log->trace("alert condition do not meet,{$interface['interface_id']}return to next loop".print_r($msg,1));
         }
     }
 
@@ -94,7 +93,7 @@ class Handler
     {
         if (empty($msg['last_alert_time']))
         {
-            $this->log("task worker {$this->worker_id}  first time to msg");
+            \Swoole::$php->log->trace("task worker {$this->worker_id}  first time to msg");
             return true;
         }
         else
@@ -102,13 +101,13 @@ class Handler
             $interval = $msg['alert_int'] * 60;//pop时间间隔 单位分钟
             if (time() - intval($msg['last_alert_time']) >= $interval) //间隔大于设置的间隔
             {
-                $this->log("task worker {$this->worker_id}  time to msg; value:".
+                \Swoole::$php->log->trace("task worker {$this->worker_id}  time to msg; value:".
                     time()."-".intval($msg['last_alert_time'])."=".(time()-intval($msg['last_alert_time'])).", setting :".$interval);
                 return true;
             }
             else
             {
-                $this->log("task worker {$this->worker_id}  time is not ready to msg ;value:".
+                \Swoole::$php->log->trace("task worker {$this->worker_id}  time is not ready to msg ;value:".
                     time()."-".intval($msg['last_alert_time'])."=".(time()-intval($msg['last_alert_time'])).", setting :".$interval);
                 return false;
             }
