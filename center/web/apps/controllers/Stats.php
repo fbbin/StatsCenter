@@ -111,8 +111,7 @@ class Stats extends \App\LoginController
     function last_hour()
     {
         $_GET['date_key'] = date('Y-m-d');
-        $_GET['hour_start'] = App\StatsData::fillZero4Time(8);
-//        $_GET['hour_start'] = date('H', time() - 3600);
+        $_GET['hour_start'] = App\StatsData::fillZero4Time(date('H', time() - 3600));
         $this->getInterfaceInfo();
         $this->display();
     }
