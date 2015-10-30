@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 use Swoole;
+use App;
 
 class Stats extends \App\LoginController
 {
@@ -55,7 +56,65 @@ class Stats extends \App\LoginController
     {
         $this->assign('width', self::$width);
         $this->getInterfaceInfo();
+
+        $moduleId = intval($_GET['module_id']);
+        $moduleInfo = table('module')->get($moduleId)->get();
+        if (empty($moduleInfo))
+        {
+            $this->http->status(404);
+            return "不存在的模块";
+        }
+
+        $interfaceId = intval($_GET['interface_id']);
+        $interfaceInfo = table('interface')->get($interfaceId)->get();
+
+        if (empty($interfaceInfo))
+        {
+            $this->http->status(404);
+            return "不存在的接口";
+        }
+
+        $table = table('stats_'.str_replace('-', '', $_GET['date_key']));
+        $pager = null;
+
+        $gets = [
+            'module_id' => $_GET['module_id'],
+            'interface_id' => intval($_GET['interface_id']),
+            'order' => 'id asc',
+        ];
+
+        $this->filterHour($gets);
+
+        $data = $table->gets($gets, $pager);
+        foreach($data as &$d)
+        {
+            if ($d['total_count'] == 0)
+            {
+                $d['succ_rate'] = '100';
+                $d['succ_count']  = 0;
+            }
+            else
+            {
+                $d['succ_count'] = $d['total_count'] - $d['fail_count'];
+                $d['succ_rate'] = ($d['succ_count'] / $d['total_count']) * 100;
+                $d['time_str'] = App\StatsData::getTimerStr($d['time_key']) . ' ~ ' . App\StatsData::getTimerStr($d['time_key'] + 1);
+            }
+            $d['interface_name'] = $interfaceInfo['name'];
+        }
+        $this->assign('data', $data);
         $this->display('stats/detail_interface.php');
+    }
+
+    /**
+     * 最近一小时的统计数据，只能使用JS
+     */
+    function last_hour()
+    {
+        $_GET['date_key'] = date('Y-m-d');
+        $_GET['hour_start'] = App\StatsData::fillZero4Time(8);
+//        $_GET['hour_start'] = date('H', time() - 3600);
+        $this->getInterfaceInfo();
+        $this->display();
     }
 
     /**
@@ -135,22 +194,23 @@ class Stats extends \App\LoginController
         unset($param['type']);
         $param['select'] = 'ip, interface_id, time_key, total_count, fail_count, total_time, total_fail_time, max_time, min_time';
 
-        if (!empty($param['hour_start']))
-        {
-            $param['where'][] = 'time_key >= ' . ($param['hour_start'] * 12);
-            unset($param['hour_start']);
-        }
-        if (!empty($param['hour_end']))
-        {
-            $param['where'][] = 'time_key <= ' . ($param['hour_end'] * 12);
-            unset($param['hour_end']);
-        }
-
         $date_key = empty($param['date_key']) ? date('Y-m-d') : $param['date_key'];
         $table = $this->getTableName($date_key, $_GET['type'] == 'server' ? 1 : 2);
         $data = table($table)->gets($param);
 
         return json_encode($data);
+    }
+
+    protected function filterHour(&$param)
+    {
+        if (!empty($_GET['hour_start']))
+        {
+            $param['where'][] = 'time_key >= ' . (intval($_GET['hour_start']) * 12);
+        }
+        if (!empty($_GET['hour_end']))
+        {
+            $param['where'][] = 'time_key < ' . (intval($_GET['hour_end']) * 12);
+        }
     }
 
     function client()
@@ -287,7 +347,7 @@ class Stats extends \App\LoginController
             {
                 $ids[] = $if['id'];
             }
-            $gets['in'] = array('interface_id', join(',', $ids));
+            //$gets['in'] = array('interface_id', join(',', $ids));
             $ret['interface'] = $ifs;
         }
 
@@ -330,7 +390,7 @@ class Stats extends \App\LoginController
 
         $ret['stats'] = $data;
         $ret['date'] = $date_key;
-        $ret['time_str'] = $hour_start . '~' . $hour_end;
+        $ret['time_str'] = $hour_start . ' ~ ' . $hour_end;
 
         $this->http->header('Content-Type', 'application/json');
         return $ret_json ? json_encode($ret, JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE) : $ret;

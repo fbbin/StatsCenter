@@ -501,7 +501,7 @@ StatsG.getStatsData = function () {
                         'total_time': 0.0,
                         'max_time': data.stats[i]['max_time'],
                         'min_time': data.stats[i]['min_time'],
-                        time_str: '00:00~23:59',
+                        time_str: '00:00 ~ 23:59',
                         date_key: data.date
                     }
                 }
@@ -562,19 +562,14 @@ StatsG.getStatsData = function () {
 //                console.log(data.stats[i]['total_time']);
 //                console.log(stats[interface_id]['total_fail_time']);
                 //console.log(stats[interface_id]['total_time']);
-                StatsG.showDetail(interface_id);
             }
+            for (i = 0; i < data.interface.length; i++) {
+                interface_id = data.interface[i].id;
+                StatsG.appendToTable(interface_id, stats[interface_id], {});
+            }
+            StatsG.dataTable = $('#data_table_stats').dataTable(StatsG.config.data_table);
         }
     });
-};
-
-StatsG.showSummaryStats = function () {
-    data = StatsG.data;
-    for (i = 0; i < data.interface.length; i++) {
-        interface_id = data.interface[i].id;
-        StatsG.appendToTable(interface_id, stats[interface_id], {});
-    }
-    StatsG.dataTable = $('#data_table_stats').dataTable(StatsG.config.data_table);
 };
 
 StatsG.showDetailStats = function() {
