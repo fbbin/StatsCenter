@@ -24,9 +24,11 @@
         <select class="input-sm" id="filter_hour_s" onchange="StatsG.filterByHour(<?=(empty($force_reload)?'false':'true')?>)">
             <option value='00' selected="selected">00</option>
             <?php
-            for ($i = 1; $i < 24; $i++) {
+            for ($i = 1; $i < 24; $i++)
+            {
                 $v = $i >= 10 ? $i : '0' . $i;
-                echo "<option value='$v'>$v</option>\n";
+                $select = (!empty($_GET['hour_start']) and $v == $_GET['hour_start']) ? 'selected="selected"' : '';
+                echo "<option value='$v' $select>$v</option>\n";
             }
             ?>
         </select>

@@ -9,9 +9,9 @@
 
     <span class="ribbon-button-alignment">
         <span id="refresh" class="btn btn-ribbon" data-title="refresh" rel="tooltip"
-              data-placement="bottom"
-              data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
-              data-html="true"><i class="fa fa-refresh"></i></span> </span>
+                                                 data-placement="bottom"
+                                                 data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
+                                                 data-html="true"><i class="fa fa-refresh"></i></span> </span>
 
     <!-- breadcrumb -->
     <ol class="breadcrumb">
@@ -32,7 +32,7 @@
                      data-widget-editbutton="false" role="widget" style="">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-                        <h2>接口调用明细</h2>
+                        <h2>接口调用统计</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div role="content">
 
@@ -45,7 +45,7 @@
 
                             </div>
 
-                            <div class="form-inline" role="grid">
+                            <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
                                 <div class="dt-top-row">
                                     <div id="data_table_stats_length" class="dataTables_length"><span
                                             class="smart-form">
@@ -56,59 +56,8 @@
                                                     <option value="100">100</option>
                                                 </select><i></i></label></span>
                                     </div>
-                                    <div class="dataTables_filter">
-                                        <div class="form-group" style="width: 300px;">
-                                            <select class="select2" id="module_id">
-                                                <option value="">所有模块</option>
-                                                <?php foreach ($modules as $m): ?>
-                                                    <option value="<?= $m['id'] ?>: <?= $m['name'] ?>"
-                                                        <?php if ($m['id'] == $_GET['module_id']) echo 'selected="selected"'; ?> ><?= $m['id'] ?>
-                                                        : <?= $m['name'] ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                                        <div class="form-group" style="width: 400px;">
-                                            <select id="interface_id" class="select2">
-                                                <option value="">所有接口</option>
-                                                <?php foreach ($interfaces as $m): ?>
-                                                    <option value="<?= $m['id'] ?>: <?= (empty($m['alias']) ? $m['name'] : $m['alias']) ?>"
-                                                        <?php if ($m['id'] == $_GET['interface_id']) echo 'selected="selected"'; ?> >
-                                                        <?= $m['id'] ?>: <?= (empty($m['alias']) ? $m['name'] : $m['alias']) ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            时间：
-                                            <label class="select">
-                                                <select class="input-sm" id="filter_hour_start">
-                                                    <option value='00' selected="selected">00</option>
-                                                    <?php
-                                                    for ($i = 1; $i < 24; $i++)
-                                                    {
-                                                        $v = $i >= 10 ? $i : '0' . $i;
-                                                        $select = (!empty($_GET['hour_start']) and $v == $_GET['hour_start']) ? 'selected="selected"' : '';
-                                                        echo "<option value='$v' $select>$v</option>\n";
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </label> ~
-                                            <label class="select">
-                                                <select class="input-sm" id="filter_hour_end">
-                                                    <?php
-                                                    if (empty($_GET['hour_end']))
-                                                    {
-                                                        $_GET['hour_end'] = '23';
-                                                    }
-                                                    for ($i = 0; $i < 24; $i++)
-                                                    {
-                                                        $v = $i >= 10 ? $i : '0' . $i;
-                                                        $select = ($v == $_GET['hour_end']) ? 'selected="selected"' : '';
-                                                        echo "<option value=$v $select>$v</option>\n";
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </label>
-                                        </div>
+                                    <div class="dataTables_filter" style="margin-left: 185px;">
+                                        <?php include dirname(__DIR__) . '/include/filter.php'; ?>
                                         <div class="form-group">
                                             日期：
                                             <input type="text" class="form-control datepicker"
@@ -120,26 +69,24 @@
                                 </div>
                             </div>
 
-                            <table class="table table-bordered table-hover dataTables_wrapper">
-                                <thead>
-                                <tr>
-                                    <th>接口名称</th>
-                                    <th>时间</th>
-                                    <th>调用次数</th>
-                                    <th>成功次数</th>
-                                    <th>失败次数</th>
-                                    <th>成功率</th>
-                                    <th>响应最大值</th>
-                                    <th>响应最小值</th>
-                                    <th>平均响应时间</th>
-                                    <th>失败平均时间</th>
-                                    <th>操作</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php include __DIR__.'/include/format.php'; ?>
-                                </tbody>
-                            </table>
+                                    <table id="data_table_stats" class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 300px;">接口名称</th>
+                                            <th style="width: 100px;">时间</th>
+                                            <th style="width: 70px;">调用次数</th>
+                                            <th style="width: 70px;">成功次数</th>
+                                            <th style="width: 70px;">失败次数</th>
+                                            <th style="width: 70px;">成功率</th>
+                                            <th style="width: 70px;">响应最大值</th>
+                                            <th style="width: 70px;">响应最小值</th>
+                                            <th style="width: 70px;">平均响应时间</th>
+                                            <th style="width: 70px;">失败平均时间</th>
+                                            <th style="width: 260px;">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="data_table_body"></tbody>
+                                    </table>
 
                             </div>
 
@@ -214,8 +161,9 @@ you can add as many as you like
     StatsG.filter.hour_end = 23;
     $(function() {
         pageSetUp();
-        StatsG.page_url = '/stats/detail/';
+
         StatsG.filter = <?php echo json_encode($_GET);?>;
+        StatsG.getStatsData();
 
         $("#datepicker").datepicker("option",
             $.datepicker.regional[ 'zh-CN' ]);
@@ -226,27 +174,16 @@ you can add as many as you like
             location.href = "/stats/index/?module_id=" + module_id + '&date_key' + '=<?=$_GET['date_key']?>';
         });
 
-        $("#interface_id").change(function(e) {
-            StatsG.filter.interface_id = e.currentTarget.value.split(':')[0];
-            StatsG.go();
-        });
-
-        $("#filter_hour_start").change(function(e) {
-            StatsG.filter.hour_start = $(this).val();
-            StatsG.go();
-        });
-
-        $("#filter_hour_end").change(function(e) {
-            StatsG.filter.hour_end = $(this).val();
-            StatsG.go();
-        });
-
         $("#data_key").change(function(){
             window.localStorage.date_key = $(this).val();
             StatsG.filter.date_key = window.localStorage.date_key;
             StatsG.go();
         });
-
+        $("#interface_id").change(function(e) {
+            StatsG.filter.interface_id = e.currentTarget.value.split(':')[0];
+            StatsG.filter.interface_name = e.currentTarget.value.split(':')[1];
+            getStatsData();
+        });
     });
 </script>
 
