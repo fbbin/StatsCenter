@@ -91,8 +91,8 @@ class Alert
                     if (!empty($interface['backup_uids'])) {
                         $alert_ids = $interface['backup_uids'];
                     }
-                    if (!empty($module['owner_uid'])) {
-                        $alert_ids .= $module['owner_uid'];
+                    if (!empty($interface['owner_uid'])) {
+                        $alert_ids .= $interface['owner_uid'];
                     }
                     $interface['alert_uids'] = explode(',',$alert_ids);
                     $mobile = array();
@@ -108,7 +108,7 @@ class Alert
                 else
                 {
                     $module_id = $interface['module_id'];
-                    $module = \Swoole::$php->redis->hGetAll($key = self::PREFIX."::MODULE::".$module_id);
+                    $module = \Swoole::$php->redis->hGetAll(self::PREFIX."::MODULE::".$module_id);
                     if (!empty($module) and $module['enable_alert'] == 1 and (!empty($module['succ_hold']) or !empty($module['wave_hold']))
                         and !empty($module['alert_uids']))
                     {
@@ -122,10 +122,11 @@ class Alert
                         $interface['alert_int'] = $module['alert_int'];
                         $data = \Swoole::$php->redis->hGetAll(self::PREFIX."::".$interface['id']);
                         $interface = array_merge($interface,$data);
+                        $this->log("{$this->worker_id} module {$module['module_id']} interface {$id} start to report".print_r($interface,1));
                         $serv->task($interface);
                     }
                     else {
-                        $this->log("{$this->worker_id} interface {$id} condition not meet,do not report");
+                        $this->log("{$this->worker_id} module {$module['module_id']} interface {$id} condition not meet,do not report".print_r($interface,1));
                     }
                 }
             }
@@ -139,7 +140,7 @@ class Alert
         if ($time_key)
         {
             $gets['select'] = "total_count,fail_count,time_key";
-            $gets['interface_id'] = $interface['id'];
+            $gets['interface_id'] = $interface['interface_id'];
             $gets['module_id'] = $interface['module_id'];
             $gets['date_key'] = date('Y-m-d');
             $gets['time_key'] = $time_key;
@@ -162,12 +163,12 @@ class Alert
                     );
                     $this->handler->alert($interface,$fake);
                 }
-//                $this->log("{$this->worker_id} on task data details mysql {$time_key} interface {$interface['id']}:".json_encode($interface,1).
-//                    "mysql data:".json_encode($tmp,JSON_UNESCAPED_UNICODE));
+                $this->log("{$this->worker_id} on task data details mysql {$time_key} interface {$interface['id']}:".json_encode($interface,1).
+                    "mysql data:".json_encode($tmp,JSON_UNESCAPED_UNICODE));
             }
             else
             {
-                $this->log("{$this->worker_id} on task {$table} is not exists");
+                $this->log("{$this->worker_id} {$time_key} on task {$table} is not exists");
             }
         }
     }

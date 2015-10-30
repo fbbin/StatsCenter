@@ -73,21 +73,20 @@ class Handler
         \Swoole::$php->redis->hSet(Alert::PREFIX."::".$interface['interface_id'],'last_succ_count_'.$time_key,$data['total_count']-$data['fail_count']);
         //$this->log("task worker {$this->worker_id}  data:".json_encode($data,JSON_UNESCAPED_UNICODE)." interface:".json_encode($interface,JSON_UNESCAPED_UNICODE));
         //成功率 或者 波动率 满足其中一个条件
+        $msg = array_merge($interface,$data);
         if (isset($data['succ_percent']) or isset($data['flag']))
         {
-
-            $msg = array_merge($interface,$data);
             if ($this->is_ready($msg))
             {
                 $this->log("meet alert condition,move to alert stage");
-                $this->_alert(array_merge($interface,$data));
+                $this->_alert($msg);
                 \Swoole::$php->redis->hSet(ALert::PREFIX."::".$msg['interface_id'],'last_alert_time',time());
                 //$this->log("task worker {$this->worker_id} msg detials .".print_r($msg,1));
             }
         }
         else
         {
-            $this->log("alert condition do not meet,return to next loop");
+            $this->log("alert condition do not meet,{$interface['interface_id']}return to next loop".print_r($msg,1));
         }
     }
 
