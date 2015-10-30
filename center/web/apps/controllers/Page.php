@@ -54,6 +54,11 @@ class Page extends Swoole\Controller
         {
             $_SESSION['userinfo'] = $this->user->getUserInfo();
             $_SESSION['realname'] = urldecode($_COOKIE['sysop_privilege_nick_name']);
+            $update = [
+                'last_ip' => Swoole\Client::getIP(),
+                'last_time' => time(),
+            ];
+            table('user', 'platform')->set($_SESSION['userinfo']['id'], $update);
             goto home;
         }
         else

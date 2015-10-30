@@ -9,9 +9,10 @@
 
     <span class="ribbon-button-alignment">
         <span id="refresh" class="btn btn-ribbon" data-title="refresh" rel="tooltip"
-                                                 data-placement="bottom"
-                                                 data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
-                                                 data-html="true"><i class="fa fa-refresh"></i></span> </span>
+              data-placement="bottom"
+              data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
+              data-html="true"><i class="fa fa-refresh"></i></span>
+    </span>
 
     <!-- breadcrumb -->
     <ol class="breadcrumb">
@@ -66,7 +67,7 @@
                                                         <input type="text" name="realname" id="realname" value="<?=  $this->value($_GET, 'realname')  ?>" placeholder="真实姓名">
                                                 </div>
                                             </div>
-                                            <div class='form-group' style="padding-left: 100px">
+                                            <div class='form-group'>
                                                 <button type="submit" id='submit' class='btn btn-success' style='padding:6px 12px'>提交查询</button>
                                             </div>
                                         </form>
@@ -82,6 +83,8 @@
                                             <th>真实姓名</th>
                                             <th>手机</th>
                                             <th>添加时间</th>
+                                            <th>最近登录时间</th>
+                                            <th>最近登录IP</th>
                                             <th>操作</th>
                                         </tr>
                                         </thead>
@@ -98,15 +101,37 @@
                                                     {
                                                         echo "<span style='color: red;'>(超级管理员)</span>";
                                                     }
+                                                    if ($d['blocking'])
+                                                    {
+                                                        echo "<span style='color: #0000ff;'>(账户已禁用)</span>";
+                                                    }
                                                     ?>
                                                 </td>
                                                 <td><?= $d['mobile'] ?></td>
                                                 <td><?= $d['addtime'] ?></td>
+                                                <td><?= date('Y-m-d H:i:s', $d['last_time']) ?></td>
+                                                <td><?= $d['last_ip'] ?></td>
                                                 <td>
-                                                    <a href="/user/add/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改</a>
-                                                    <?php if ($this->userinfo['usertype'] == 0):?>
-                                                    <a onclick="return confirm('确定要重置用户密码');" href="/user/reset_passwd/?id=<?= $d['id'] ?>"
-                                                       class="btn btn-danger btn-xs">重置密码</a>
+                                                    <a href="/user/add/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改信息</a>
+                                                    <?php if ($this->userinfo['usertype'] == 0): ?>
+                                                        <a onclick="return confirm('确定要重置用户密码');"
+                                                           href="/user/reset_passwd/?id=<?= $d['id'] ?>"
+                                                           class="btn btn-warning btn-xs">重置密码</a>
+                                                        <?php  if (!$d['blocking']){ ?>
+                                                        <a onclick="return confirm('确定要禁用此用户');"
+                                                           href="/user/ulist/?block=<?= $d['id'] ?>"
+                                                           class="btn btn-warning btn-xs">禁用账户</a>
+                                                        <?php }
+                                                        else
+                                                        { ?>
+                                                            <a onclick="return confirm('确定要启用此用户');"
+                                                               href="/user/ulist/?block=<?= $d['id'] ?>&unblock"
+                                                               class="btn btn-success btn-xs">启用账户</a>
+                                                        <?php } ?>
+                                                        <a onclick="return confirm('确定要删除此用户');"
+                                                           href="/user/ulist/?del=<?= $d['id'] ?>"
+                                                           class="btn btn-danger btn-xs">删除用户</a>
+
                                                     <?php endif; ?>
                                                 </td>
                                             </tr>
