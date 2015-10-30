@@ -566,7 +566,7 @@ class Setting extends \App\LoginController
             }
             $params['module_id'] = $id;
             $params['module_name'] = $module['name'];
-            $gets['select'] = 'id,mobile,weixinid';
+            $gets['select'] = 'id,mobile,weixinid,username';
             $gets['where'][] = 'id in ('.$alert_ids.')';
             $tmp = table('user', 'platform')->gets($gets);
             $user = array();
@@ -579,7 +579,7 @@ class Setting extends \App\LoginController
                 }
                 if (!empty($t['weixinid']))
                 {
-                    $weixin[$t['id']] = $t['weixinid'];
+                    $weixin[$t['id']] = $t['username'];
                 }
             }
 

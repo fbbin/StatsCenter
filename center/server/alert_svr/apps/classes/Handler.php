@@ -78,7 +78,7 @@ class Handler
         {
             if ($this->is_ready($msg))
             {
-                $this->log("meet alert condition,move to alert stage");
+                $this->log("meet alert condition,move to alert stage".json_encode($msg));
                 $this->_alert($msg);
                 \Swoole::$php->redis->hSet(ALert::PREFIX."::".$msg['interface_id'],'last_alert_time',time());
                 //$this->log("task worker {$this->worker_id} msg detials .".print_r($msg,1));
