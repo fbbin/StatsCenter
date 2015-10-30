@@ -67,7 +67,7 @@
                                                         <input type="text" name="realname" id="realname" value="<?=  $this->value($_GET, 'realname')  ?>" placeholder="真实姓名">
                                                 </div>
                                             </div>
-                                            <div class='form-group' style="padding-left: 100px">
+                                            <div class='form-group'>
                                                 <button type="submit" id='submit' class='btn btn-success' style='padding:6px 12px'>提交查询</button>
                                             </div>
                                         </form>
@@ -83,6 +83,8 @@
                                             <th>真实姓名</th>
                                             <th>手机</th>
                                             <th>添加时间</th>
+                                            <th>最近登录时间</th>
+                                            <th>最近登录IP</th>
                                             <th>操作</th>
                                         </tr>
                                         </thead>
@@ -101,14 +103,16 @@
                                                     }
                                                     if ($d['blocking'])
                                                     {
-                                                        echo "<span style='color: orange;'>(账户已禁用)</span>";
+                                                        echo "<span style='color: #0000ff;'>(账户已禁用)</span>";
                                                     }
                                                     ?>
                                                 </td>
                                                 <td><?= $d['mobile'] ?></td>
                                                 <td><?= $d['addtime'] ?></td>
+                                                <td><?= date('Y-m-d H:i:s', $d['last_time']) ?></td>
+                                                <td><?= $d['last_ip'] ?></td>
                                                 <td>
-                                                    <a href="/user/add/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改</a>
+                                                    <a href="/user/add/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改信息</a>
                                                     <?php if ($this->userinfo['usertype'] == 0): ?>
                                                         <a onclick="return confirm('确定要重置用户密码');"
                                                            href="/user/reset_passwd/?id=<?= $d['id'] ?>"
