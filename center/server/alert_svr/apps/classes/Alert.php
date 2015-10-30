@@ -125,7 +125,7 @@ class Alert
                         $serv->task($interface);
                     }
                     else {
-                        $this->log("{$this->worker_id} interface {$id} condition not meet,do not report");
+                        $this->log("{$this->worker_id} module {$module['module_id']} interface {$id} condition not meet,do not report".print_r($interface,1));
                     }
                 }
             }
@@ -139,7 +139,7 @@ class Alert
         if ($time_key)
         {
             $gets['select'] = "total_count,fail_count,time_key";
-            $gets['interface_id'] = $interface['id'];
+            $gets['interface_id'] = $interface['interface_id'];
             $gets['module_id'] = $interface['module_id'];
             $gets['date_key'] = date('Y-m-d');
             $gets['time_key'] = $time_key;
