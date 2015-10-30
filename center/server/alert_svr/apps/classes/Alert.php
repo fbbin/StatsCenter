@@ -91,8 +91,8 @@ class Alert
                     if (!empty($interface['backup_uids'])) {
                         $alert_ids = $interface['backup_uids'];
                     }
-                    if (!empty($module['owner_uid'])) {
-                        $alert_ids .= $module['owner_uid'];
+                    if (!empty($interface['owner_uid'])) {
+                        $alert_ids .= $interface['owner_uid'];
                     }
                     $interface['alert_uids'] = explode(',',$alert_ids);
                     $mobile = array();
@@ -108,7 +108,7 @@ class Alert
                 else
                 {
                     $module_id = $interface['module_id'];
-                    $module = \Swoole::$php->redis->hGetAll($key = self::PREFIX."::MODULE::".$module_id);
+                    $module = \Swoole::$php->redis->hGetAll(self::PREFIX."::MODULE::".$module_id);
                     if (!empty($module) and $module['enable_alert'] == 1 and (!empty($module['succ_hold']) or !empty($module['wave_hold']))
                         and !empty($module['alert_uids']))
                     {
@@ -122,6 +122,7 @@ class Alert
                         $interface['alert_int'] = $module['alert_int'];
                         $data = \Swoole::$php->redis->hGetAll(self::PREFIX."::".$interface['id']);
                         $interface = array_merge($interface,$data);
+                        $this->log("{$this->worker_id} module {$module['module_id']} interface {$id} start to report".print_r($interface,1));
                         $serv->task($interface);
                     }
                     else {
