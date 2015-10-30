@@ -1,15 +1,12 @@
 <nav>
 <ul>
-    <li class="active">
+    <li <?php if ($this->isActiveMenu('stats', 'home')){ ?>class="active"<?php } ?>>
         <a href="/stats/home/" title="Dashboard"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">系统首页</span></a>
     </li>
     <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 1) : ?>
-    <li>
+    <li <?php if ($this->isActiveMenu('stats')){ ?>class="active"<?php } ?>>
         <a href="/stats/index/" id="stats_index_link"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">统计数据</span></a>
     </li>
-    <li>
-    </li>
-
     <li>
         <a href="#"><i class="fa fa-lg fa-fw fa-bell"></i> <span class="menu-item-parent">模调管理</span></a>
         <ul>
