@@ -1,7 +1,7 @@
 <?php
 $db['master'] = array(
     'type'    => Swoole\Database::TYPE_MYSQLi,
-    'host'    => "127.0.0.1",
+    'host'    => "10.10.2.38",
     'port'    => 3306,
     'dbms'    => 'mysql',
     'engine'  => 'MyISAM',
