@@ -147,7 +147,8 @@ class User extends \App\LoginController
             $inserts['uid'] = isset($_POST['uid']) ? (int) $_POST['uid'] : 0;
             $inserts['gid'] = 0;
             $inserts['last_ip'] = '';
-            $inserts['last_time'] = '0';
+            $inserts['last_time'] = 0;
+            $inserts['blocking'] = 0;
             $inserts['project_id'] = isset($_POST['project_id'])
                 ? implode(',',$_POST['project_id'])
                 : '';
