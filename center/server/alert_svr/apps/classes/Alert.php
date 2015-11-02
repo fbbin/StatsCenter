@@ -88,6 +88,10 @@ class Alert
                 $interface = table("interface")->get($id)->get();
                 $interface['interface_id'] = $interface['id'];
                 $interface['interface_name'] = $interface['name'];
+                //手动关闭接口报警的用户
+                if (!empty($interface) and $interface['enable_alert'] == 2) {
+                    continue;
+                }
                 if (!empty($interface) and $interface['enable_alert'] == 1 and (!empty($interface['succ_hold']) or !empty($interface['wave_hold']))
                     and (!empty($interface['owner_uid']) or !empty($interface['backup_uids'])))
                 {
