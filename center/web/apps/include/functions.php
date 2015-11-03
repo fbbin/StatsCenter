@@ -32,5 +32,5 @@ function is_valid_url($url)
 {
     // return (bool) preg_match('@^(https?|ftp)://[^\s/$.?#].[^\s]*$@iS', $url);
     // TODO: 拆分两个方法判断
-    return (bool) preg_match('@^(https?|ftp|chelun)://[^\s/$.?#].[^\s]*$@iS', $url);
+    return (bool) preg_match('@^(https?|ftp|chelun|autopaiwz|chelunwelfare|chelunkjz|drivingcoach)://[^\s/$.?#].[^\s]*$@iS', $url);
 }
