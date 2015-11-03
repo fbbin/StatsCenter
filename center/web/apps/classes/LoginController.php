@@ -30,7 +30,7 @@ class LoginController extends \Swoole\Controller
         }
         else
         {
-            $this->uid = $this->user->getUid();
+            $this->uid = $_SESSION['user_id'];
             $this->userinfo = $_SESSION['userinfo'];
             if (!empty($this->userinfo['blocking']))
             {

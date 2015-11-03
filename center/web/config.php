@@ -5,7 +5,8 @@ if (isset($_SERVER['HTTP_HOST']))
 {
     define('WEBROOT', 'http://' . $_SERVER['HTTP_HOST']);
 }
-define('FRAMEWORK_PATH', '/data/www/public/framework');
+define('PUBLIC_PATH', '/data/www/public/');
+define('FRAMEWORK_PATH', PUBLIC_PATH.'/framework');
 
 require FRAMEWORK_PATH . '/libs/lib_config.php';
 require __DIR__ . '/apps/include/functions.php';
