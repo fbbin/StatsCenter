@@ -33,15 +33,15 @@
         <a href="#"><i class="fa fa-lg fa-fw fa-cog"></i> <span class="menu-item-parent">系统管理</span></a>
         <ul>
             <li
-                <?php if ($this->isActiveMenu('user', 'add')){ ?>class="active"
+                <?php if ($this->isActiveMenu('setting', 'add_user')){ ?>class="active"
                 <?php } ?>>
-                <a href="/user/add/"
+                <a href="/setting/add_user/"
             ><i class="fa fa-lg fa-fw fa-user"></i> <span
                         class="menu-item-parent">新增用户</span></a>
             </li>
-            <li <?php if ($this->isActiveMenu('user', 'ulist')){ ?>
+            <li <?php if ($this->isActiveMenu('setting', 'user_list')){ ?>
                 class="active" <?php } ?>>
-                <a href="/user/ulist/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span
+                <a href="/setting/user_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span
                         class="menu-item-parent">用户列表</span></a>
             </li>
             <li <?php if ($this->isActiveMenu('project', 'edit')){ ?>

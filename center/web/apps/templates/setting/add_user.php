@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <?php include __DIR__.'/../include/css.php'; ?>
+    <?php include __DIR__ . '/../include/css.php'; ?>
 </head>
 <body class="">
 <header style="background: #E4E4E4;color: #22201F" id="header">
@@ -14,7 +14,7 @@
 </header>
 <aside id="left-panel">
     <!--            --><?php //include __DIR__.'/../include/login_info.php'; ?>
-    <?php include __DIR__.'/../include/leftmenu.php'; ?>
+    <?php include __DIR__ . '/../include/leftmenu.php'; ?>
     <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
 </aside>
 <!-- END NAVIGATION -->
@@ -99,6 +99,16 @@
                                         <label class="textarea">
                                             <?= $form['rules'] ?>
                                         </label>
+                                    </section>
+                                </fieldset>
+                                <fieldset>
+                                    <section>
+                                        <label class="label">子系统权限分配</label>
+                                        <div class="inline-group">
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="git_account" value="1">
+                                                <i></i>开通GIT账户</label>
+                                        </div>
                                     </section>
                                 </fieldset>
                                 <fieldset>

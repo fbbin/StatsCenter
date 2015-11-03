@@ -124,7 +124,7 @@
                                 <div class="col-sm-2 text-left">
                                     <div class="pager"><span>共有 <?=$total?> 个接口</span></div>
                                 </div>
-                                <div class="col-sm-5 text-left">
+                                <div class="col-sm-10 text-left">
                                     <?=$pager?>
                                 </div>
                             </div>

@@ -1,4 +1,4 @@
-<?php include __DIR__.'/../include/header.php'; ?>
+<?php include __DIR__ . '/../include/header.php'; ?>
 <!-- END NAVIGATION -->
 
 <!-- MAIN PANEL -->
@@ -112,24 +112,24 @@
                                                 <td><?= date('Y-m-d H:i:s', $d['last_time']) ?></td>
                                                 <td><?= $d['last_ip'] ?></td>
                                                 <td>
-                                                    <a href="/user/add/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改信息</a>
+                                                    <a href="/setting/add_user/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改信息</a>
                                                     <?php if ($this->userinfo['usertype'] == 0): ?>
                                                         <a onclick="return confirm('确定要重置用户密码');"
-                                                           href="/user/reset_passwd/?id=<?= $d['id'] ?>"
+                                                           href="/setting/reset_password/?id=<?= $d['id'] ?>"
                                                            class="btn btn-warning btn-xs">重置密码</a>
                                                         <?php  if (!$d['blocking']){ ?>
                                                         <a onclick="return confirm('确定要禁用此用户');"
-                                                           href="/user/ulist/?block=<?= $d['id'] ?>"
+                                                           href="/setting/user_list/?block=<?= $d['id'] ?>"
                                                            class="btn btn-warning btn-xs">禁用账户</a>
                                                         <?php }
                                                         else
                                                         { ?>
                                                             <a onclick="return confirm('确定要启用此用户');"
-                                                               href="/user/ulist/?block=<?= $d['id'] ?>&unblock"
+                                                               href="/setting/user_list/?block=<?= $d['id'] ?>&unblock"
                                                                class="btn btn-success btn-xs">启用账户</a>
                                                         <?php } ?>
                                                         <a onclick="return confirm('确定要删除此用户');"
-                                                           href="/user/ulist/?del=<?= $d['id'] ?>"
+                                                           href="/setting/user_list/?del=<?= $d['id'] ?>"
                                                            class="btn btn-danger btn-xs">删除用户</a>
 
                                                     <?php endif; ?>
@@ -207,7 +207,7 @@ you can add as many as you like
         </li>
     </ul>
 </div>
-<?php include dirname(__DIR__).'/include/javascript.php'; ?>
+<?php include dirname(__DIR__) . '/include/javascript.php'; ?>
 <script>
     $(function() {
         pageSetUp();

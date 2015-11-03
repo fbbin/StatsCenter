@@ -2,19 +2,22 @@
 namespace App\Controller;
 use Swoole;
 
+/**
+ * 系统管理，只有超级管理员有权限
+ * @package App\Controller
+ */
 class Setting extends \App\LoginController
 {
-    public $prefix = 'YYPUSH';
     public $alert_types = array(
         1 => "谈窗",
         2 => '短信'
     );
 
-    function look_sess()
-    {
-        echo "<pre>";
-        var_dump($_SESSION);
-    }
+    static $roles = array(
+        'app' => '客户端控制',
+        'stats' => '模调统计',
+        'url' => '短链接系统',
+    );
 
     function add_interface()
     {
@@ -658,5 +661,237 @@ class Setting extends \App\LoginController
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $this->assign('data', $data);
         $this->display();
+    }
+
+    /**
+     * 重置密码
+     * @return string
+     * @throws \Exception
+     */
+    function reset_password()
+    {
+        //不是超级用户不能查看修改用户
+        if ($this->userinfo['usertype'] != 0)
+        {
+            return "access deny";
+        }
+
+        if (empty($_GET['id']))
+        {
+            return \Swoole\JS::js_back("操作不合法");
+        }
+
+        $uid = intval($_GET['id']);
+        $user = table('user', 'platform')->get($uid);
+        if (!$user->exist())
+        {
+            return \Swoole\JS::js_back("用户不存在");
+        }
+
+        $defaultPassword = self::DEFAULT_PASSWORD;
+        $user->password = Swoole\Auth::makePasswordHash($user->username, $defaultPassword);
+        $user->git_password = crypt($defaultPassword, '$2a$10$' . substr(md5(uniqid()), 0, 22));
+
+        //同步到内网平台
+        $this->syncIntranet($user->username, ['git_password' => $user->git_password]);
+
+        if ($user->save())
+        {
+            return \Swoole\JS::js_back("重置密码成功");
+        }
+        else
+        {
+            return \Swoole\JS::js_back("重置密码失败，请稍后重试");
+        }
+    }
+
+
+    function user_list()
+    {
+        //不是超级用户不能查看修改用户
+        if ($this->userinfo['usertype'] != 0)
+        {
+            return "access deny";
+        }
+
+        if (!empty($_GET['del']))
+        {
+            $u = table("user", 'platform')->get(intval($_GET['del']));
+            if ($u->delete())
+            {
+                $this->syncIntranet($u['username'], ['lock' => 1]);
+                return Swoole\JS::js_goto("删除成功", '/setting/user_list/');
+            }
+        }
+        elseif (!empty($_GET['block']))
+        {
+            $blocking = isset($_GET['unblock']) ? 0 : 1;
+            $u = table("user", 'platform')->get(intval($_GET['block']));
+            if ($this->syncIntranet($u['username'], ['lock' => $blocking]))
+            {
+                $u->blocking = $blocking;
+                if ($u->save())
+                {
+                    return Swoole\JS::js_goto("操作成功", '/setting/user_list/');
+                }
+            }
+            return Swoole\JS::js_goto("操作失败，请重试！", '/setting/user_list/');
+        }
+
+        $gets = array();
+        if (!empty($_POST['uid']))
+        {
+            $uid = intval(trim($_POST['uid']));
+            $gets['where'][] = "uid={$uid}";
+            $_GET['uid'] = $uid;
+        }
+        if (!empty($_POST['username']))
+        {
+            $name = trim($_POST['username']);
+            $gets['where'][] = "username like '%{$name}%'";
+            $_GET['username'] = $name;
+        }
+        if (!empty($_POST['realname']))
+        {
+            $name = trim($_POST['realname']);
+            $gets['where'][] = "realname like '%{$name}%'";
+            $_GET['realname'] = $name;
+        }
+
+        $gets["order"] = 'addtime desc';
+        $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
+        $gets['pagesize'] = 20;
+        $data = table("user", 'platform')->gets($gets,$pager);
+        $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
+        $this->assign('data', $data);
+        $this->display();
+    }
+
+    protected function filterPostData(&$data)
+    {
+        $data['rules'] = empty($_POST['rules']) ? '' : implode($_POST['rules']);
+        $data['project_id'] = empty($_POST['project_id']) ? '' : implode($_POST['project_id']);
+
+        $data['realname'] = trim($_POST['realname']);
+        $data['username'] = trim($_POST['username']);
+        //微信号
+        $data['weixinid'] = trim($_POST['weixinid']);
+        //手机号
+        $data['mobile'] = trim($_POST['mobile']);
+        // NOTE: 写死0，貌似目前没用到
+        $data['uid'] = 0;
+        $data['usertype'] = (int)$_POST['usertype'];
+    }
+
+    function add_user()
+    {
+        //不是超级用户不能查看修改用户
+        if ($this->userinfo['usertype'] != 0)
+        {
+            return "access deny";
+        }
+        //\Swoole::$php->db->debug = true;
+        if (empty($_GET) and empty($_POST))
+        {
+            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
+            $project = array();
+            foreach ($tmp as $t)
+            {
+                $project[$t['id']] = $t['name'];
+            }
+            $form['project_id'] = \Swoole\Form::muti_select('project_id[]', $project, array(), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+            $form['rules'] = \Swoole\Form::muti_select('rules[]', self::$roles, [], null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+            $form['uid'] = \Swoole\Form::input('uid');
+            $form['mobile'] = \Swoole\Form::input('mobile');
+            $form['realname'] = \Swoole\Form::input('realname');
+            $form['username'] = \Swoole\Form::input('username');
+            $form['weixinid'] = \Swoole\Form::input('weixinid');
+            $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], null, null, array('class' => 'select2'));
+            $this->assign('form', $form);
+            $this->display();
+        }
+        elseif (!empty($_GET['id']) and empty($_POST))
+        {
+            $id = (int)$_GET['id'];
+            $user = table('user', 'platform')->get($id)->get();
+
+            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
+            $project = array();
+            foreach ($tmp as $t)
+            {
+                $project[$t['id']] = $t['name'];
+            }
+            $form['project_id'] = \Swoole\Form::muti_select('project_id[]', $project, explode(',', $user['project_id']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+            $form['rules'] = \Swoole\Form::muti_select('rules[]', self::$roles, explode(',', $user['rules']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+            $form['uid'] = \Swoole\Form::input('uid', $user['uid']);
+            $form['mobile'] = \Swoole\Form::input('mobile', $user['mobile']);
+            $form['realname'] = \Swoole\Form::input('realname', $user['realname']);
+            $form['username'] = \Swoole\Form::input('username', $user['username']);
+            $form['weixinid'] = \Swoole\Form::input('weixinid', $user['weixinid']);
+            $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], $user['usertype'], null, array('class' => 'select2'));
+            $form['id'] = \Swoole\Form::hidden('id',$user['id']);
+            $this->assign('form', $form);
+            $this->display();
+        }
+        elseif (!empty($_POST['id']))
+        {
+            $id = (int)$_POST['id'];
+            $this->filterPostData($inserts);
+            $res = table("user", 'platform')->set($id,$inserts);
+            if ($res)
+            {
+                $this->addWeiXin($inserts);
+                $msg = "修改成功";
+            }
+            else
+            {
+                $msg = "修改失败";
+            }
+            \Swoole\JS::js_goto($msg, '/setting/user_list/');
+        }
+        else
+        {
+            $inserts['username'] = trim($_POST['username']);
+            if (table('user', 'platform')->exists($inserts))
+            {
+                \Swoole\JS::js_goto("账户已存在",'/setting/user_list/');
+                return;
+            }
+            $this->filterPostData($inserts);
+            $inserts['uid'] = isset($_POST['uid']) ? (int)$_POST['uid'] : 0;
+            $inserts['gid'] = 0;
+            $inserts['code_type'] = 0;
+            $inserts['last_ip'] = '';
+            $inserts['last_time'] = 0;
+            $inserts['blocking'] = 0;
+            //默认密码
+            $inserts['password'] = Swoole\Auth::makePasswordHash($inserts['username'], self::DEFAULT_PASSWORD);
+
+            $newUser = [
+                'username' => $inserts['username'],
+                'git_password' => $this->getGitPassword(self::DEFAULT_PASSWORD),
+                'fullname' => $inserts['realname'],
+                'phone' => $inserts['mobile'],
+            ];
+            $newUser['git'] = empty($_POST['git_account']) ? 0 : 1;
+            //同步到内网平台
+            if (!$this->syncIntranet('', $newUser))
+            {
+                goto fail;
+            }
+
+            $res = table("user", 'platform')->put($inserts);
+
+            if ($res)
+            {
+                $this->addWeiXin($inserts);
+                \Swoole\JS::js_goto("添加成功", '/setting/user_list/');
+            }
+            else
+            {
+                fail:
+                \Swoole\JS::js_goto("添加失败，请稍后重试", '/setting/user_list/');
+            }
+        }
     }
 }
