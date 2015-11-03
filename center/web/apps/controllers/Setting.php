@@ -697,7 +697,7 @@ class Setting extends \App\LoginController
 
         if ($user->save())
         {
-            return \Swoole\JS::js_goto("重置{$user->usernam}登录密码成功", '/setting/user_list/');
+            return \Swoole\JS::js_goto("重置{$user->username}登录密码成功", '/setting/user_list/');
         }
         else
         {
