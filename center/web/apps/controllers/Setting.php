@@ -690,18 +690,18 @@ class Setting extends \App\LoginController
 
         $defaultPassword = self::DEFAULT_PASSWORD;
         $user->password = Swoole\Auth::makePasswordHash($user->username, $defaultPassword);
-        $user->git_password = crypt($defaultPassword, '$2a$10$' . substr(md5(uniqid()), 0, 22));
+        $user->git_password = $this->getGitPassword($defaultPassword);
 
         //同步到内网平台
         $this->syncIntranet($user->username, ['git_password' => $user->git_password]);
 
         if ($user->save())
         {
-            return \Swoole\JS::js_back("重置密码成功");
+            return \Swoole\JS::js_goto("重置{$user->usernam}登录密码成功", '/setting/user_list/');
         }
         else
         {
-            return \Swoole\JS::js_back("重置密码失败，请稍后重试");
+            return \Swoole\JS::js_goto("重置密码失败，请稍后重试", '/setting/user_list/');
         }
     }
 
