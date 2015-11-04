@@ -864,6 +864,7 @@ class Setting extends \App\LoginController
             $inserts['last_ip'] = '';
             $inserts['last_time'] = 0;
             $inserts['blocking'] = 0;
+            $inserts['svn_password'] = '';
             //默认密码
             $inserts['password'] = Swoole\Auth::makePasswordHash($inserts['username'], self::DEFAULT_PASSWORD);
             $inserts['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
