@@ -866,10 +866,10 @@ class Setting extends \App\LoginController
             $inserts['blocking'] = 0;
             //默认密码
             $inserts['password'] = Swoole\Auth::makePasswordHash($inserts['username'], self::DEFAULT_PASSWORD);
-
+            $inserts['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
             $newUser = [
                 'username' => $inserts['username'],
-                'git_password' => $this->getGitPassword(self::DEFAULT_PASSWORD),
+                'git_password' => $inserts['git_password'],
                 'fullname' => $inserts['realname'],
                 'phone' => $inserts['mobile'],
             ];
@@ -881,7 +881,6 @@ class Setting extends \App\LoginController
             }
 
             $res = table("user", 'platform')->put($inserts);
-
             if ($res)
             {
                 $this->addWeiXin($inserts);
