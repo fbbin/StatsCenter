@@ -10,6 +10,9 @@ class LoginController extends \Swoole\Controller
     protected $projectId;
     protected $projectInfo;
 
+    protected $errCode;
+    protected $errMsg;
+
     const DEFAULT_PASSWORD = '123456';
     const PROJECT_ID_KEY = 'stats:web:user:project_id';
 
@@ -163,6 +166,16 @@ class LoginController extends \Swoole\Controller
             {
                 return true;
             }
+            else
+            {
+                $this->errCode = $json['code'];
+                $this->errMsg = $json['message'];
+            }
+        }
+        else
+        {
+            $this->errCode = $curl->errCode;
+            $this->errMsg = $curl->errMsg;
         }
         return false;
     }
