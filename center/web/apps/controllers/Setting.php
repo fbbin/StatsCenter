@@ -735,7 +735,7 @@ class Setting extends \App\LoginController
                     return Swoole\JS::js_goto("操作成功", '/setting/user_list/');
                 }
             }
-            return Swoole\JS::js_goto("操作失败，请重试！\n错误信息：".$this->errMsg."\n错误码：".$this->errCode, '/setting/user_list/');
+            return Swoole\JS::js_goto("操作失败，请重试！\\n错误信息：".$this->errMsg."\\n错误码：".$this->errCode, '/setting/user_list/');
         }
 
         $gets = array();

@@ -162,14 +162,22 @@ class LoginController extends \Swoole\Controller
         if ($res)
         {
             $json = json_decode($res, true);
-            if (isset($json['code']) and $json['code'] == 1)
+            if (isset($json['code']) )
             {
-                return true;
+                if ($json['code'] == 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    $this->errCode = $json['code'];
+                    $this->errMsg = $json['message'];
+                }
             }
             else
             {
-                $this->errCode = $json['code'];
-                $this->errMsg = $json['message'];
+                $this->errCode = '1001';
+                $this->errMsg = 'JSON解析失败. Response='.$res;
             }
         }
         else
