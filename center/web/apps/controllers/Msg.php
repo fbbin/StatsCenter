@@ -21,10 +21,14 @@ class Msg extends \App\LoginController
         if (!empty($_POST['start_time']))
         {
             $gets['where'][] = 'addtime >= "'.trim($_POST['start_time']).'"';
+        } else {
+            $gets['where'][] = 'addtime >= "'.date("Y-m-d H:i:s",time()-3600*24).'"';
         }
         if (!empty($_POST['end_time']))
         {
             $gets['where'][] = 'addtime <= "'.trim($_POST['end_time']).'"';
+        } else {
+            $gets['where'][] = 'addtime >= "'.date("Y-m-d H:i:s").'"';
         }
         //\Swoole::$php->db("platform")->debug = 1;
 
@@ -84,10 +88,12 @@ class Msg extends \App\LoginController
         if (!empty($_POST['start_time']))
         {
             $gets['where'][] = 'add_time >= "'.strtotime(trim($_POST['start_time'])).'"';
+        } else {
+            $gets['where'][] = 'add_time >= "'.(time()-3600*24).'"';
         }
         if (!empty($_POST['end_time']))
         {
-            $gets['where'][] = 'add_time <= "'.strtotime(trim($_POST['end_time'])).'"';
+            $gets['where'][] = 'add_time <= "'.(time()).'"';
         }
 
         $type = 0;
