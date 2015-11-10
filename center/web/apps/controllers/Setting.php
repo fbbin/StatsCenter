@@ -689,7 +689,8 @@ class Setting extends \App\LoginController
 
         $defaultPassword = self::DEFAULT_PASSWORD;
         $user->password = Swoole\Auth::makePasswordHash($user->username, $defaultPassword);
-        if (!empty($user->git_password))
+        $gitPassword = $user->git_password;
+        if (!empty($gitPassword))
         {
             $user->git_password = $this->getGitPassword($defaultPassword);
             //同步到内网平台

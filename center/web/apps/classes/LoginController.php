@@ -143,6 +143,7 @@ class LoginController extends \Swoole\Controller
     {
         if (ENV_NAME != 'product')
         {
+            //debug($username, $update);
             return true;
         }
 
