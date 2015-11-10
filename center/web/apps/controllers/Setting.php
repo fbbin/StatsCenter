@@ -857,7 +857,7 @@ class Setting extends \App\LoginController
             $inserts = [];
             $this->filterPostData($inserts);
 
-            $update['mobile'] = $inserts['mobile'];
+            $update['phone'] = $inserts['mobile'];
             $update['fullname'] = $inserts['realname'];
 
             //同步到内网平台
