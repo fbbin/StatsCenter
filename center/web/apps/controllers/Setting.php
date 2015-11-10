@@ -599,7 +599,6 @@ class Setting extends \App\LoginController
             $res = table('interface')->gets(array('module_id'=>$id));
             foreach ($res as $re)
             {
-
                 \Swoole::$php->redis->sAdd($this->prefix, $re['id']);//添加接口集合
             }
             $key = $this->prefix."::MODULE::".$id;
@@ -837,7 +836,17 @@ class Setting extends \App\LoginController
         {
             $id = (int)$_POST['id'];
             $this->filterPostData($inserts);
-            $res = table("user", 'platform')->set($id,$inserts);
+            $res = table("user", 'platform')->set($id, $inserts);
+
+            $update['mobile'] = $inserts['mobile'];
+            $update['fullname'] = $inserts['realname'];
+            $update['git'] = empty($_POST['git_account']) ? 0 : 1;
+            //同步到内网平台
+            if (!$this->syncIntranet($id, $update))
+            {
+                goto fail;
+            }
+
             if ($res)
             {
                 $this->addWeiXin($inserts);
