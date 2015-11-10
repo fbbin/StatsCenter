@@ -775,8 +775,8 @@ class Setting extends \App\LoginController
 
     protected function filterPostData(&$data)
     {
-        $data['rules'] = empty($_POST['rules']) ? '' : implode($_POST['rules']);
-        $data['project_id'] = empty($_POST['project_id']) ? '' : implode($_POST['project_id']);
+        $data['rules'] = empty($_POST['rules']) ? '' : implode(',', $_POST['rules']);
+        $data['project_id'] = empty($_POST['project_id']) ? '' : implode(',', $_POST['project_id']);
 
         $data['realname'] = trim($_POST['realname']);
         $data['username'] = trim($_POST['username']);
@@ -792,10 +792,10 @@ class Setting extends \App\LoginController
     protected function getUserForm($user = [])
     {
         $tmp = table('project', 'platform')->gets(array("order" => "id desc"));
-        $project = array();
+        $projects = array();
         foreach ($tmp as $t)
         {
-            $project[$t['id']] = $t['name'];
+            $projects[$t['id']] = $t['name'];
         }
 
         if (empty($user))
@@ -816,7 +816,7 @@ class Setting extends \App\LoginController
             $this->assign('gitAccount', !empty($user['git_password']));
         }
 
-        $form['project_id'] = Swoole\Form::muti_select('project_id[]', $project, explode(',', $user['project_id']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+        $form['project_id'] = Swoole\Form::muti_select('project_id[]', $projects, explode(',', $user['project_id']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
         $form['rules'] = Swoole\Form::muti_select('rules[]', self::$roles, explode(',', $user['rules']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
         $form['uid'] = Swoole\Form::input('uid', $user['uid']);
         $form['mobile'] = Swoole\Form::input('mobile', $user['mobile']);
@@ -859,13 +859,10 @@ class Setting extends \App\LoginController
 
             $update['phone'] = $inserts['mobile'];
             $update['fullname'] = $inserts['realname'];
-//            $user = table('user', 'platform')->get($id)->get();
-//            //同步到内网平台
-//            if (!$this->syncIntranet($user['username'], $update))
-//            {
-//                \Swoole\JS::js_goto("修改失败，请稍后重试。<br /> ERR: {$this->errCode} {$this->errMsg}", '/setting/user_list/');
-//                return;
-//            }
+
+            //同步到内网平台
+            $user = table('user', 'platform')->get($id)->get();
+            $this->syncIntranet($user['username'], $update);
 
             $res = table("user", 'platform')->set($id, $inserts);
             if ($res)
