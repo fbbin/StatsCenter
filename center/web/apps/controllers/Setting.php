@@ -853,19 +853,19 @@ class Setting extends \App\LoginController
         elseif (!empty($_POST['id']))
         {
             $id = (int)$_POST['id'];
-            $user = table('user', 'platform')->get($id)->get();
+
             $inserts = [];
             $this->filterPostData($inserts);
 
             $update['phone'] = $inserts['mobile'];
             $update['fullname'] = $inserts['realname'];
-
-            //同步到内网平台
-            if (!$this->syncIntranet($user['username'], $update))
-            {
-                \Swoole\JS::js_goto("修改失败，请稍后重试。<br /> ERR: {$this->errCode} {$this->errMsg}", '/setting/user_list/');
-                return;
-            }
+//            $user = table('user', 'platform')->get($id)->get();
+//            //同步到内网平台
+//            if (!$this->syncIntranet($user['username'], $update))
+//            {
+//                \Swoole\JS::js_goto("修改失败，请稍后重试。<br /> ERR: {$this->errCode} {$this->errMsg}", '/setting/user_list/');
+//                return;
+//            }
 
             $res = table("user", 'platform')->set($id, $inserts);
             if ($res)
