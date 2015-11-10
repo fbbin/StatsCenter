@@ -694,7 +694,7 @@ class Setting extends \App\LoginController
         {
             $user->git_password = $this->getGitPassword($defaultPassword);
             //同步到内网平台
-            if (!$this->syncIntranet($user->username, ['git_password' => $user->git_password]))
+            if (!$this->syncIntranet($user->username, ['git' => 1, 'git_password' => $user->git_password]))
             {
                 goto fail;
             }
