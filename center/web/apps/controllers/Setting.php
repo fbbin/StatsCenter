@@ -853,14 +853,16 @@ class Setting extends \App\LoginController
         elseif (!empty($_POST['id']))
         {
             $id = (int)$_POST['id'];
+            $user = table('user', 'platform')->get($id)->get();
+            $inserts = [];
             $this->filterPostData($inserts);
-            $res = table("user", 'platform')->set($id, $inserts);
+            $res = table("user", 'platform')->set( $id, $inserts);
 
             $update['mobile'] = $inserts['mobile'];
             $update['fullname'] = $inserts['realname'];
             $update['git'] = empty($_POST['git_account']) ? 0 : 1;
             //同步到内网平台
-            if (!$this->syncIntranet($id, $update))
+            if (!$this->syncIntranet($user['username'], $update))
             {
                 \Swoole\JS::js_goto("添加失败，请稍后重试。<br />#{$this->errCode} {$this->errMsg}", '/setting/user_list/');
                 return;
