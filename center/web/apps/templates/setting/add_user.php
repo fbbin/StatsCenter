@@ -106,7 +106,7 @@
                                         <label class="label">子系统权限分配</label>
                                         <div class="inline-group">
                                             <label class="checkbox">
-                                                <input type="checkbox" name="git_account" value="1">
+                                                <input type="checkbox" name="git_account" value="1" <?php if ($gitAccount) echo "checked='checked'"?>>
                                                 <i></i>开通GIT账户</label>
                                         </div>
                                     </section>

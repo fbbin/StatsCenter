@@ -81,17 +81,24 @@ class User extends \App\LoginController
             $ret = $this->user->changePassword($this->uid, $_POST['old_password'], $_POST['new_password']);
             if ($ret)
             {
-                $git_password = $this->getGitPassword($_POST['new_password']);
-
-                $update = ['git_password' => $git_password];
-                table('user', 'platform')->set($this->uid, $update);
-                $this->syncIntranet($this->userinfo['username'], $update);
-
+                //是否有GIT账户
+                if (!empty($this->userinfo['git_password']))
+                {
+                    $git_password = $this->getGitPassword($_POST['new_password']);
+                    $update = ['git_password' => $git_password];
+                    table('user', 'platform')->set($this->uid, $update);
+                    //同步到内网平台
+                    if (!$this->syncIntranet($this->userinfo['username'], $update))
+                    {
+                        goto fail;
+                    }
+                }
                 $msg['message'] = '密码修改成功';
                 $msg['code'] = 0;
             }
             else
             {
+                fail:
                 $msg['message'] = $this->user->errMessage;
                 $msg['code'] = $this->user->errCode;
             }

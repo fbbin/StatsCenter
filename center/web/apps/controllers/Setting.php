@@ -689,10 +689,15 @@ class Setting extends \App\LoginController
 
         $defaultPassword = self::DEFAULT_PASSWORD;
         $user->password = Swoole\Auth::makePasswordHash($user->username, $defaultPassword);
-        $user->git_password = $this->getGitPassword($defaultPassword);
-
-        //同步到内网平台
-        $this->syncIntranet($user->username, ['git_password' => $user->git_password]);
+        if (!empty($user->git_password))
+        {
+            $user->git_password = $this->getGitPassword($defaultPassword);
+            //同步到内网平台
+            if (!$this->syncIntranet($user->username, ['git_password' => $user->git_password]))
+            {
+                goto fail;
+            }
+        }
 
         if ($user->save())
         {
@@ -700,6 +705,7 @@ class Setting extends \App\LoginController
         }
         else
         {
+            fail:
             return \Swoole\JS::js_goto("重置密码失败，请稍后重试", '/setting/user_list/');
         }
     }
@@ -782,6 +788,45 @@ class Setting extends \App\LoginController
         $data['usertype'] = (int)$_POST['usertype'];
     }
 
+    protected function getUserForm($user = [])
+    {
+        $tmp = table('project', 'platform')->gets(array("order" => "id desc"));
+        $project = array();
+        foreach ($tmp as $t)
+        {
+            $project[$t['id']] = $t['name'];
+        }
+
+        if (empty($user))
+        {
+            $user['project_id'] = '';
+            $user['rules'] = '';
+            $user['uid'] = 0;
+            $user['id'] = 0;
+            $user['mobile'] = '';
+            $user['realname'] = '';
+            $user['username'] = '';
+            $user['weixinid'] = '';
+            $user['usertype'] = '';
+            $this->assign('gitAccount', false);
+        }
+        else
+        {
+            $this->assign('gitAccount', !empty($user['git_password']));
+        }
+
+        $form['project_id'] = Swoole\Form::muti_select('project_id[]', $project, explode(',', $user['project_id']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+        $form['rules'] = Swoole\Form::muti_select('rules[]', self::$roles, explode(',', $user['rules']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
+        $form['uid'] = Swoole\Form::input('uid', $user['uid']);
+        $form['mobile'] = Swoole\Form::input('mobile', $user['mobile']);
+        $form['realname'] = Swoole\Form::input('realname', $user['realname']);
+        $form['username'] = Swoole\Form::input('username', $user['username']);
+        $form['weixinid'] = Swoole\Form::input('weixinid', $user['weixinid']);
+        $form['usertype'] = Swoole\Form::select('usertype', $this->config['usertype'], $user['usertype'], null, array('class' => 'select2'));
+        $form['id'] = Swoole\Form::hidden('id', $user['id']);
+        return $form;
+    }
+
     function add_user()
     {
         //不是超级用户不能查看修改用户
@@ -792,20 +837,7 @@ class Setting extends \App\LoginController
         //\Swoole::$php->db->debug = true;
         if (empty($_GET) and empty($_POST))
         {
-            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
-            $project = array();
-            foreach ($tmp as $t)
-            {
-                $project[$t['id']] = $t['name'];
-            }
-            $form['project_id'] = \Swoole\Form::muti_select('project_id[]', $project, array(), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
-            $form['rules'] = \Swoole\Form::muti_select('rules[]', self::$roles, [], null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
-            $form['uid'] = \Swoole\Form::input('uid');
-            $form['mobile'] = \Swoole\Form::input('mobile');
-            $form['realname'] = \Swoole\Form::input('realname');
-            $form['username'] = \Swoole\Form::input('username');
-            $form['weixinid'] = \Swoole\Form::input('weixinid');
-            $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], null, null, array('class' => 'select2'));
+            $form = $this->getUserForm();
             $this->assign('form', $form);
             $this->display();
         }
@@ -813,22 +845,7 @@ class Setting extends \App\LoginController
         {
             $id = (int)$_GET['id'];
             $user = table('user', 'platform')->get($id)->get();
-
-            $tmp = table('project', 'platform')->gets(array("order"=>"id desc"));
-            $project = array();
-            foreach ($tmp as $t)
-            {
-                $project[$t['id']] = $t['name'];
-            }
-            $form['project_id'] = \Swoole\Form::muti_select('project_id[]', $project, explode(',', $user['project_id']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
-            $form['rules'] = \Swoole\Form::muti_select('rules[]', self::$roles, explode(',', $user['rules']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
-            $form['uid'] = \Swoole\Form::input('uid', $user['uid']);
-            $form['mobile'] = \Swoole\Form::input('mobile', $user['mobile']);
-            $form['realname'] = \Swoole\Form::input('realname', $user['realname']);
-            $form['username'] = \Swoole\Form::input('username', $user['username']);
-            $form['weixinid'] = \Swoole\Form::input('weixinid', $user['weixinid']);
-            $form['usertype'] = \Swoole\Form::select('usertype', $this->config['usertype'], $user['usertype'], null, array('class' => 'select2'));
-            $form['id'] = \Swoole\Form::hidden('id',$user['id']);
+            $form = $this->getUserForm($user);
             $this->assign('form', $form);
             $this->display();
         }
@@ -844,7 +861,8 @@ class Setting extends \App\LoginController
             //同步到内网平台
             if (!$this->syncIntranet($id, $update))
             {
-                goto fail;
+                \Swoole\JS::js_goto("添加失败，请稍后重试。<br />#{$this->errCode} {$this->errMsg}", '/setting/user_list/');
+                return;
             }
 
             if ($res)
@@ -877,14 +895,22 @@ class Setting extends \App\LoginController
             $inserts['md5_password'] = '';
             //默认密码
             $inserts['password'] = Swoole\Auth::makePasswordHash($inserts['username'], self::DEFAULT_PASSWORD);
-            $inserts['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
+
+            $gitAccount = empty($_POST['git_account']) ? 0 : 1;
             $newUser = [
                 'username' => $inserts['username'],
-                'git_password' => $inserts['git_password'],
                 'fullname' => $inserts['realname'],
                 'phone' => $inserts['mobile'],
+                'git' => $gitAccount,
             ];
-            $newUser['git'] = empty($_POST['git_account']) ? 0 : 1;
+            if ($gitAccount)
+            {
+                $inserts['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
+            }
+            else
+            {
+                $inserts['git_password'] = '';
+            }
             //同步到内网平台
             if (!$this->syncIntranet('', $newUser))
             {
