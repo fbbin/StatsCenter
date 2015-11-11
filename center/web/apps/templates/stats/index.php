@@ -1,4 +1,22 @@
-<?php include __DIR__.'/../include/header.php'; ?>
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <title><?=Swoole::$php->config['common']['site_name']?></title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <?php include __DIR__.'/../include/css.php'; ?>
+</head>
+<body class="">
+<header style="background: #E4E4E4;color: #22201F" id="header">
+    <?php include __DIR__ . '/../include/top_menu.php'; ?>
+</header>
+<aside id="left-panel">
+    <!--            --><?php //include __DIR__.'/../include/login_info.php'; ?>
+    <?php include __DIR__ . '/../include/leftmenu.php'; ?>
+    <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
+</aside>
 <!-- END NAVIGATION -->
 
 <!-- MAIN PANEL -->
@@ -62,8 +80,25 @@
 
                             <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
                                 <div class="dt-top-row">
-                                    <div class="dataTables_filter" style="margin-left: 5px;">
-                                        <div class="form-group" style="width: 300px;">
+                                    <div class="dataTables_filter">
+                                        <div class="form-group inline-group" style="width: 260px;">
+                                            <form class="smart-form inline-group" novalidate="novalidate" onsubmit="return filterInterfaceName()" method="get">
+                                                <div class="form-group">
+                                                    <div class="form-group">
+                                                        <label class="input">
+                                                            <input type="text" name="interface_name" id="interface_name"
+                                                                   value="<?= $this->value($_GET, 'interface_name') ?>"
+                                                                   placeholder="接口名称">
+                                                    </div>
+                                                </div>
+                                                <div class='form-group'>
+                                                    <button type="submit" id='submit' class='btn btn-default'
+                                                            style='padding:6px 12px'>过滤
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="form-group inline-group" style="width: 300px;">
                                             <select class="select2" id="module_id">
                                                 <option value="">所有模块</option>
                                                 <?php foreach ($modules as $m): ?>
@@ -203,6 +238,14 @@ you can add as many as you like
         "desc": <?=empty($_GET['desc'])?0:1?>,
         "orderby": "<?=empty($_GET['orderby'])?'':$_GET['orderby']?>"
     };
+
+    function filterInterfaceName() {
+        delete StatsG.filter.page;
+        delete StatsG.filter.interface_id;
+        StatsG.filter.interface_name = $('#interface_name').val();
+        StatsG.go();
+        return false;
+    }
 
     $(function() {
         $('.order').click(function (e) {

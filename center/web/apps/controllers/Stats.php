@@ -1,5 +1,6 @@
 <?php
 namespace App\Controller;
+use mobilemsg\service\Filter;
 use Swoole;
 use App;
 
@@ -36,6 +37,16 @@ class Stats extends \App\LoginController
             else
             {
                 $gets['order'] .= ' desc';
+            }
+        }
+
+        if (isset($_GET['interface_name']))
+        {
+            $_GET['interface_name'] = trim($_GET['interface_name']);
+            Swoole\Filter::safe($_GET['interface_name']);
+            if (!empty($_GET['interface_name']))
+            {
+                $gets['like'] = ['interface_name', '%' . $this->db->quote($_GET['interface_name']) . '%'];
             }
         }
 
