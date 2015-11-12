@@ -94,9 +94,9 @@
                             <table id="data_table_stats" class="table table-hover table-bordered table-striped">
                                 <thead>
                                 <tr>
-                                    <th style="width: 240px; overflow-x: hidden;">接口ID</th>
-                                    <th style="width: 240px; overflow-x: hidden;">接口名称</th>
-                                    <th style="width: 100px; overflow-x: hidden;">接口别名</th>
+                                    <th style="width: 100px; overflow-x: hidden;">接口ID</th>
+                                    <th style="width: 300px; overflow-x: hidden;">接口名称</th>
+                                    <th style="width: 300px; overflow-x: hidden;">接口别名</th>
                                     <th>成功率阀值</th>
                                     <th>调用量波动阀值</th>
                                     <th style="width: 200px; overflow-x: hidden;">负责人</th>

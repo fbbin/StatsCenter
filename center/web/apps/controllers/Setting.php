@@ -9,6 +9,8 @@ use App;
  */
 class Setting extends App\LoginController
 {
+    protected $prefix = 'YYPUSH';
+
     public $alert_types = array(
         1 => "谈窗",
         2 => '短信'
@@ -542,7 +544,7 @@ class Setting extends App\LoginController
     }
 
     //判断符合包就那报警条件的数据  转存入redis
-    function _save_interface($id,$interface)
+    function _save_interface($id, $interface)
     {
         //添加到报警集合
         \Swoole::$php->redis->sAdd($this->prefix, $id);
@@ -553,8 +555,8 @@ class Setting extends App\LoginController
     function _save_module($id,$module)
     {
         $params = array();
-        if (  ($module['succ_hold'] > 0 or $module['wave_hold'] > 0)
-            and (!empty($module['backup_uids']) or !empty($module['owner_uid'])) and  $module['alert_int'] > 0
+        if (($module['succ_hold'] > 0 or $module['wave_hold'] > 0)
+            and (!empty($module['backup_uids']) or !empty($module['owner_uid'])) and $module['alert_int'] > 0
         )
         {
             $alert_ids = '';
