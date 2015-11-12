@@ -66,7 +66,25 @@
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
                         <h2>接口调用统计</h2>
-                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                        <?php if (!empty($_GET['module_id'])){?>
+                        <div class="widget-toolbar">
+                            <div class="btn-group">
+                                <button class="btn dropdown-toggle btn-xs btn-primary" data-toggle="dropdown">
+                                    设置 <i class="fa fa-caret-down"></i>
+                                </button>
+                                <ul class="dropdown-menu pull-right">
+                                    <li>
+                                        <a href="/setting/add_module/?id=<?=$_GET['module_id']?>">模块设置</a>
+                                    </li>
+                                    <li>
+                                        <a href="/setting/interface_list/?module_id=<?=$_GET['module_id']?>">接口列表</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </header>
                     <div role="content">
 
                         <div class="jarviswidget-editbox">

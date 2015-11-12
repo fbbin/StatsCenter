@@ -70,7 +70,8 @@
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
-                                                        <input type="text" name="id" id="id" value="<?= $this->value($_GET, 'id') ?>"
+                                                        <input type="text" name="id" id="id"
+                                                               value="<?= $this->value($_GET, 'id') ?>"
                                                                placeholder="接口ID">
                                                 </div>
                                             </div>
@@ -78,12 +79,12 @@
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
                                                         <input type="text" name="name" id="name"
-                                                               value="<?= $this->value($_GET, 'name') ?>" placeholder="接口名称">
+                                                               value="<?= $this->value($_GET, 'name') ?>"
+                                                               placeholder="接口名称">
                                                 </div>
                                             </div>
                                             <div class='form-group' style="padding-left: 100px">
-                                                <a id='submit' class='btn btn-success' style='padding:6px 12px'
-                                                   href='javascript:void(0)'>提交查询</a>
+                                                <button class='btn btn-success' style='padding:6px 12px'>提交查询</button>
                                             </div>
                                         </form>
                                     </div>
@@ -202,10 +203,6 @@ you can add as many as you like
 <script>
     $(function () {
         pageSetUp();
-//        ListsG.getListsData();
-        $("#submit").click(function () {
-            $("#form").submit();
-        });
     });
 </script>
 

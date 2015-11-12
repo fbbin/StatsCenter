@@ -334,6 +334,7 @@ class Setting extends \App\LoginController
             $name = trim($_POST['name']);
             $gets['where'][] = "name like '%{$name}%'";
             $_GET['name'] = $name;
+            unset($_GET['page']);
         }
         $users['select'] = 'id,username,realname';
         $tmp = table('user', 'platform')->gets($users);
@@ -347,6 +348,10 @@ class Setting extends \App\LoginController
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
         $gets['order'] = 'id desc';
+        if (!empty($_GET['module_id']))
+        {
+            $gets['module_id'] = intval($_GET['module_id']);
+        }
         $data = table('interface')->gets($gets,$pager);
         foreach ($data as $k => $v)
         {
