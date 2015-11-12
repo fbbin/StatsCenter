@@ -1,4 +1,4 @@
-<?php include __DIR__.'/../include/header.php'; ?>
+<?php include __DIR__ . '/../include/header.php'; ?>
 <!-- END NAVIGATION -->
 
 <!-- MAIN PANEL -->
@@ -158,7 +158,7 @@ you can add as many as you like
         </li>
     </ul>
 </div>
-<?php include dirname(__DIR__).'/include/javascript.php'; ?>
+<?php include dirname(__DIR__) . '/include/javascript.php'; ?>
 <script>
     $(function() {
         pageSetUp();

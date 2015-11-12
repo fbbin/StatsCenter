@@ -198,30 +198,4 @@ class Logs2 extends App\LoginController
         }
         echo json_encode($return);
     }
-
-    function smslog()
-    {
-//        $this->db('platform')->debug = true;
-        $gets["order"] = 'id desc';
-        $gets['page'] = !empty($_GET['page']) ? $_GET['page'] : 1;
-        $gets['pagesize'] = 20;
-
-        if (empty($_GET['date']))
-        {
-            $_GET['date'] = date('Y-m-d');
-        }
-
-        $gets['where'][] = 'addtime >= "'.$_GET['date'].' 00:00:00'.'"';
-        $gets['where'][] = 'addtime <= "'.$_GET['date'].' 23:59:59'.'"';
-
-        if (!empty($_GET['mobile']))
-        {
-            $gets['mobile'] = intval($_GET['mobile']);
-        }
-
-        $data = table('sms_log', 'platform')->gets($gets, $pager);
-        $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
-        $this->assign('data', $data);
-        $this->display();
-    }
 }

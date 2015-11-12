@@ -1,12 +1,13 @@
 <?php
 namespace App\Controller;
 use Swoole;
+use App;
 
 /**
  * 系统管理，只有超级管理员有权限
  * @package App\Controller
  */
-class Setting extends \App\LoginController
+class Setting extends App\LoginController
 {
     public $alert_types = array(
         1 => "谈窗",
@@ -286,37 +287,28 @@ class Setting extends \App\LoginController
             return json_encode($return);
         }
         $id = (int)$_GET['id'];
+        $data = table('module')->get($id)->get();
+
         //接口创建人，超级管理员，项目负责人可以删除
-        if (!$this->isAllow(__METHOD__, $id))
+        if (!$this->isAllow(__METHOD__, $id) and ($data['owner_uid'] == 0 or $data['owner_uid'] != $this->uid))
         {
             $return['status'] = 400;
             $return['msg'] = '没有权限删除';
             return json_encode($return);
         }
 
-        $data = table('module')->get($id)->get();
-        if ($data['owner_uid'] == 0 or $data['owner_uid'] != $this->uid)
+        $res = table('module')->del($id);
+        if ($res)
         {
-            $this->log->put("{$_SESSION['userinfo']['username']} try to del interface {$id} failed cause of owner_uid==0");
-            $return['status'] = 300;
-            $return['msg'] = '暂时不能删除';
+            $return['status'] = 0;
+            $return['msg'] = '操作成功';
         }
         else
         {
-            $res = table('module')->del($id);
-            if ($res)
-            {
-                $return['status'] = 0;
-                $return['msg'] = '操作成功';
-            }
-            else
-            {
-                $this->log->put("{$_SESSION['userinfo']['username']}  del interface {$id} failed with db error");
-                $return['status'] = 500;
-                $return['msg'] = '操作失败';
-            }
+            $this->log->put("{$_SESSION['userinfo']['username']}  del interface {$id} failed with db error");
+            $return['status'] = 500;
+            $return['msg'] = '操作失败';
         }
-
         return json_encode($return);
     }
 

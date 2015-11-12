@@ -54,12 +54,6 @@
                 <a href="/project/plist/"><i class="fa fa-lg fa-fw fa-reorder"></i>
                     <span class="menu-item-parent">项目列表</span></a>
             </li>
-
-            <li <?php if ($this->isActiveMenu('logs2', 'smslog')){ ?>
-                class="active" <?php } ?>>
-                <a href="/logs2/smslog/"><i class="fa fa-lg fa-fw fa-reorder"></i>
-                    <span class="menu-item-parent">短信记录</span></a>
-            </li>
         </ul>
         </li>
         <li>
@@ -83,21 +77,19 @@
         <li>
             <a href="#"><i class="fa fa-lg fa-fw fa-envelope"></i> <span class="menu-item-parent">短信管理</span></a>
             <ul>
-                <li
-                    <?php if ($this->isActiveMenu('msg', 'msg_stats')){ ?>class="active"
-                    <?php } ?>>
+                <li <?php if ($this->isActiveMenu('msg', 'msg_stats')){ ?>class="active"<?php } ?>>
                     <a href="/msg/msg_stats/"><i class="fa fa-lg fa-fw fa-envelope-o"></i> <span
                             class="menu-item-parent">短信统计</span></a>
                 </li>
-                <li
-                    <?php if ($this->isActiveMenu('msg')){ ?>class="active"
-                    <?php } ?>>
+                <li <?php if ($this->isActiveMenu('msg', 'smslog')){ ?> class="active" <?php } ?>>
+                    <a href="/msg/smslog/"><i class="fa fa-lg fa-fw fa-reorder"></i>
+                        <span class="menu-item-parent">短信记录</span></a>
+                </li>
+                <li <?php if ($this->isActiveMenu('msg')){ ?>class="active" <?php } ?>>
                     <a href="/msg/captcha_stats/"><i class="fa fa-lg fa-fw fa-folder-open"></i> <span
                             class="menu-item-parent">验证码统计</span></a>
                 </li>
-                <li
-                    <?php if ($this->isActiveMenu('msg')){ ?>class="active"
-                    <?php } ?>>
+                <li <?php if ($this->isActiveMenu('msg')){ ?>class="active"<?php } ?>>
                     <a href="/msg/weight/"><i class="fa fa-lg fa-fw fa-random"></i> <span
                             class="menu-item-parent">权重设置</span></a>
                 </li>
