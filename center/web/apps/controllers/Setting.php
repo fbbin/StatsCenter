@@ -20,6 +20,7 @@ class Setting extends App\LoginController
         'app' => '客户端控制',
         'stats' => '模调统计',
         'url' => '短链接系统',
+        'common_admin' => 'common后台管理员',
     );
 
     function add_interface()
