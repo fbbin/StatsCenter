@@ -22,7 +22,7 @@ class LoginController extends \Swoole\Controller
         $swoole->session->start();
         if (!$this->user->isLogin())
         {
-            if (!empty($_SERVER['QUERY_STRING']))
+            if (!empty($_SERVER['REQUEST_URI']))
             {
                 $this->swoole->http->redirect($this->swoole->config['user']['login_url']."?refer=".base64_encode($_SERVER['REQUEST_URI']));
             }
