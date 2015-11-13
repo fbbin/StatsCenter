@@ -898,6 +898,7 @@ class Setting extends App\LoginController
             $inserts['blocking'] = 0;
             $inserts['svn_password'] = '';
             $inserts['md5_password'] = '';
+            $inserts['property'] = '';
             //默认密码
             $inserts['password'] = Swoole\Auth::makePasswordHash($inserts['username'], self::DEFAULT_PASSWORD);
 
