@@ -172,7 +172,7 @@ class LoginController extends \Swoole\Controller
                 else
                 {
                     $this->errCode = $json['code'];
-                    $this->errMsg = $json['message'];
+                    $this->errMsg = $json['msg'];
                 }
             }
             else
