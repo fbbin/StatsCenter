@@ -27,15 +27,26 @@ class Msg
     {
         $this->worker_id = $this->handler->alert->worker_id;
         $content = $this->handler->build_msg($msg);
-        if (!empty($msg['alert_weixins']))
+        $alerts = json_decode($msg['alerts'],1);
+        $weixinids = array();
+        foreach ($alerts as $uid => $info)
         {
-            $this->sendWeiXin($msg['alert_weixins'],$content);
+            if (!empty($info['weixinid'])) {
+                $weixinids[] = $info['weixinid'];
+            } elseif (!empty($info['mobile'])) {
+                $res = $this->service->call('Common\SMS::send', $info['mobile'], $content)->getResult();
+                \Swoole::$php->log->trace("task worker {$this->worker_id} send mobile msg: {$info['mobile']}  {$content}".var_export($res,1));
+            }
         }
-        $mobiles = explode(',',$msg['alert_mobiles']);
-        if (!empty($mobiles))
+        if (!empty($weixinids))
         {
-            $this->_send($mobiles,$content);
+            $this->sendWeiXin(implode('|',$weixinids),$content);
         }
+//        $mobiles = explode(',',$msg['alert_mobiles']);
+//        if (!empty($mobiles))
+//        {
+//            $this->_send($mobiles,$content);
+//        }
     }
 
     function sendWeiXin($weixin_ids,$msg)
@@ -57,9 +68,9 @@ class Msg
             );
             $str = json_encode($data,JSON_UNESCAPED_UNICODE);
             $res = $this->ch->post($msg_url,$str);
-            \Swoole::$php->log->trace("weixin send msg {$str}".var_export($res,1));
+            \Swoole::$php->log->trace("task worker {$this->worker_id} send weixin msg {$str}".var_export($res,1));
         } else {
-            \Swoole::$php->log->trace("weixin get token failed");
+            \Swoole::$php->log->trace("task worker {$this->worker_id} weixin get token failed");
         }
 
     }
