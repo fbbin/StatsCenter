@@ -28,7 +28,7 @@ class Handler
         //时间段没有数据上报  成功率不给报警
         if ($data['total_count'] > 0)
         {
-            $succ_percent = round(($data['total_count']-$data['fail_count'])/$data['total_count'],2)*100;
+            $succ_percent = number_format(($data['total_count']-$data['fail_count'])/$data['total_count'],4)*100;
             if ($succ_percent <= $interface['succ_hold'])
             {
                 //成功率低于配置
@@ -48,7 +48,7 @@ class Handler
             {
                 //前一天和今天的数据都不为空 正常波动报警
                 $wave = ($data['total_count']-$data['fail_count']) - $data[$key];
-                $wave_percent = round(abs($wave)/$data['$key'],2)*100;
+                $wave_percent = number_format(abs($wave)/$data[$key],4)*100;
                 if ( $wave_percent >= $data['wave_hold'])
                 {
                     if ($wave > 0)
