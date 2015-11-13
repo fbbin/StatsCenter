@@ -1,5 +1,6 @@
 <?php
 namespace App\Controller;
+use mobilemsg\service\Filter;
 use Swoole;
 use App;
 
@@ -928,6 +929,35 @@ class Setting extends App\LoginController
                 fail:
                 \Swoole\JS::js_goto("添加失败，请稍后重试", '/setting/user_list/');
             }
+        }
+    }
+
+    function user_property()
+    {
+        //\Swoole::$php->db->debug = true;
+        if (empty($_GET['id']))
+        {
+            return "错误的请求";
+        }
+        $id = intval($_GET['id']);
+        $user = table('user', 'platform')->get($id)->get();
+        $property = empty($user['property']) ? '{}' : $user['property'];
+        if (!empty($_POST['json']))
+        {
+            Swoole\Filter::safe($_POST['json']);
+            if (table('user', 'platform')->set($id, ['property' => $_POST['json']]))
+            {
+                return $this->json('');
+            }
+            else
+            {
+                return $this->json('err', 500);
+            }
+        }
+        else
+        {
+            $this->assign('json', $property);
+            $this->display();
         }
     }
 }

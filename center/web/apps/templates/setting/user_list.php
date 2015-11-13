@@ -113,26 +113,25 @@
                                                 <td><?= $d['last_ip'] ?></td>
                                                 <td>
                                                     <a href="/setting/add_user/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改信息</a>
-                                                    <?php if ($this->userinfo['usertype'] == 0): ?>
-                                                        <a onclick="return confirm('确定要重置用户密码');"
-                                                           href="/setting/reset_password/?id=<?= $d['id'] ?>"
-                                                           class="btn btn-warning btn-xs">重置密码</a>
-                                                        <?php  if (!$d['blocking']){ ?>
+                                                    <a href="/setting/user_property/?id=<?= $d['id'] ?>" class="btn btn-primary btn-xs">属性设置</a>
+                                                    <a onclick="return confirm('确定要重置用户密码');"
+                                                       href="/setting/reset_password/?id=<?= $d['id'] ?>"
+                                                       class="btn btn-warning btn-xs">重置密码</a>
+                                                    <?php if (!$d['blocking'])
+                                                    { ?>
                                                         <a onclick="return confirm('确定要禁用此用户');"
                                                            href="/setting/user_list/?block=<?= $d['id'] ?>"
                                                            class="btn btn-warning btn-xs">禁用账户</a>
-                                                        <?php }
-                                                        else
-                                                        { ?>
-                                                            <a onclick="return confirm('确定要启用此用户');"
-                                                               href="/setting/user_list/?block=<?= $d['id'] ?>&unblock"
-                                                               class="btn btn-success btn-xs">启用账户</a>
-                                                        <?php } ?>
-                                                        <a onclick="return confirm('确定要删除此用户');"
-                                                           href="/setting/user_list/?del=<?= $d['id'] ?>"
-                                                           class="btn btn-danger btn-xs">删除用户</a>
-
-                                                    <?php endif; ?>
+                                                    <?php }
+                                                    else
+                                                    { ?>
+                                                        <a onclick="return confirm('确定要启用此用户');"
+                                                           href="/setting/user_list/?block=<?= $d['id'] ?>&unblock"
+                                                           class="btn btn-success btn-xs">启用账户</a>
+                                                    <?php } ?>
+                                                    <a onclick="return confirm('确定要删除此用户');"
+                                                       href="/setting/user_list/?del=<?= $d['id'] ?>"
+                                                       class="btn btn-danger btn-xs">删除用户</a>
                                                 </td>
                                             </tr>
                                         <?php
