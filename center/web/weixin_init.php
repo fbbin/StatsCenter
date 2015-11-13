@@ -25,12 +25,15 @@ foreach ($modules as $module)
         $tmp = table('user', 'platform')->gets($gets);
         $user = array();
         $weixin = array();
+        $alert = array();
         foreach ($tmp as $t) {
             if (!empty($t['mobile'])) {
                 $user[$t['id']] = $t['mobile'];
+                $alert[$t['id']]['mobile'] = $t['mobile'];
             }
             if (!empty($t['weixinid'])) {
                 $weixin[$t['id']] = $t['username'];
+                $alert[$t['id']]['weixinid'] = $t['username'];
             }
         }
 
@@ -40,11 +43,12 @@ foreach ($modules as $module)
         $params['alert_uids'] = $alert_ids;
         $params['alert_mobiles'] = implode(',', $user);
         $params['alert_weixins'] = implode('|', $weixin);
+        $params['alerts'] = json_encode($alert);
         $params['alert_int'] = $module['alert_int'];
         $params['succ_hold'] = $module['succ_hold'];
         $params['wave_hold'] = $module['wave_hold'];
 
-        if (!empty($weixin)) {
+        if (!empty($alert)) {
 
             $res = table('interface')->gets(array('module_id' => $module['id']));
             foreach ($res as $re) {

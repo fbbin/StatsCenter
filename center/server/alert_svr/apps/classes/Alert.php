@@ -105,14 +105,23 @@ class Alert
                     $interface['alert_uids'] = explode(',',$alert_ids);
                     $mobile = array();
                     $weixin = array();
+                    $alert = array();
                     foreach ($interface['alert_uids'] as $uid)
                     {
-                        $mobile[$uid] = $this->user[$uid];
-                        $weixin[$uid] = $this->weixin[$uid];
+                        if (!empty($this->user[$uid])) {
+                            $mobile[$uid] = $this->user[$uid];
+                            $alert[$uid]['mobile'] = $this->user[$uid];
+                        }
+                        if (!empty($this->weixin[$uid])) {
+                            $weixin[$uid] = $this->weixin[$uid];
+                            $alert[$uid]['weixinid'] = $this->weixin[$uid];
+                        }
+
                     }
                     if (!empty($weixin))
                         $interface['alert_weixins'] = implode('|', $weixin);
                     $interface['alert_mobiles'] = implode(',',$mobile);
+                    $interface['alerts'] = json_encode($alert);
                     $data = \Swoole::$php->redis->hGetAll(self::PREFIX."::".$interface['id']);
                     $interface = array_merge($interface,$data);
                     $serv->task($interface);
@@ -129,6 +138,7 @@ class Alert
                         $interface['alert_uids'] = $module['alert_uids'];
                         $interface['alert_mobiles'] = $module['alert_mobiles'];
                         $interface['alert_weixins'] = $module['alert_weixins'];
+                        $interface['alerts'] = $module['alerts'];
                         $interface['succ_hold'] = $module['succ_hold'];
                         $interface['wave_hold'] = $module['wave_hold'];
                         $interface['alert_int'] = $module['alert_int'];
