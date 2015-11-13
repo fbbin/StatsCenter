@@ -932,7 +932,7 @@ class Setting extends App\LoginController
             else
             {
                 fail:
-                \Swoole\JS::js_goto("添加失败，请稍后重试", '/setting/user_list/');
+                \Swoole\JS::js_goto("添加失败，请稍后重试.CODE=".$this->errCode."|MSG=".$this->errMsg, '/setting/user_list/');
             }
         }
     }
