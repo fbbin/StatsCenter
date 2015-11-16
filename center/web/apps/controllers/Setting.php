@@ -750,23 +750,20 @@ class Setting extends App\LoginController
         }
 
         $gets = array();
-        if (!empty($_POST['uid']))
+        if (!empty($_GET['uid']))
         {
-            $uid = intval(trim($_POST['uid']));
-            $gets['where'][] = "uid={$uid}";
-            $_GET['uid'] = $uid;
+            $_GET['uid'] = intval(trim($_GET['uid']));
+            $gets['uid'] = $_GET['uid'];
         }
-        if (!empty($_POST['username']))
+        if (!empty($_GET['username']))
         {
-            $name = trim($_POST['username']);
-            $gets['where'][] = "username like '%{$name}%'";
-            $_GET['username'] = $name;
+            $_GET['username'] = trim($_GET['username']);
+            $gets['where'][] = "username like '%{$_GET['username']}%'";
         }
-        if (!empty($_POST['realname']))
+        if (!empty($_GET['realname']))
         {
-            $name = trim($_POST['realname']);
-            $gets['where'][] = "realname like '%{$name}%'";
-            $_GET['realname'] = $name;
+            $_GET['realname'] = trim($_GET['realname']);
+            $gets['where'][] = "realname like '%{$_GET['realname']}%'";
         }
 
         $gets["order"] = 'addtime desc';

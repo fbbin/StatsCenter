@@ -48,7 +48,7 @@
                             <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
                                 <div class="dt-top-row">
                                     <div id="data_table_stats_length" style="position: absolute;left: 10px;top: -38px;">
-                                        <form id="form" class="smart-form" novalidate="novalidate" method="post">
+                                        <form id="form" class="smart-form" novalidate="novalidate" method="get">
                                             <div class="form-group" style="width: 200px;">
                                                 <div class="form-group">
                                                     <label class="input" style="height: 34px;">
