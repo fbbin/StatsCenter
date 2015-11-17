@@ -136,6 +136,26 @@ class Handler
                 $content .= "波动率同比下降{$message['wave_percent']}% 高于 {$message['wave_hold']}%，";
             }
         }
+        if (isset($message['fail_server'])) {
+            $fail_server = json_decode($message['fail_server'],1);
+            if (!empty($fail_server)) {
+                $content .= "服务器详情，";
+                foreach ($fail_server as $ip => $count)
+                {
+                    $content .= "{$ip}失败{$count}次，";
+                }
+            }
+        }
+        if (isset($message['ret_code'])) {
+            $ret_code = json_decode($message['ret_code'],1);
+            if (!empty($ret_code)) {
+                $content .= "错误码详情，";
+                foreach ($ret_code as $code => $count)
+                {
+                    $content .= "{$code}:{$count}次，";
+                }
+            }
+        }
         $content .= "请尽快处理。";
         return $content;
     }

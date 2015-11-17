@@ -160,7 +160,7 @@ class Alert
 
         if ($time_key)
         {
-            $gets['select'] = "total_count,fail_count,time_key";
+            $gets['select'] = "total_count,fail_count,time_key,fail_server,ret_code";
             $gets['interface_id'] = $interface['interface_id'];
             $gets['module_id'] = $interface['module_id'];
             $gets['date_key'] = date('Y-m-d');
