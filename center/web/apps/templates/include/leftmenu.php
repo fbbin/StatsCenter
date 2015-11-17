@@ -3,7 +3,7 @@
     <li <?php if ($this->isActiveMenu('stats', 'home')){ ?>class="active"<?php } ?>>
         <a href="/stats/home/" title="Dashboard"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">系统首页</span></a>
     </li>
-    <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 1) : ?>
+    <?php if ($this->isAllow('stats')) : ?>
     <li <?php if ($this->isActiveMenu('stats')){ ?>class="active"<?php } ?>>
         <a href="/stats/index/" id="stats_index_link"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">统计数据</span></a>
     </li>

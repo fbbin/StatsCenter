@@ -35,7 +35,7 @@ class Page extends Swoole\Controller
         if (!empty($_SESSION['isLogin']))
         {
             home:
-            $this->swoole->http->redirect($this->swoole->config['user']['home_url'] . $refer);
+            $this->swoole->http->redirect($this->swoole->config['user']['home_url']);
             return;
         }
         Swoole\Loader::addNameSpace('Sdk', PUBLIC_PATH.'/sdk/Sdk/');
@@ -43,7 +43,7 @@ class Page extends Swoole\Controller
         //跳转到登录平台
         if (empty($_GET['token']))
         {
-            $login_url = $sdk->getLoginUrl(WEBROOT.'/page/login/');
+            $login_url = $sdk->getLoginUrl(WEBROOT . '/page/login/' . $refer);
             $this->http->redirect($login_url);
         }
         else
@@ -52,7 +52,14 @@ class Page extends Swoole\Controller
             $_SESSION['userinfo'] = $userinfo;
             $_SESSION['user_id'] = $userinfo['id'];
             $_SESSION['isLogin'] = true;
-            goto home;
+            if (!empty($_GET['refer']))
+            {
+                $this->swoole->http->redirect(WEBROOT . base64_decode($_GET['refer']));
+            }
+            else
+            {
+                goto home;
+            }
         }
     }
 }
