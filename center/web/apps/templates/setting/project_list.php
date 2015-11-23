@@ -1,4 +1,4 @@
-<?php include __DIR__.'/../include/header.php'; ?>
+<?php include __DIR__ . '/../include/header.php'; ?>
 <!-- END NAVIGATION -->
 
 <!-- MAIN PANEL -->
@@ -71,8 +71,9 @@
                                     <table id="data_table_stats" class="table table-hover table-bordered table-striped">
                                         <thead>
                                         <tr>
-                                            <th style="width: 50px; overflow-x: hidden;">项目ID</th>
+                                            <th style="width: 80px; overflow-x: hidden;">项目ID</th>
                                             <th>项目名称</th>
+                                            <th>项目代号</th>
                                             <th>添加时间</th>
                                             <th>操作</th>
                                         </tr>
@@ -86,13 +87,14 @@
             <td class=" "><?=$d['id']?></td>
             <td class=" ">
                 <a href="/setting/module_list/?project=<?= $d['id'] ?>"> <?= $d['name'] ?></a></td>
+            <td class=" "><?=$d['ckey']?></td>
             <td class=" "><?=$d['add_time']?></td>
             <td class=" ">
-                <a href="/project/edit/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
+                <a href="/setting/add_project/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
                 <?php
                 if ($this->isAllow(__METHOD__, $d['id'])):
                 ?>
-                <a onclick="return confirm('确定要删除此项目');" href="/project/delete/?id=<?=$d['id']?>" class="btn btn-danger btn-xs">删除</a>
+                <a onclick="return confirm('确定要删除此项目');" href="/setting/delete_project/?id=<?=$d['id']?>" class="btn btn-danger btn-xs">删除</a>
                 <?php endif ?>
             </td>
         </tr>
@@ -168,7 +170,7 @@ you can add as many as you like
         </li>
     </ul>
 </div>
-<?php include dirname(__DIR__).'/include/javascript.php'; ?>
+<?php include dirname(__DIR__) . '/include/javascript.php'; ?>
 <script>
     $(function() {
         pageSetUp();

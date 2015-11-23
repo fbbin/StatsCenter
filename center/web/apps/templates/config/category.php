@@ -41,15 +41,22 @@
 
     <div id="content">
         <div class="row">
+            <?php if (!empty($error)) : ?>
+            <div class="alert alert-block alert-warning">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                <p><?=$error?></p>
+            </div>
+            <?php endif; ?>
+
             <article class="col-sm-12 sortable-grid ui-sortable">
                 <div class="jarviswidget jarviswidget-sortable" id="wid-id-0" data-widget-togglebutton="false"
                      data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false"
-                     data-widget-deletebutton="false" role="widget" style="width: 800px">
+                     data-widget-deletebutton="false" role="widget" style="width: 500px">
                     <header role="heading">
                         <ul class="nav nav-tabs pull-left in">
                             <li class="active">
                                 <a><i class="fa fa-clock-o"></i>
-                                    <span class="hidden-mobile hidden-tablet">项目管理</span>
+                                    <span class="hidden-mobile hidden-tablet">新增分类</span>
                                 </a>
                             </li>
                         </ul>
@@ -59,22 +66,19 @@
                     <!-- widget div-->
                     <div class="no-padding" role="content">
                         <div class="widget-body">
-                            <form class="smart-form" method="post">
+                            <form class="smart-form" id="form" method="post">
                                 <?php include dirname(__DIR__) . '/include/msg.php'; ?>
-                                <?=$this->value($form, 'id')?>
                                 <fieldset>
                                     <section>
-                                        <label class="label">项目名称</label>
+                                        <label class="label">名称</label>
                                         <label class="input">
-                                            <?=$form['name']?>
+                                            <input class="input" name="name"/>
                                         </label>
                                     </section>
-                                </fieldset>
-                                <fieldset>
                                     <section>
-                                        <label class="label">项目介绍</label>
-                                        <label class="input">
-                                            <?=$form['intro']?>
+                                        <label class="label">备注</label>
+                                        <label class="textarea">
+                                            <textarea class="textarea" rows="10" name="intro"></textarea>
                                         </label>
                                     </section>
                                 </fieldset>
@@ -93,44 +97,27 @@
             </article>
         </div>
     </div>
-
-    <div id="shortcut">
-        <ul>
-            <li>
-                <a href="#inbox.html" class="jarvismetro-tile big-cubes bg-color-blue"> <span class="iconbox"> <i
-                            class="fa fa-envelope fa-4x"></i> <span>Mail <span
-                                class="label pull-right bg-color-darken">14</span></span> </span> </a>
-            </li>
-            <li>
-                <a href="#calendar.html" class="jarvismetro-tile big-cubes bg-color-orangeDark"> <span class="iconbox"> <i
-                            class="fa fa-calendar fa-4x"></i> <span>Calendar</span> </span> </a>
-            </li>
-            <li>
-                <a href="#gmap-xml.html" class="jarvismetro-tile big-cubes bg-color-purple"> <span class="iconbox"> <i
-                            class="fa fa-map-marker fa-4x"></i> <span>Maps</span> </span> </a>
-            </li>
-            <li>
-                <a href="#invoice.html" class="jarvismetro-tile big-cubes bg-color-blueDark"> <span class="iconbox"> <i
-                            class="fa fa-book fa-4x"></i> <span>Invoice <span
-                                class="label pull-right bg-color-darken">99</span></span> </span> </a>
-            </li>
-            <li>
-                <a href="#gallery.html" class="jarvismetro-tile big-cubes bg-color-greenLight"> <span
-                        class="iconbox"> <i
-                            class="fa fa-picture-o fa-4x"></i> <span>Gallery </span> </span> </a>
-            </li>
-            <li>
-                <a href="javascript:void(0);" class="jarvismetro-tile big-cubes selected bg-color-pinkDark"> <span
-                        class="iconbox"> <i class="fa fa-user fa-4x"></i> <span>My Profile </span> </span> </a>
-            </li>
-        </ul>
-    </div>
     <?php include dirname(__DIR__) . '/include/javascript.php'; ?>
+</body>
     <script >
         pageSetUp();
-        if (window.localStorage.module_id) {
-            $('#module_id').val(window.localStorage.module_id);
-        }
+        $(function () {
+            $("#form").validate({
+                rules: {
+                    name: {
+                        required: true
+                    }
+                },
+                messages: {
+                    name: {
+                        required: '分类名称不能为空'
+                    }
+                },
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.parent());
+                }
+            });
+        });
     </script>
-</body>
 </html>
+

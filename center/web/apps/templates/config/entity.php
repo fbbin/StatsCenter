@@ -55,22 +55,45 @@
                         <ul class="nav nav-tabs pull-left in">
                             <li class="active">
                                 <a><i class="fa fa-clock-o"></i>
-                                    <?php if (!empty($keys[$_GET['key']])): ?><span
-                                        class="hidden-mobile hidden-tablet"><?= $keys[$_GET['key']] ?></span>
-                                    <?php endif; ?>
+                                    新增配置
                                 </a>
                             </li>
                         </ul>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
                     </header>
 
-                    <div role="content">
+                    <div role="content" class="no-padding">
                         <div class="widget-body">
-                            <div class="widget-body bg-color-white" style="height: 600px;" id="jsoneditor"></div>
-                            <div class="widget-body bg-color-white">
-                                <button class="btn btn-success" id='json_submit'>保存</button>
-                                <span id="msg"></span>
-                            </div>
+                            <form class="smart-form" id="form" method="post">
+                                <?php include dirname(__DIR__) . '/include/msg.php'; ?>
+                                <fieldset>
+                                    <section>
+                                        <label class="label">名称（仅用于管理平台展示，必填）</label>
+                                        <label class="input">
+                                            <input class="input" name="name" value="<?=$name?>" data-placeholder="请输入配置名称"/>
+                                            <input type="hidden" name="json" id="json" />
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">KEY（调用端使用KEY来访问配置，必填）</label>
+                                        <label class="input">
+                                            <input class="input" name="ckey" value="<?=$ckey?>" data-placeholder="请输入配置KEY"/>
+                                        </label>
+                                    </section>
+                                </fieldset>
+                                <fieldset>
+                                    <div class="widget-body bg-color-white" style="height: 600px;"
+                                         id="jsoneditor"></div>
+                                </fieldset>
+                                <footer>
+                                    <button type="button" class="btn btn-primary" id='json_submit'>
+                                        提交
+                                    </button>
+                                    <button type="button" class="btn btn-default" onclick="window.history.back();">
+                                        返回
+                                    </button>
+                                </footer>
+                            </form>
                         </div>
                     </div>
                     <!-- end widget div -->
@@ -101,11 +124,30 @@
     };
     var editor = new JSONEditor(container, options);
     editor.set(<?=$json?>);
-
     $('#json_submit').click(function () {
-        $.post('/config/entity/?category=<?=$_GET['category']?>', {'json': JSON.stringify(editor.get())}, function (data) {
-            if (data == 'ok') {
-                $("#msg").html('操作成功');
+        $('#json').val(JSON.stringify(editor.get()));
+        $('#form').submit();
+    });
+    $(function () {
+        $("#form").validate({
+            rules: {
+                name: {
+                    required: true
+                },
+                ckey: {
+                    required: true
+                }
+            },
+            messages: {
+                name: {
+                    required: '名称不能为空'
+                },
+                ckey: {
+                    required: 'KEY不能为空'
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element.parent());
             }
         });
     });
