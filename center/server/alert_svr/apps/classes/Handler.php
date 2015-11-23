@@ -28,8 +28,8 @@ class Handler
         //时间段没有数据上报  成功率不给报警
         if ($data['total_count'] > 0)
         {
-            $succ_percent = number_format(($data['total_count']-$data['fail_count'])/$data['total_count'],4)*100;
-            if ($succ_percent <= $interface['succ_hold'])
+            $succ_percent = number_format((($data['total_count']-$data['fail_count'])/$data['total_count'])*100,2);
+            if ($succ_percent < $interface['succ_hold'])
             {
                 //成功率低于配置
                 $data['succ_percent'] = $succ_percent;
@@ -48,7 +48,7 @@ class Handler
             {
                 //前一天和今天的数据都不为空 正常波动报警
                 $wave = ($data['total_count']-$data['fail_count']) - $data[$key];
-                $wave_percent = number_format(abs($wave)/$data[$key],4)*100;
+                $wave_percent = number_format((abs($wave)/$data[$key])*100,2);
                 if ( $wave_percent >= $data['wave_hold'])
                 {
                     if ($wave > 0)
@@ -134,6 +134,26 @@ class Handler
             if ($message['flag'] == 2)
             {
                 $content .= "波动率同比下降{$message['wave_percent']}% 高于 {$message['wave_hold']}%，";
+            }
+        }
+        if (isset($message['fail_server'])) {
+            $fail_server = json_decode($message['fail_server'],1);
+            if (!empty($fail_server)) {
+                $content .= "服务器详情，";
+                foreach ($fail_server as $ip => $count)
+                {
+                    $content .= "{$ip}失败{$count}次，";
+                }
+            }
+        }
+        if (isset($message['ret_code'])) {
+            $ret_code = json_decode($message['ret_code'],1);
+            if (!empty($ret_code)) {
+                $content .= "错误码详情，";
+                foreach ($ret_code as $code => $count)
+                {
+                    $content .= "{$code}:{$count}次，";
+                }
             }
         }
         $content .= "请尽快处理。";
