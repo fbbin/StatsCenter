@@ -109,7 +109,7 @@
                                                 </td>
                                                 <td><?= $d['mobile'] ?></td>
                                                 <td><?= $d['addtime'] ?></td>
-                                                <td><?= date('Y-m-d H:i:s', $d['last_time']) ?></td>
+                                                <td><?= $d['last_time'] ? date('Y-m-d H:i:s', $d['last_time']) : '-' ?></td>
                                                 <td><?= $d['last_ip'] ?></td>
                                                 <td>
                                                     <a href="/setting/add_user/?id=<?= $d['id'] ?>" class="btn btn-info btn-xs">修改信息</a>
