@@ -810,7 +810,7 @@ class Setting extends App\LoginController
             $user['realname'] = '';
             $user['username'] = '';
             $user['weixinid'] = '';
-            $user['usertype'] = '';
+            $user['usertype'] = '2';
             $this->assign('gitAccount', false);
         }
         else
