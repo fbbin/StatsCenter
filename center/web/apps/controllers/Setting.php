@@ -408,7 +408,6 @@ class Setting extends App\LoginController
             {
                 $project[$t['id']] = $t['name'];
             }
-            $form['project_id'] = \Swoole\Form::select('project_id',$project,'',null,array('class'=>'select2 select2-offscreen','style'=>"width:100%" ));
             $this->assign('form', $form);
             $this->display();
         }
@@ -437,7 +436,6 @@ class Setting extends App\LoginController
             {
                 $project[$t['id']] = $t['name'];
             }
-            $form['project_id'] = \Swoole\Form::select('project_id',$project,$module['project_id'],null,array('class'=>'select2 select2-offscreen','style'=>"width:100%" ));
             $this->assign('form', $form);
             $this->assign('data', $module);
             $this->display();
@@ -470,6 +468,7 @@ class Setting extends App\LoginController
             $in['alert_int'] = trim($_POST['alert_int']);
             $in['enable_alert'] = trim($_POST['enable_alert']);
             $in['intro'] = trim($_POST['intro']);
+            $in['project_id'] = $this->projectId;
 
             $c = table('module')->count(array('name' => $in['name']));
             if ($c > 0)

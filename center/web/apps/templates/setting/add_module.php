@@ -71,14 +71,6 @@
                                 </fieldset>
                                 <fieldset>
                                     <section>
-                                        <label class="label">所属项目</label>
-                                        <div class="form-group">
-                                            <?=$form['project_id']?>
-                                        </div>
-                                    </section>
-                                </fieldset>
-                                <fieldset>
-                                    <section>
                                         <label class="label">报警策略</label>
                                         <label class="radio state-success" style="display: inline-block">
                                             <input type="radio" name="enable_alert"
