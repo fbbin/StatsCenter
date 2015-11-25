@@ -561,16 +561,19 @@ class Setting extends App\LoginController
         )
         {
             $alert_ids = '';
-            if (!empty($module['backup_uids'])) {
+            if (!empty($module['backup_uids']))
+            {
                 $alert_ids = $module['backup_uids'];
             }
-            if (!empty($module['owner_uid'])) {
-                $alert_ids .= ",".$module['owner_uid'];
+            if (!empty($module['owner_uid']))
+            {
+                $alert_ids .= "," . $module['owner_uid'];
             }
+
             $params['module_id'] = $id;
             $params['module_name'] = $module['name'];
             $gets['select'] = 'id,mobile,weixinid,username';
-            $gets['where'][] = 'id in ('.$alert_ids.')';
+            $gets['where'][] = 'id in ('.trim($alert_ids, ',').')';
             $tmp = table('user', 'platform')->gets($gets);
             $user = array();
             $weixin = array();
