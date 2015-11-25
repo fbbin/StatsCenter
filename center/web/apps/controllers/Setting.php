@@ -498,7 +498,6 @@ class Setting extends App\LoginController
             $id = (int)$_POST['id'];
             $in['name'] = trim($_POST['name']);
             $in['owner_uid'] = trim($_POST['owner_uid']);
-            $in['project_id'] = trim($_POST['project_id']);
             $backup_uids = '';
             if (!empty($_POST['backup_uids']))
             {
@@ -553,7 +552,7 @@ class Setting extends App\LoginController
     }
 
     //判断符合包就那报警条件的数据  转存入redis
-    function _save_module($id,$module)
+    function _save_module($id, $module)
     {
         $params = array();
         if (($module['succ_hold'] > 0 or $module['wave_hold'] > 0)
