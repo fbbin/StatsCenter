@@ -56,24 +56,6 @@
             </li>
         </ul>
         </li>
-        <li>
-            <a href="#"><i class="fa fa-lg fa-fw fa-cloud"></i> <span class="menu-item-parent">集群管理</span></a>
-            <ul>
-                <li
-                    <?php if ($this->isActiveMenu('cluster', 'index') or $this->isActiveMenu('cluster', 'node')){ ?>class="active"
-                    <?php } ?>>
-                    <a href="/cluster/index/<?php if ($this->isActiveMenu('cluster')) echo "?p=$c_proj";?>"
-                        ><i class="fa fa-lg fa-fw fa-user"></i> <span
-                            class="menu-item-parent">Service集群</span></a>
-                </li>
-                <li
-                    <?php if ($this->isActiveMenu('config')){ ?>class="active"
-                    <?php } ?>>
-                    <a href="/config/index/"><i class="fa fa-lg fa-fw fa-check-square-o"></i> <span
-                            class="menu-item-parent">云端配置管理</span></a>
-                </li>
-            </ul>
-        </li>
     <?php
     endif;
     //短信查看的权限
@@ -89,16 +71,16 @@
                     <a href="/msg/smslog/"><i class="fa fa-lg fa-fw fa-reorder"></i>
                         <span class="menu-item-parent">短信记录</span></a>
                 </li>
-                <?php if ($this->userinfo['usertype'] == 0):?>
                 <li <?php if ($this->isActiveMenu('msg', 'captcha_stats')){ ?>class="active" <?php } ?>>
                     <a href="/msg/captcha_stats/"><i class="fa fa-lg fa-fw fa-folder-open"></i> <span
                             class="menu-item-parent">验证码统计</span></a>
                 </li>
+                <?php if ($this->userinfo['usertype'] == 0):?>
                 <li <?php if ($this->isActiveMenu('msg', 'weight')){ ?>class="active"<?php } ?>>
                     <a href="/msg/weight/"><i class="fa fa-lg fa-fw fa-random"></i> <span
                             class="menu-item-parent">权重设置</span></a>
                 </li>
-                <?php endif;?>
+                <?php endif; ?>
             </ul>
         </li>
     <?php endif;?>
