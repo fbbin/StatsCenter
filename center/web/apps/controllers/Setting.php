@@ -22,6 +22,7 @@ class Setting extends App\LoginController
         'stats' => '模调统计',
         'url' => '短链接系统',
         'common_admin' => 'common后台管理员',
+        'sms' => '短信管理',
     );
 
     function add_interface()

@@ -74,6 +74,10 @@
                 </li>
             </ul>
         </li>
+    <?php
+    endif;
+    //短信查看的权限
+    if ($this->isAllow('sms')) : ?>
         <li>
             <a href="#"><i class="fa fa-lg fa-fw fa-envelope"></i> <span class="menu-item-parent">短信管理</span></a>
             <ul>
@@ -85,7 +89,8 @@
                     <a href="/msg/smslog/"><i class="fa fa-lg fa-fw fa-reorder"></i>
                         <span class="menu-item-parent">短信记录</span></a>
                 </li>
-                <li <?php if ($this->isActiveMenu('msg')){ ?>class="active" <?php } ?>>
+                <?php if ($this->userinfo['usertype'] == 0):?>
+                <li <?php if ($this->isActiveMenu('msg', 'captcha_stats')){ ?>class="active" <?php } ?>>
                     <a href="/msg/captcha_stats/"><i class="fa fa-lg fa-fw fa-folder-open"></i> <span
                             class="menu-item-parent">验证码统计</span></a>
                 </li>
@@ -93,11 +98,10 @@
                     <a href="/msg/weight/"><i class="fa fa-lg fa-fw fa-random"></i> <span
                             class="menu-item-parent">权重设置</span></a>
                 </li>
+                <?php endif;?>
             </ul>
         </li>
-    <?php
-    endif;
-    ?>
+    <?php endif;?>
 
     <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 1) : ?>
     <li <?php if ($this->isActiveMenu('logs2', 'index')){ ?>class="active"<?php } ?>>
