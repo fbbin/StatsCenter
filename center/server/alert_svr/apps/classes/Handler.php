@@ -45,14 +45,10 @@ class Handler
             $last_success = $last_date['total_count']-$last_date['fail_count'];
             $wave = ($data['total_count']-$data['fail_count']) - $last_success;
 
-            if($last_success==0 and $wave!=0) {
-                $wave_percent = 100;//昨天值为 0 波动不为0 波动率为100
-            } elseif ($last_success==0 and $wave==0) {
-                $wave_percent = 0;//昨天 和波动值都是0
-            } else {
+            $wave_percent = 0;
+            if($last_success!=0) {
                 $wave_percent = number_format((abs($wave)/$last_success)*100,2);
             }
-
 
             if ( $wave_percent > $data['wave_hold'])
             {
