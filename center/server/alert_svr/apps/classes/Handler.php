@@ -50,7 +50,7 @@ class Handler
                 $wave_percent = number_format((abs($wave)/$last_success)*100,2);
             }
 
-            if ( $wave_percent > $data['wave_hold'])
+            if (isset($interface['wave_hold']) and  $wave_percent > $interface['wave_hold'])
             {
                 if ($wave > 0)
                 {
