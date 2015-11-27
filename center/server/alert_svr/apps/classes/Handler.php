@@ -36,8 +36,8 @@ class Handler
             }
         }
 
-        //前一天表不存在不报警
-        if (is_array($last_date)) {
+        //前一天表不存在不报警 今天的总量不够100 不触发报警
+        if (($data['total_count'] >=100) and is_array($last_date)) {
             //今天和昨天都没有数据 不报警
             //昨天没数据 今天有数据 报警
             //昨天有数据 今天没数据 报警
