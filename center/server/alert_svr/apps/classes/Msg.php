@@ -1,7 +1,6 @@
 <?php
 namespace App;
 
-require '/data/system/libraries/Service.php';
 /**
  * Class Msg
  * @package App
