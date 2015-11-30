@@ -861,6 +861,16 @@ class Setting extends App\LoginController
             $inserts = [];
             $this->filterPostData($inserts);
 
+            $gitAccount = empty($_POST['git_account']) ? 0 : 1;
+            if ($gitAccount)
+            {
+                $inserts['git_password'] = $update['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
+            }
+            else
+            {
+                $inserts['git_password'] = '';
+            }
+
             $update['phone'] = $inserts['mobile'];
             $update['fullname'] = $inserts['realname'];
 
@@ -902,12 +912,6 @@ class Setting extends App\LoginController
             $inserts['password'] = Swoole\Auth::makePasswordHash($inserts['username'], self::DEFAULT_PASSWORD);
 
             $gitAccount = empty($_POST['git_account']) ? 0 : 1;
-            $newUser = [
-                'username' => $inserts['username'],
-                'fullname' => $inserts['realname'],
-                'phone' => $inserts['mobile'],
-                'git' => $gitAccount,
-            ];
             if ($gitAccount)
             {
                 $inserts['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
@@ -916,6 +920,14 @@ class Setting extends App\LoginController
             {
                 $inserts['git_password'] = '';
             }
+
+            $newUser = [
+                'username' => $inserts['username'],
+                'fullname' => $inserts['realname'],
+                'phone' => $inserts['mobile'],
+                'git' => $gitAccount,
+            ];
+
             //同步到内网平台
             if (!$this->syncIntranet('', $newUser))
             {
