@@ -865,6 +865,7 @@ class Setting extends App\LoginController
             if ($gitAccount)
             {
                 $inserts['git_password'] = $update['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
+                $update['git'] = 1;
             }
             else
             {
