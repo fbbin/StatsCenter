@@ -160,6 +160,7 @@ class Alert
 
         if ($time_key)
         {
+            $gets = array();
             $gets['select'] = "total_count,fail_count,time_key,fail_server,ret_code";
             $gets['interface_id'] = $interface['interface_id'];
             $gets['module_id'] = $interface['module_id'];
@@ -170,21 +171,41 @@ class Alert
             $res = \Swoole::$php->db->query("SELECT table_name FROM information_schema.TABLES WHERE table_name ='$table'")->fetch();
             if ($res)
             {
-                $tmp = table($table)->gets($gets);
-                if (!empty($tmp))
-                {
-                    $this->handler->alert($interface,$tmp[0]); //传入最多数据 后期详细数据报警
-                }
-                else
-                {
-                    $fake = array(
+                $today_tmp = table($table)->gets($gets);
+                $today = $today_tmp[0];
+                if (empty($today)) {
+                    $today = array(
                         'total_count' => 0,
                         'fail_count' => 0,
                         'time_key' => $time_key,
                     );
-                    $this->handler->alert($interface,$fake);
                 }
-                \Swoole::$php->log->trace("{$this->worker_id} on task data details mysql {$time_key} interface {$interface['id']}: mysql data:".json_encode($tmp,JSON_UNESCAPED_UNICODE));
+
+                $gets = array();
+                $gets['select'] = "total_count,fail_count,time_key,fail_server,ret_code";
+                $gets['interface_id'] = $interface['interface_id'];
+                $gets['module_id'] = $interface['module_id'];
+                $gets['date_key'] = date('Y-m-d',time()-3600*24);
+                $gets['time_key'] = $time_key;
+                $yes_table = "stats_".date('Ymd',time()-3600*24);
+                //判断表是否存在
+                $res = \Swoole::$php->db->query("SELECT table_name FROM information_schema.TABLES WHERE table_name ='$yes_table'")->fetch();
+                if ($res) {
+                    $yesterday_tmp = table($yes_table)->gets($gets);
+                    $yesterday = $yesterday_tmp[0];
+                    if (empty($yesterday)) {
+                        $yesterday = array(
+                            'total_count' => 0,
+                            'fail_count' => 0,
+                            'time_key' => $time_key,
+                        );
+                    }
+                } else {
+                    $yesterday = null;
+                    \Swoole::$php->log->trace("{$this->worker_id} {$time_key} on task {$yes_table} is not exists");
+                }
+                $this->handler->alert($interface,$today,$yesterday); //传入最多数据 后期详细数据报警
+                \Swoole::$php->log->trace("{$this->worker_id} on task data details mysql {$time_key} interface {$interface['id']}: mysql data today:".json_encode($today,JSON_UNESCAPED_UNICODE)."lastday".json_encode($yesterday,JSON_UNESCAPED_UNICODE));
             }
             else
             {

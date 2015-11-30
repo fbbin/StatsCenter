@@ -23,7 +23,7 @@ class Handler
      * @param $interface  接口信息
      * @param $data 当前时间统计数据
      */
-    public function alert($interface,$data)
+    public function alert($interface,$data,$last_date)
     {
         //时间段没有数据上报  成功率不给报警
         if ($data['total_count'] > 0)
@@ -36,45 +36,43 @@ class Handler
             }
         }
 
-        //波动报警
-        //前一天数据为空  今天有数据 波动不报警
-        //前一天有数据  今天为0 波动报警
-        $time_key = $data['time_key'];
-        $key = "last_succ_count_".$time_key;
-        //前一天数据为空 不报警
-        if (isset($data[$key]) and !empty($data[$key]))
-        {
-            if (!empty($data['total_count']))
-            {
-                //前一天和今天的数据都不为空 正常波动报警
-                $wave = ($data['total_count']-$data['fail_count']) - $data[$key];
-                $wave_percent = number_format((abs($wave)/$data[$key])*100,2);
-                if ( $wave_percent >= $data['wave_hold'])
-                {
-                    if ($wave > 0)
-                    {
-                        $data['flag'] = 1;//大于上次数据
-                    }
-                    else
-                    {
-                        $data['flag'] = 2;//小于上次数据
-                    }
-                    //成功率低于配置
-                    $data['wave_percent'] = $wave_percent;
-                }
+        //前一天表不存在不报警 今天的总量不够100 不触发报警
+        //县官比
+        if (($data['total_count'] ==0) and is_array($last_date)) {
+            //今天和昨天都没有数据 不报警
+            //昨天没数据 今天有数据 报警
+            //昨天有数据 今天没数据 报警
+            //今天数据和昨天的波动值
+            $last_success = $last_date['total_count']-$last_date['fail_count'];
+            $wave = ($data['total_count']-$data['fail_count']) - $last_success;
+
+            $wave_percent = 0;
+            if($last_success!=0) {
+                $wave_percent = number_format((abs($wave)/$last_success)*100,2);
             }
-            else
+
+            if (isset($interface['wave_hold']) and  $wave_percent > $interface['wave_hold'])
             {
-                //前一天有数据  今天为0 波动报警 波动100%
-                $data['flag'] = 2;//小于上次数据
-                $data['wave_percent'] = 100;
+                if ($wave > 0)
+                {
+                    $data['flag'] = 1;//大于上次数据
+                }
+                else
+                {
+                    $data['flag'] = 2;//小于等于上次数据
+                }
+                //成功率低于配置
+                $data['wave_percent'] = $wave_percent;
+                $data['last_total_count'] = $last_date['total_count'];
+                $data['last_fail_count'] = $last_date['fail_count'];
+
             }
         }
-        \Swoole::$php->redis->hSet(Alert::PREFIX."::".$interface['interface_id'],'last_succ_count_'.$time_key,$data['total_count']-$data['fail_count']);
+        //\Swoole::$php->redis->hSet(Alert::PREFIX."::".$interface['interface_id'],'last_succ_count_'.$time_key,$data['total_count']-$data['fail_count']);
         //$this->log("task worker {$this->worker_id}  data:".json_encode($data,JSON_UNESCAPED_UNICODE)." interface:".json_encode($interface,JSON_UNESCAPED_UNICODE));
         //成功率 或者 波动率 满足其中一个条件
         $msg = array_merge($interface,$data);
-        if (isset($data['succ_percent']) or isset($data['flag']))
+        if (isset($data['succ_percent']) or isset($data['wave_percent']))
         {
             if ($this->is_ready($msg))
             {
@@ -127,13 +125,14 @@ class Handler
         }
         if (isset($message['wave_percent']) and !empty($message['wave_percent']))
         {
+            $content .= "5分钟内调用{$message['total_count']}次，失败{$message['fail_count']}次，昨天同一时刻调用成功调用{$message['last_total_count']}次，失败{$message['last_fail_count']}次，";
             if ($message['flag'] == 1)
             {
-                $content .= "波动率同比增长{$message['wave_percent']}% 高于 {$message['wave_hold']}%，";
+                $content .= "波动率为增长{$message['wave_percent']}%，高于{$message['wave_hold']}%，";
             }
             if ($message['flag'] == 2)
             {
-                $content .= "波动率同比下降{$message['wave_percent']}% 高于 {$message['wave_hold']}%，";
+                $content .= "波动率为下降{$message['wave_percent']}%，高于{$message['wave_hold']}%，";
             }
         }
         if (isset($message['fail_server'])) {
