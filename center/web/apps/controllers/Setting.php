@@ -860,12 +860,17 @@ class Setting extends App\LoginController
 
             $inserts = [];
             $this->filterPostData($inserts);
+            //同步到内网平台
+            $user = table('user', 'platform')->get($id)->get();
 
             $gitAccount = empty($_POST['git_account']) ? 0 : 1;
             if ($gitAccount)
             {
-                $inserts['git_password'] = $update['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
-                $update['git'] = 1;
+                if (empty($user['git_password']))
+                {
+                    $inserts['git_password'] = $update['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
+                    $update['git'] = 1;
+                }
             }
             else
             {
@@ -875,8 +880,7 @@ class Setting extends App\LoginController
             $update['phone'] = $inserts['mobile'];
             $update['fullname'] = $inserts['realname'];
 
-            //同步到内网平台
-            $user = table('user', 'platform')->get($id)->get();
+
             $this->syncIntranet($user['username'], $update);
 
             $res = table("user", 'platform')->set($id, $inserts);
