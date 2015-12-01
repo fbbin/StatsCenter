@@ -73,7 +73,7 @@ class Alert
         $interfaces = \Swoole::$php->redis->sMembers(self::PREFIX);
         if (!empty($interfaces))
         {
-            $gets['select'] = 'id,mobile';
+            $gets['select'] = 'id,mobile,weixinid,username';
             $tmp = table('user',"platform")->gets($gets);
             foreach ($tmp as $t)
             {
