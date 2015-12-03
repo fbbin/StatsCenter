@@ -18,9 +18,10 @@ class CrowdUser
         $res = $curl->post(self::BASE_URL . 'usermanagement/1/user/password?username=' . $username, json_encode([
             'value' => $password,
         ]));
-        if (!$res)
+        if ($curl->httpCode != 204)
         {
-            var_dump($curl->httpCode, $curl->info);
+            var_dump($curl->info);
+            return false;
         }
         return true;
     }
