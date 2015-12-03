@@ -63,7 +63,12 @@ class CrowdUser
             return false;
         }
 
-        //2—加入组
+        //2—移除组
+        $curl = self::getCurl();
+        $curl->setMethod('DELETE');
+        $curl->get(self::BASE_URL . 'usermanagement/1/group/user/direct?username=' . $username . '&groupname=confluence-users');
+
+        //3—加入组
         $curl = self::getCurl();
         $res = $curl->post(self::BASE_URL . 'usermanagement/1/user/group/direct?username=' . $username, json_encode([
             'name' => 'confluence-users',
