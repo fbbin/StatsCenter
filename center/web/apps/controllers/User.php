@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 use Swoole;
+use App;
 
 class User extends \App\LoginController
 {
@@ -93,6 +94,7 @@ class User extends \App\LoginController
                         goto fail;
                     }
                 }
+                App\CrowdUser::setPassword($this->userinfo['username'], $_POST['new_password']);
                 $msg['message'] = '密码修改成功';
                 $msg['code'] = 0;
             }

@@ -707,6 +707,8 @@ class Setting extends App\LoginController
             }
         }
 
+        App\CrowdUser::setPassword($user['username'], self::DEFAULT_PASSWORD);
+
         if ($user->save())
         {
             return \Swoole\JS::js_goto("重置{$user->username}登录密码成功", '/setting/user_list/');
