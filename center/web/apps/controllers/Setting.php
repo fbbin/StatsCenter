@@ -707,6 +707,9 @@ class Setting extends App\LoginController
             }
         }
 
+        //同步到Confluence
+        App\CrowdUser::setPassword($user['username'], self::DEFAULT_PASSWORD);
+
         if ($user->save())
         {
             return \Swoole\JS::js_goto("重置{$user->username}登录密码成功", '/setting/user_list/');
@@ -880,7 +883,6 @@ class Setting extends App\LoginController
             $update['phone'] = $inserts['mobile'];
             $update['fullname'] = $inserts['realname'];
 
-
             $this->syncIntranet($user['username'], $update);
 
             $res = table("user", 'platform')->set($id, $inserts);
@@ -938,6 +940,9 @@ class Setting extends App\LoginController
             {
                 goto fail;
             }
+
+            //同步到Confluence
+            App\CrowdUser::newAccount($inserts['username'], $inserts['realname'], self::DEFAULT_PASSWORD);
 
             $res = table("user", 'platform')->put($inserts);
             if ($res)
