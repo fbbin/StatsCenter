@@ -52,6 +52,7 @@ class Page extends Swoole\Controller
             $_SESSION['userinfo'] = $userinfo;
             $_SESSION['user_id'] = $userinfo['id'];
             $_SESSION['isLogin'] = true;
+            $_SESSION['login_token'] = $_GET['token'];
             if (!empty($_GET['refer']))
             {
                 $this->swoole->http->redirect(WEBROOT . base64_decode($_GET['refer']));
