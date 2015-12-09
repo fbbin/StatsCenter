@@ -80,7 +80,7 @@ function del_log()
 }
 
 /**
- * 删除一个月前的日志
+ * 删除一个月前的统计数据
  */
 function del_stats()
 {
@@ -97,6 +97,7 @@ function del_stats()
             {
                 dropTable('stats_client_' . $date);
                 dropTable('stats_server_' . $date);
+                dropTable('stats_sum_' . $date);
                 dropTable('stats_' . $date);
             }
         }
