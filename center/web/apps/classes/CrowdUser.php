@@ -28,7 +28,7 @@ class CrowdUser
     {
         $curl = self::getCurl();
         $curl->setMethod('PUT');
-        $res = $curl->post(self::BASE_URL . 'usermanagement/1/user/password?username=' . $username, json_encode([
+        $res = $curl->post(self::BASE_URL . 'usermanagement/1/user/password?username=' . urlencode($username), json_encode([
             'value' => $password,
         ]));
         if ($curl->httpCode != 204)
@@ -66,11 +66,11 @@ class CrowdUser
         //2—移除组
         $curl = self::getCurl();
         $curl->setMethod('DELETE');
-        $curl->get(self::BASE_URL . 'usermanagement/1/group/user/direct?username=' . $username . '&groupname=confluence-users');
+        $curl->get(self::BASE_URL . 'usermanagement/1/group/user/direct?username=' . urlencode($username) . '&groupname=confluence-users');
 
         //3—加入组
         $curl = self::getCurl();
-        $res = $curl->post(self::BASE_URL . 'usermanagement/1/user/group/direct?username=' . $username, json_encode([
+        $res = $curl->post(self::BASE_URL . 'usermanagement/1/user/group/direct?username=' . urlencode($username), json_encode([
             'name' => 'confluence-users',
         ]));
 
@@ -80,5 +80,27 @@ class CrowdUser
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param $username
+     * @return bool|string
+     */
+    static function get($username)
+    {
+        $curl = self::getCurl();
+        $ret = $curl->get(self::BASE_URL . 'usermanagement/1/user?username='.urlencode($username));
+        if (empty($ret))
+        {
+            if ($curl->httpCode == 404)
+            {
+                return false;
+            }
+            else
+            {
+                throw new \Exception("curl->get [" . $curl->getEffectiveUrl() . '] failed. HttpCode=' . $curl->httpCode);
+            }
+        }
+        return json_decode($ret, true);
     }
 }

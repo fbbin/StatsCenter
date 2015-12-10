@@ -821,6 +821,8 @@ class Setting extends App\LoginController
         else
         {
             $this->assign('gitAccount', !empty($user['git_password']));
+            $crowdUser = App\CrowdUser::get($user['username']);
+            $this->assign('crowdUser', $crowdUser);
         }
 
         $form['project_id'] = Swoole\Form::muti_select('project_id[]', $projects, explode(',', $user['project_id']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
@@ -878,6 +880,12 @@ class Setting extends App\LoginController
             else
             {
                 $inserts['git_password'] = '';
+            }
+
+            //创建Doc账户
+            if (!empty($_POST['crowd_user']))
+            {
+                App\CrowdUser::newAccount($inserts['username'], $inserts['realname'], self::DEFAULT_PASSWORD);
             }
 
             $update['phone'] = $inserts['mobile'];

@@ -106,8 +106,15 @@
                                         <label class="label">子系统权限分配</label>
                                         <div class="inline-group">
                                             <label class="checkbox">
-                                                <input type="checkbox" name="git_account" value="1" <?php if ($gitAccount) echo "checked='checked'"?>>
+                                                <input type="checkbox" name="git_account" value="1" <?php if ($gitAccount) echo 'checked="checked" disabled=disabled"';?>>
                                                 <i></i>开通GIT账户</label>
+                                            <?php
+                                            if (isset($crowdUser) and $crowdUser === false):
+                                            ?>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="crowd_user" value="1">
+                                                    <i></i>开通Confluence账户</label>
+                                            <?php endif; ?>
                                         </div>
                                     </section>
                                 </fieldset>
