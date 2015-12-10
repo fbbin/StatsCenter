@@ -172,7 +172,10 @@ class Alert
             if ($res)
             {
                 $today_tmp = table($table)->gets($gets);
-                $today = $today_tmp[0];
+                if (isset($today_tmp[0]) and !empty($today_tmp[0])) {
+                    $today = $today_tmp[0];
+                }
+
                 if (empty($today)) {
                     $today = array(
                         'total_count' => 0,
@@ -192,7 +195,9 @@ class Alert
                 $res = \Swoole::$php->db->query("SELECT table_name FROM information_schema.TABLES WHERE table_name ='$yes_table'")->fetch();
                 if ($res) {
                     $yesterday_tmp = table($yes_table)->gets($gets);
-                    $yesterday = $yesterday_tmp[0];
+                    if (isset($yesterday_tmp[0]) and !empty($yesterday_tmp[0])) {
+                        $yesterday = $yesterday_tmp[0];
+                    }
                     if (empty($yesterday)) {
                         $yesterday = array(
                             'total_count' => 0,
