@@ -90,11 +90,11 @@
                                         <thead>
                                         <tr>
                                             <th style="width: 50px; overflow-x: hidden;">模块ID</th>
-                                            <th>模块名称</th>
-                                            <th>负责人</th>
+                                            <th style="width: 150px">模块名称</th>
+                                            <th style="width: 150px">负责人</th>
                                             <th>备选负责人</th>
-                                            <th>添加时间</th>
-                                            <th>操作</th>
+                                            <th style="width: 140px">添加时间</th>
+                                            <th style="width: 150px">操作</th>
                                         </tr>
                                         </thead>
                                         <tbody id="data_table_body">
