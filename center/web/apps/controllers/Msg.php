@@ -90,14 +90,15 @@ class Msg extends \App\LoginController
     {
         if (!empty($_POST['start_time']))
         {
-            $gets['where'][] = 'add_time >= "'.strtotime(trim($_POST['start_time'])).'"';
+            $start = trim($_POST['start_time'])." 00:00:00";
+            $end = trim($_POST['start_time'])." 23:59:59";
         } else {
-            $gets['where'][] = 'add_time >= "'.(time()-3600*24).'"';
+            $today = date("Y-m-d");
+            $start = $today." 00:00:00";
+            $end = $today." 23:59:59";
         }
-        if (!empty($_POST['end_time']))
-        {
-            $gets['where'][] = 'add_time <= "'.(time()).'"';
-        }
+        $gets['where'][] = 'add_time >= "'.strtotime($start).'"';
+        $gets['where'][] = 'add_time <= "'.strtotime($end).'"';
 
         $type = 0;
         if (!empty($_POST['type']))
