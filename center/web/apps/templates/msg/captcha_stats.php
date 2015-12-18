@@ -85,7 +85,7 @@
                                                            }
                                                            ?>"
                                                         />
-                                                </label> ~
+                                                </label>
 <!--                                                <label class="label">-->
 <!--                                                    <input type="text" class="form-control datepicker"-->
 <!--                                                           data-dateformat="yy-mm-dd" id="end_time" name="end_time"-->
