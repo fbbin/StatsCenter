@@ -71,7 +71,7 @@
                                                            data-dateformat="yy-mm-dd" id="start_time" name="start_time"
                                                            value="<?php
                                                            if (empty($_POST['start_time'])){
-                                                               echo date("Y-m-d",time()-3600*24);
+                                                               echo date("Y-m-d");
                                                            } else {
                                                                echo $_POST['start_time'];
                                                            }
