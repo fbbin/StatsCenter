@@ -77,19 +77,19 @@
                                                            }
                                                            ?>"
                                                         />
-                                                </label> ~
-                                                <label class="label">
-                                                    <input type="text" class="form-control datepicker"
-                                                           data-dateformat="yy-mm-dd" id="end_time" name="end_time"
-                                                           value="<?php
-                                                           if (empty($_POST['end_time'])){
-                                                               echo date("Y-m-d",time());
-                                                           } else {
-                                                               echo $_POST['end_time'];
-                                                           }
-                                                           ?>"
-                                                        />
                                                 </label>
+<!--                                                <label class="label">-->
+<!--                                                    <input type="text" class="form-control datepicker"-->
+<!--                                                           data-dateformat="yy-mm-dd" id="end_time" name="end_time"-->
+<!--                                                           value="--><?php
+//                                                           if (empty($_POST['end_time'])){
+//                                                               echo date("Y-m-d",time());
+//                                                           } else {
+//                                                               echo $_POST['end_time'];
+//                                                           }
+//                                                           ?><!--"-->
+<!--                                                        />-->
+<!--                                                </label>-->
                                             </div>
                                             <div class='form-group'>
                                                 <button type="submit" class="form-control btn-success input-sm">搜索

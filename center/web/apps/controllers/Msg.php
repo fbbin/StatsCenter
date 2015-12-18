@@ -10,6 +10,7 @@ class Msg extends \App\LoginController
         1 => '亿美',
         2 => '漫道',
         3 => '梦网',
+        4 => '亿美广告',
     );
 
     static $msg_type = array(
@@ -21,16 +22,17 @@ class Msg extends \App\LoginController
     {
         if (!empty($_POST['start_time']))
         {
-            $gets['where'][] = 'addtime >= "'.trim($_POST['start_time']).'"';
+            $start = trim($_POST['start_time'])." 00:00:00";
+            $end = trim($_POST['start_time'])." 23:59:59";
+
         } else {
-            $gets['where'][] = 'addtime >= "'.date("Y-m-d H:i:s",time()-3600*24).'"';
+            $today = date("Y-m-d");
+            $start = $today." 00:00:00";
+            $end = $today." 23:59:59";
         }
-        if (!empty($_POST['end_time']))
-        {
-            $gets['where'][] = 'addtime <= "'.trim($_POST['end_time']).'"';
-        } else {
-            $gets['where'][] = 'addtime >= "'.date("Y-m-d H:i:s").'"';
-        }
+
+        $gets['where'][] = 'addtime >= "'.$start.'"';
+        $gets['where'][] = 'addtime <= "'.$end.'"';
         //\Swoole::$php->db("platform")->debug = 1;
 
         $gets['order'] = 'id desc';
