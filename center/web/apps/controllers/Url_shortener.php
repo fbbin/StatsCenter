@@ -672,10 +672,11 @@ class Url_shortener extends \App\LoginController
         $tiny_url_symbol = $tiny_url_info['prefix'] . ShortUrl::encode($tiny_url_id);
         $tiny_url = "http://chelun.com/url/{$tiny_url_symbol}";
 
-        $date = $this->value($_GET, 'date', date('Y-m-d'));
+        $db = \Swoole::$php->db('platform');
+        $date = $db->quote($this->value($_GET, 'date', date('Y-m-d')));
 
         $params = [
-            'where' => "tiny_url_id = {$tiny_url_id}",
+            'where' => "tiny_url_id = {$tiny_url_id} AND stats_time >= '{$date} 00:00:00' AND stats_time <= '{$date}' 23:59:59",
             'order' => 'stats_time ASC',
         ];
         $data = table('tiny_url_stats_hourly', 'platform')->gets($params);
