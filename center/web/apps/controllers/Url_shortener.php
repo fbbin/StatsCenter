@@ -613,6 +613,7 @@ class Url_shortener extends \App\LoginController
         $page = $this->value($_GET, 'page', 1, true);
 
         $params = [
+            'where' => "tiny_url_id = {$tiny_url_id}",
             'order' => 'stats_day DESC',
             'pagesize' => 20,
             'page' => $page,
@@ -646,6 +647,7 @@ class Url_shortener extends \App\LoginController
         $date = $this->value($_GET, 'date', date('Y-m-d'));
 
         $params = [
+            'where' => "tiny_url_id = {$tiny_url_id}",
             'order' => 'stats_time ASC',
         ];
         $data = table('tiny_url_stats_hourly', 'platform')->gets($params);
