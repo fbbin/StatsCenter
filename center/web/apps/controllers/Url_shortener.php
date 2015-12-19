@@ -593,4 +593,67 @@ class Url_shortener extends \App\LoginController
 
         $this->display();
     }
+
+    function new_stats()
+    {
+        $tiny_url_id = $this->value($_GET, 'id', 0, true);
+        if (empty($tiny_url_id))
+        {
+            $this->http->header('Location', '/url_shortener/tiny_url_list');
+        }
+
+        $tiny_url_info = table('tiny_url')->get($tiny_url_id)->get();
+        if (!$tiny_url_info)
+        {
+            \Swoole\JS::js_goto('短网址不存在！', '/url_shortener/tiny_url_list');
+        }
+        $tiny_url_symbol = $tiny_url_info['prefix'] . ShortUrl::encode($tiny_url_id);
+        $tiny_url = "http://chelun.com/url/{$tiny_url_symbol}";
+
+        $page = $this->value($_GET, 'page', 1, true);
+
+        $params = [
+            'order' => 'stats_day DESC',
+            'pagesize' => 20,
+            'page' => $page,
+        ];
+        $data = table('tiny_url_stats_daily', 'platform')->gets($params, $pager);
+
+        $this->assign('tiny_url', $tiny_url);
+        $this->assign('tiny_url_id', $tiny_url_id);
+        $this->assign('total', $pager->total);
+        $this->assign('pager', $pager->render());
+        $this->assign('data', $data);
+        $this->display();
+    }
+
+    function stats_hourly()
+    {
+        $tiny_url_id = $this->value($_GET, 'id', 0, true);
+        if (empty($tiny_url_id))
+        {
+            $this->http->header('Location', '/url_shortener/tiny_url_list');
+        }
+
+        $tiny_url_info = table('tiny_url')->get($tiny_url_id)->get();
+        if (!$tiny_url_info)
+        {
+            \Swoole\JS::js_goto('短网址不存在！', '/url_shortener/tiny_url_list');
+        }
+        $tiny_url_symbol = $tiny_url_info['prefix'] . ShortUrl::encode($tiny_url_id);
+        $tiny_url = "http://chelun.com/url/{$tiny_url_symbol}";
+
+        $date = $this->value($_GET, 'date', date('Y-m-d'));
+
+        $params = [
+            'order' => 'stats_time ASC',
+        ];
+        $data = table('tiny_url_stats_hourly', 'platform')->gets($params);
+
+        $this->assign('tiny_url', $tiny_url);
+        $this->assign('tiny_url_id', $tiny_url_id);
+        $this->assign('date', $date);
+        $this->assign('data', $data);
+        $this->display();
+    }
 }

@@ -94,6 +94,7 @@
                                                         <td><?=$d['total_visits']?></td>
                                                         <td><?=$d['add_time']?></td>
                                                         <td>
+                                                            <a href="/url_shortener/new_stats/?id=<?=$d['id']?>" class="btn btn-info btn-xs">新统计</a>
                                                             <a href="/url_shortener/stats/?id=<?=$d['id']?>" class="btn btn-info btn-xs">查看统计</a>
                                                             <a href="/url_shortener/edit/?id=<?=$d['id']?>" class="btn btn-info btn-xs">修改</a>
                                                             <a href="/url_shortener/delete/?id=<?=$d['id']?>" class="btn btn-warning btn-xs delete-tiny-url">删除</a>
