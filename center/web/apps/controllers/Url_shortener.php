@@ -676,7 +676,7 @@ class Url_shortener extends \App\LoginController
         $date = $db->quote($this->value($_GET, 'date', date('Y-m-d')));
 
         $params = [
-            'where' => "tiny_url_id = {$tiny_url_id} AND stats_time >= '{$date} 00:00:00' AND stats_time <= '{$date}' 23:59:59",
+            'where' => "tiny_url_id = {$tiny_url_id} AND stats_time >= '{$date} 00:00:00' AND stats_time <= '{$date} 23:59:59'",
             'order' => 'stats_time ASC',
         ];
         $data = table('tiny_url_stats_hourly', 'platform')->gets($params);
