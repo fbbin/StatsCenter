@@ -613,12 +613,40 @@ class Url_shortener extends \App\LoginController
         $page = $this->value($_GET, 'page', 1, true);
 
         $params = [
+            'select' => ['num_openudid, num_ip, num_ip_without_openudid, num_pv, stats_day, update_time', true],
             'where' => "tiny_url_id = {$tiny_url_id}",
             'order' => 'stats_day DESC',
             'pagesize' => 20,
             'page' => $page,
         ];
         $data = table('tiny_url_stats_daily', 'platform')->gets($params, $pager);
+
+        $today = new \DateTime();
+        $day = $today->format('Ymd');
+        $redis_key_visits_daily = sprintf('turl:visits:%s', $day);
+        $redis_key_openudid_daily = sprintf('turl:id:%s:%s', $tiny_url_symbol, $day);
+        $redis_key_ip_daily = sprintf('turl:ip:%s:%s', $tiny_url_symbol, $day);
+        $redis_key_ip_without_openudid_daily = sprintf('turl:ip-no-id:%s:%s', $tiny_url_symbol, $day);
+
+        $redis = \Swoole::$php->redis('cluster');
+        $num_openudid = (int) $redis->zCard($redis_key_openudid_daily);
+        $num_ip = (int) $redis->zCard($redis_key_ip_daily);
+        $num_ip_without_openudid = (int) $redis->lLen($redis_key_ip_without_openudid_daily);
+        $num_pv = (int) $redis->zScore($redis_key_visits_daily, $tiny_url_symbol);
+
+        // 只在第一页加上今天的数据
+        if ($page === 1)
+        {
+            $data_today = [
+                'num_openudid' => $num_openudid,
+                'num_ip' => $num_ip,
+                'num_ip_without_openudid' => $num_ip_without_openudid,
+                'num_pv' => $num_pv,
+                'stats_day' => $today->format('Y-m-d'),
+                'update_time' => $today->format('Y-m-d H:i:s'),
+            ];
+            array_unshift($data, $data_today);
+        }
 
         $this->assign('tiny_url', $tiny_url);
         $this->assign('tiny_url_id', $tiny_url_id);

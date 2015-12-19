@@ -53,6 +53,7 @@
                                         <th>IP数</th>
                                         <th>分时统计</th>
                                         <th>各城市访问统计</th>
+                                        <th>更新时间</th>
                                     </tr>
                                 </thead>
                                 <tbody id="data_table_body">
@@ -68,6 +69,7 @@
                                             <td><?=$row['num_ip']?></td>
                                             <td><a href ="/url_shortener/stats_hourly/?id=<?=$tiny_url_id?>&date=<?=$row['stats_day']?>">查看</a></td>
                                             <td><a href="/url_shortener/stats_by_city/?id=<?=$tiny_url_id?>&date=<?=$row['stats_day']?>">查看</a></td>
+                                            <td><?=$row['update_time']?></td>
                                         </tr>
                                     <?php
                                     }
