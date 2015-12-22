@@ -143,7 +143,6 @@ class LoginController extends \Swoole\Controller
     {
         if (ENV_NAME != 'product')
         {
-            //debug($username, $update);
             return true;
         }
 
@@ -159,7 +158,11 @@ class LoginController extends \Swoole\Controller
 
         $curl = new CURL();
         $curl->setHeader('Host', 'code.oa.com');
-        $res = $curl->post('http://10.10.2.2/'.$api, $update);
+
+        $this->log->info("CURL->post(" . $curl->getEffectiveUrl() . "), params=" .
+            json_encode($update, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
+        $res = $curl->post('http://10.10.2.2/' . $api, $update);
         if ($res)
         {
             $json = json_decode($res, true);
