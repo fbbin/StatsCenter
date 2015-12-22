@@ -136,24 +136,6 @@
             <i class="fa fa-lg fa-fw fa-link"></i>
             <span class="menu-item-parent">短网址管理</span>
         </a>
-        <!--ul>
-            <li <?php if ($this->isActiveMenu('url_shortener', 'add')){ ?>
-                class="active" <?php } ?>>
-                <a href="/url_shortener/add/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">新增短网址</span></a>
-            </li>
-            <li <?php if ($this->isActiveMenu('url_shortener', 'tiny_url_list')){ ?>
-                class="active" <?php } ?>>
-                <a href="/url_shortener/tiny_url_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">短网址列表</span></a>
-            </li>
-            <li <?php if ($this->isActiveMenu('url_shortener', 'add_category')){ ?>
-                class="active" <?php } ?>>
-                <a href="/url_shortener/add_category/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">新增短网址分类</span></a>
-            </li>
-            <li <?php if ($this->isActiveMenu('url_shortener', 'category_list')){ ?>
-                class="active" <?php } ?>>
-                <a href="/url_shortener/category_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">短网址分类列表</span></a>
-            </li>
-        </ul-->
     </li>
 </ul>
 </nav>
