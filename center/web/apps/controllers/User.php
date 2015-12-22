@@ -86,7 +86,7 @@ class User extends \App\LoginController
                 if (!empty($this->userinfo['git_password']))
                 {
                     $git_password = $this->getGitPassword($_POST['new_password']);
-                    $update = ['git_password' => $git_password];
+                    $update = ['git_password' => $git_password, ];
                     table('user', 'platform')->set($this->uid, $update);
                     //同步到内网平台
                     if (!$this->syncIntranet($this->userinfo['username'], $update))
