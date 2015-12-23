@@ -32,28 +32,27 @@
 
                         </div>
                         <div class="widget-body no-padding">
-                            <div class="widget-body-toolbar" style="height: 40px;">
-
-                            </div>
-
-                            <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
-                                <div class="dt-top-row">
-                                    <div id="data_table_stats_length" class="dataTables_length">
-                                    </div>
-                                    <div class="dataTables_filter">
+                            <div class="widget-body-toolbar">
+                                <div class="row">
+                                    <div class="col-md-8">
                                         <form id="form" class="form-inline" novalidate="novalidate" method="post">
                                             <div class="form-group">
                                                 <?=$form['name']?>
                                             </div>
                                             <div class='form-group'>
-<!--                                                <a id='submit' class='form-control btn-success input-sm'  href='javascript:void(0)'>提交查询</a>-->
                                                 <button type="submit" class="form-control btn-success input-sm">搜索
                                                 </button>
                                             </div>
                                         </form>
                                     </div>
+                                    <div class="col-md-4">
+                                        <a href="/setting/add_app" class="btn btn-primary pull-right">
+                                            <i class="fa fa-plus"></i> 添加APP
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
+
                                     <table id="data_table_stats" class="table table-bordered table-">
                                         <thead>
                                         <tr>

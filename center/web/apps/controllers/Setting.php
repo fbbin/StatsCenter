@@ -1131,10 +1131,6 @@ class Setting extends App\LoginController
             $data[$k]['has_init'] = $has_init;
         }
 
-
-        // var_dump($data);
-        // exit;
-
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $form['name'] = \Swoole\Form::input('name',isset($_POST['name']) ? $_POST['name'] : '',array('class'=>'form-control input-sm',
                                                                         'placeholder'=>"APP名称"));
@@ -1145,6 +1141,6 @@ class Setting extends App\LoginController
 
     function add_app()
     {
-        // $this->display();
+        $this->display();
     }
 }
