@@ -53,27 +53,27 @@
                                 </div>
                             </div>
 
-                                    <table id="data_table_stats" class="table table-bordered table-">
-                                        <thead>
-                                        <tr>
-                                            <th style="width: 50px">序列</th>
-                                            <th>ID</th>
-                                            <th>APP</th>
-                                            <th>APP_KEY</th>
-                                            <th>OS</th>
-                                            <th>状态</th>
-                                            <th>是否初始化</th>
-                                            <th>过期时间</th>
-                                            <th>创建时间</th>
-                                            <th>更新时间</th>
-                                            <th>操作</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="data_table_body">
-                                        <?php
-                                        foreach ($data as $k=>$d)
-                                        {
-                                        ?>
+                            <table id="data_table_stats" class="table table-bordered table-">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px">序列</th>
+                                        <th>ID</th>
+                                        <th>APP</th>
+                                        <th>APP_KEY</th>
+                                        <th>OS</th>
+                                        <th>状态</th>
+                                        <th>是否初始化</th>
+                                        <th>过期时间</th>
+                                        <th>创建时间</th>
+                                        <th>更新时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data_table_body">
+                                    <?php
+                                    foreach ($data as $k=>$d)
+                                    {
+                                    ?>
                                         <tr>
                                             <td><?= $k + 1 ?></td>
                                             <td><?= $d['id'] ?></td>
@@ -89,7 +89,7 @@
                                                     echo 'style="color:red"';
                                                 }
                                                 ?>
-                                                ><?= $d['enable_name'] ?></td>
+                                            ><?= $d['enable_name'] ?></td>
                                             <td
                                                 <?php
                                                 if ($d['has_init'] == 1)
@@ -99,19 +99,20 @@
                                                     echo 'style="color:red"';
                                                 }
                                                 ?>
-                                                ><?=$d['has_init_name']?></td>
-                                                <td><?=array_get($d, 'expire_time')?></td>
-                                                <td><?=$d['create_time']?></td>
-                                                <td><?=$d['update_time']?></td>
-                                                <td>
-                                                    <a href="/project/edit/?id=<?=$d['id']?>">编辑</a>
-                                                </td>
-                                            </tr>
-                                        <?php
-                                        }
-                                        ?>
-                                        </tbody>
-                                    </table>
+                                            ><?=$d['has_init_name']?></td>
+                                            <td><?=array_get($d, 'expire_time')?></td>
+                                            <td><?=$d['create_time']?></td>
+                                            <td><?=$d['update_time']?></td>
+                                            <td>
+                                                <a href="/project/edit/?id=<?=$d['id']?>">编辑</a>
+                                            </td>
+                                        </tr>
+                                    <?php
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+
                             <div class="dt-row dt-bottom-row">
                                 <div class="pager"> <span>总计：<strong>
                                             <?php echo $pager['total'];?>
