@@ -1,113 +1,149 @@
 <?php include __DIR__.'/../include/header.php'; ?>
-<!-- END NAVIGATION -->
 
 <!-- MAIN PANEL -->
 <div id="main" role="main">
 
 <!-- RIBBON -->
 <div id="ribbon">
-
-    <span class="ribbon-button-alignment">
-        <span id="refresh" class="btn btn-ribbon" data-title="refresh" rel="tooltip"
-                                                 data-placement="bottom"
-                                                 data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
-                                                 data-html="true"><i class="fa fa-refresh"></i></span> </span>
-
     <!-- breadcrumb -->
     <ol class="breadcrumb">
         <li>Home</li>
-        <li>Dashboard</li>
+        <li>APP管理</li>
     </ol>
 
 </div>
 
 <div id="content">
-    <!-- row -->
-    <div class="row">
+        <!-- row -->
+        <div class="row">
 
-        <!-- NEW WIDGET START -->
-        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-            <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0"
-                 data-widget-editbutton="false" role="widget" style="">
-                <header role="heading">
-                    <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+            <!-- NEW WIDGET START -->
+            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
 
-                    <h2>接口列表</h2>
-                    <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
-                <div role="content">
-                    <div id="delete_tip">
-                    </div>
-                    <div class="jarviswidget-editbox">
+                <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0"
+                     data-widget-editbutton="false" role="widget" style="">
+                    <header role="heading">
+                        <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                        <h2>APP管理</h2>
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                    <div role="content">
+
+                        <div class="jarviswidget-editbox">
+
+                        </div>
+                        <div class="widget-body no-padding">
+                            <div class="widget-body-toolbar" style="height: 40px;">
+
+                            </div>
+
+                            <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                                <div class="dt-top-row">
+                                    <div id="data_table_stats_length" class="dataTables_length">
+                                    </div>
+                                    <div class="dataTables_filter">
+                                        <form id="form" class="form-inline" novalidate="novalidate" method="post">
+                                            <div class="form-group">
+                                                <?=$form['name']?>
+                                            </div>
+                                            <div class='form-group'>
+<!--                                                <a id='submit' class='form-control btn-success input-sm'  href='javascript:void(0)'>提交查询</a>-->
+                                                <button type="submit" class="form-control btn-success input-sm">搜索
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                                    <table id="data_table_stats" class="table table-bordered table-">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 50px">序列</th>
+                                            <th>ID</th>
+                                            <th>APP</th>
+                                            <th>APP_KEY</th>
+                                            <th>OS</th>
+                                            <th>状态</th>
+                                            <th>是否初始化</th>
+                                            <th>过期时间</th>
+                                            <th>创建时间</th>
+                                            <th>更新时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="data_table_body">
+                                        <?php
+                                        foreach ($data as $k=>$d)
+                                        {
+                                        ?>
+                                        <tr>
+                                            <td><?= $k + 1 ?></td>
+                                            <td><?= $d['id'] ?></td>
+                                            <td><?= $d['name'] ?></td>
+                                            <td><?= $d['app_key'] ?></td>
+                                            <td><?= $d['os_name'] ?></td>
+                                            <td
+                                                <?php
+                                                if ($d['enable'] == 1)
+                                                {
+                                                    echo 'style="color:green"';
+                                                } else {
+                                                    echo 'style="color:red"';
+                                                }
+                                                ?>
+                                                ><?= $d['enable_name'] ?></td>
+                                            <td
+                                                <?php
+                                                if ($d['has_init'] == 1)
+                                                {
+                                                    echo 'style="color:green"';
+                                                } else {
+                                                    echo 'style="color:red"';
+                                                }
+                                                ?>
+                                                ><?=$d['has_init_name']?></td>
+                                                <td><?=array_get($d, 'expire_time')?></td>
+                                                <td><?=$d['create_time']?></td>
+                                                <td><?=$d['update_time']?></td>
+                                                <td>
+                                                    <a href="/project/edit/?id=<?=$d['id']?>">编辑</a>
+                                                </td>
+                                            </tr>
+                                        <?php
+                                        }
+                                        ?>
+                                        </tbody>
+                                    </table>
+                            <div class="dt-row dt-bottom-row">
+                                <div class="pager"> <span>总计：<strong>
+                                            <?php echo $pager['total'];?>
+                                        </strong> 条</span></div>
+                                <?php echo $pager['render'];?>
+                            </div>
+                            </div>
+
+                        </div>
+                        <!-- end widget content -->
 
                     </div>
+                    <!-- end widget div -->
 
-                    <div class="widget-body no-padding">
-                        <table id="data_table_stats" class="table table-hover table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th style="width: 100px; overflow-x: hidden;">接口ID</th>
-                                    <th style="width: 300px; overflow-x: hidden;">接口名称</th>
-                                    <th style="width: 300px; overflow-x: hidden;">接口别名</th>
-                                    <th>成功率阀值</th>
-                                    <th>调用量波动阀值</th>
-                                    <th style="width: 200px; overflow-x: hidden;">负责人</th>
-                                    <th>添加时间</th>
-                                    <th>操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="data_table_body">
-                                <?php
-                                foreach ($data as $d)
-                                {
-                                ?>
-                                    <tr height="32">
-                                        <td class=" "><?= $d['id'] ?></td>
-                                        <td class=" "><?= $d['name'] ?></td>
-                                        <td class=" "><?= $d['alias'] ?></td>
-                                        <td class=" "><?= $d['succ_hold'] ?></td>
-                                        <td class=" "><?= $d['wave_hold'] ?></td>
-                                        <td class=" "><?= $d['owner_uid_name'] ?></td>
-                                        <td class=" "><?= $d['addtime'] ?></td>
-                                        <td class=" ">
-                                            <a href="/setting/add_interface/?id=<?= $d['id'] ?>"
-                                               class="btn btn-info btn-xs">修改</a>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;
-                                            <a value="<?= $d['id'] ?>" onclick="deleteItem(this)"
-                                               href="javascript:void(0)" class="btn btn-danger btn-xs">删除</a>
-                                        </td>
-                                    </tr>
-                                <?php
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="pager-box">
-                        <?php echo $pager['render']; ?>
-                    </div>
                 </div>
-                <!-- end widget content -->
-
-            </div>
-            <!-- end widget div -->
-
-    </div>
-    <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1"
-         data-widget-editbutton="false" role="widget" style="">
+                <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-1"
+                     data-widget-editbutton="false" role="widget" style="">
 
 
-    </div>
-    <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-2"
-         data-widget-editbutton="false" role="widget" style="">
+                </div>
+                <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-2"
+                     data-widget-editbutton="false" role="widget" style="">
 
-    </div>
-    <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-3"
-         data-widget-editbutton="false" role="widget" style="">
+                </div>
+                <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" id="wid-id-3"
+                     data-widget-editbutton="false" role="widget" style="">
 
-    </div>
-        </article>
-        <!-- WIDGET END -->
-</div>
+                </div>
+            </article>
+            <!-- WIDGET END -->
+        </div>
 </div>
 <!-- END MAIN CONTENT -->
 
@@ -148,10 +184,13 @@ you can add as many as you like
         </li>
     </ul>
 </div>
-<?php include dirname(__DIR__).'/include/javascript.php'; ?>
+<?php include __DIR__.'/../include/javascript.php'; ?>
 <script>
     $(function() {
         pageSetUp();
+        $("#submit").click(function(){
+            $("#form").submit();
+        });
     });
 </script>
 
