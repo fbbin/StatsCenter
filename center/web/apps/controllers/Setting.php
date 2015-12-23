@@ -25,6 +25,16 @@ class Setting extends App\LoginController
         'sms' => '短信管理',
     );
 
+    static $app_enable = array(
+        1 => '开启',
+        2 => '关闭'
+    );
+
+    static $app_has_init = array(
+        1 => '已初始化',
+        2 => '未初始化'
+    );
+
     function add_interface()
     {
         $gets['select'] = 'id,username,realname,mobile';
@@ -1081,5 +1091,60 @@ class Setting extends App\LoginController
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $this->assign('data', $data);
         $this->display();
+    }
+
+    function app_list()
+    {
+        $uid = $_SESSION['user_id'];
+        //$gets['uids'] = $uid;
+        if (!empty($_POST['name']))
+        {
+            $name = trim($_POST['name']);
+            $gets['where'][] = "name like '%$name%'";;
+        }
+
+        $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
+        $gets['pageSize'] = 15;
+        $gets['order'] = 'enable asc,is_inited asc, name asc';
+        //\Swoole::$php->db->debug = 1;
+        $data = table('app', 'platform')->gets($gets,$pager);
+
+        foreach ($data as $k => $v)
+        {
+            $data[$k]['os_name'] = $this->config['os'][$v['os']];
+            $data[$k]['enable_name'] = self::$app_enable[$v['enable']];
+            $cert_info = \Swoole::$php->redis->hGetAll($v['app_key']."_".$v['os']);
+            $has_init = 2;
+            if (($cert_info['os'] == 1)
+                && isset($cert_info['apns_perm_file'])
+                && is_file($cert_info['apns_pem_file'])) {
+                $has_init = 1;
+            }
+            if (($cert_info['os'] == 2)
+                && isset($cert_info['umeng_pem_file'])
+                && isset($cert_info['umeng_key_file'])
+                && is_file($cert_info['umeng_pem_file'])
+                && is_file($cert_info['umeng_key_file'])) {
+                $has_init = 1;
+            }
+            $data[$k]['has_init_name'] = self::$app_has_init[$has_init];
+            $data[$k]['has_init'] = $has_init;
+        }
+
+
+        // var_dump($data);
+        // exit;
+
+        $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
+        $form['name'] = \Swoole\Form::input('name',isset($_POST['name']) ? $_POST['name'] : '',array('class'=>'form-control input-sm',
+                                                                        'placeholder'=>"APP名称"));
+        $this->assign('form', $form);
+        $this->assign('data', $data);
+        $this->display();
+    }
+
+    function add_app()
+    {
+        // $this->display();
     }
 }
