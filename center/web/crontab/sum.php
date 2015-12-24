@@ -256,8 +256,8 @@ class StatsSum
                     $res = $this->sumInterfaceData($ifce, $this->moduleInfo);
                     if ($res)
                     {
-                        Swoole\Filter::safe($name);
-                        echo "update interface [".$name."] success\n";
+                        Swoole\Filter::safe($ifce['name']);
+                        echo "update interface [".$ifce['name']."] success\n";
                     }
                 }
             }, false, false);
