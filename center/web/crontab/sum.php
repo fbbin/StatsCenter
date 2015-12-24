@@ -23,6 +23,7 @@ echo("[" . date("Y-m-d H:i:s") . "] elapsed time $elapsed s\n");
 class StatsSum
 {
     protected $date;
+    protected $moduleInfo;
 
     function __construct($date = null)
     {
@@ -61,7 +62,15 @@ class StatsSum
         Swoole::$php->db->query($sql2);
     }
 
-    function save($interface_id, $name, $module_info)
+    /**
+     * 汇总接口的数据
+     * @param $interface_id
+     * @param $name
+     * @param $module_info
+     * @return bool|int
+     * @throws Exception
+     */
+    function sumInterfaceData($interface_id, $name, $module_info)
     {
         $today = $this->date;
         $table = "stats_" . $today;
@@ -201,6 +210,13 @@ class StatsSum
         return __DIR__ . '/' . $this->date . '.sum.lock';
     }
 
+    function getModuleInfo()
+    {
+        $u_gets['select'] = "id,username";
+        $m_gets['select'] = 'name';
+        $this->moduleInfo = table("module")->getMap($m_gets, 'name');
+    }
+
     function sum()
     {
         $lock_file = $this->getLockFile();
@@ -215,55 +231,44 @@ class StatsSum
             unlink($lock_file);
         });
 
-        $i_gets['select'] = 'id,name,module_id';
-        $i_gets['order'] = 'name asc';
-        $interface_tmp = table("interface")->gets($i_gets );
+        //获取所有接口
+        $i_gets['select'] = 'id, name, module_id';
+        $i_gets['order'] = 'id desc';
+        $interface_tmp = table("interface")->gets($i_gets);
 
-        $mid2interface_id = array();
         $interface_info = array();
         foreach ($interface_tmp as $v)
         {
             $interface_info[$v['id']] = $v['name'];
-            $mid2interface_id[$v['module_id']][$v['id']] = $v['id'];
         }
 
-        $u_gets['select'] = "id,username";
-        $user = table("user", 'platform')->getMap($u_gets, "username");
+        $this->getModuleInfo();
 
-        $m_gets['select'] = 'id,name,owner_uid,backup_uids';
-        $module_tmp = table("module")->gets($m_gets);
-        $module_info = array();
-        $mid2username = array();
+        //工作进程数量
+        $worker_num = 10;
+        $worker_pool = array();
+        $pagesize = ceil(count($interface_info) / $worker_num);
 
-        foreach ($module_tmp as $v)
+        for ($i = 0; $i < $worker_num; $i++)
         {
-            $module_info[$v['id']] = $v['name'];
-            if (!empty($v['owner_uid']))
-            {
-                $uids = explode(',',$v['owner_uid']);
-                foreach ($uids as $uid)
+            $interfaces = array_slice($interface_info, $i * $pagesize, $pagesize);
+            $process = new swoole_process(function($o) use ($interfaces, $i) {
+                echo "worker#{$i} start\n";
+                foreach ($interfaces as $interface_id => $name)
                 {
-                    $mid2username['addr'][$v['id']][] = $user[$uid]."@chelun.com";
+                    $res = $this->sumInterfaceData($interface_id, $name, $this->moduleInfo);
+                    if ($res)
+                    {
+                        Swoole\Filter::safe($name);
+                        echo "update interface [".$name."] success\n";
+                    }
                 }
-            }
-            if (!empty($v['backup_uids']))
-            {
-                $cc_uids = explode(',',$v['backup_uids']);
-                foreach ($cc_uids as $uid)
-                {
-                    $mid2username['cc'][$v['id']][] = $user[$uid]."@chelun.com";
-                }
-            }
+            }, false, false);
+            $worker_pool[] = $process;
         }
-
-        foreach ($interface_info as $interface_id => $name)
+        for ($i = 0; $i < $worker_num; $i++)
         {
-            $res = $this->save($interface_id, $name, $module_info);
-            if ($res)
-            {
-                Swoole\Filter::safe($name);
-                echo "update interface [".$name."] success\n";
-            }
+            swoole_process::wait();
         }
     }
 }
