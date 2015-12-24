@@ -212,8 +212,8 @@ class StatsSum
 
     function getModuleInfo()
     {
-        $u_gets['select'] = "id,username";
-        $m_gets['select'] = 'name';
+        $u_gets['select'] = "id, username";
+        $m_gets['select'] = 'id, name';
         $this->moduleInfo = table("module")->getMap($m_gets, 'name');
     }
 
@@ -264,6 +264,7 @@ class StatsSum
                     }
                 }
             }, false, false);
+            $process->start();
             $worker_pool[] = $process;
         }
         for ($i = 0; $i < $worker_num; $i++)
