@@ -254,6 +254,8 @@ class StatsSum
             $interfaces = array_slice($interface_info, $i * $pagesize, $pagesize);
             $process = new swoole_process(function($o) use ($interfaces, $i) {
                 echo "worker#{$i} start\n";
+                Swoole::getInstance()->db->close();
+                Swoole::getInstance()->db->connect();
                 foreach ($interfaces as $interface_id => $name)
                 {
                     $res = $this->sumInterfaceData($interface_id, $name, $this->moduleInfo);
