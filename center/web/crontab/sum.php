@@ -70,8 +70,11 @@ class StatsSum
      * @return bool|int
      * @throws Exception
      */
-    function sumInterfaceData($interface_id, $name, $module_info)
+    function sumInterfaceData($ifce, $module_info)
     {
+        $interface_id = $ifce['id'];
+        $name = $ifce['name'];
+        $module_id = $ifce['module_id'];
         $today = $this->date;
         $table = "stats_" . $today;
         $sum_table = table('stats_sum_' . $today);
@@ -79,6 +82,10 @@ class StatsSum
         //$table = "stats_20150818";
         $gets['order'] = 'time_key asc';
         $gets['interface_id'] = $interface_id;
+        if (!empty($module_id))
+        {
+            $gets['module_id'] = $module_id;
+        }
         $res = table($table)->gets($gets);
         if (!empty($res))
         {
@@ -224,23 +231,11 @@ class StatsSum
         {
             die("StatsSum program is running.");
         }
-
         file_put_contents($lock_file, 'locked');
-        register_shutdown_function(function () use ($lock_file)
-        {
-            unlink($lock_file);
-        });
-
         //获取所有接口
         $i_gets['select'] = 'id, name, module_id';
         $i_gets['order'] = 'id desc';
-        $interface_tmp = table("interface")->gets($i_gets);
-
-        $interface_info = array();
-        foreach ($interface_tmp as $v)
-        {
-            $interface_info[$v['id']] = $v['name'];
-        }
+        $interface_info = table("interface")->gets($i_gets);
 
         $this->getModuleInfo();
 
@@ -253,12 +248,12 @@ class StatsSum
         {
             $interfaces = array_slice($interface_info, $i * $pagesize, $pagesize);
             $process = new swoole_process(function($o) use ($interfaces, $i) {
-                echo "worker#{$i} start\n";
+                echo "worker#{$i}, interface_num=".count($interfaces)." start\n";
                 Swoole::getInstance()->db->close();
                 Swoole::getInstance()->db->connect();
-                foreach ($interfaces as $interface_id => $name)
+                foreach ($interfaces as $ifce)
                 {
-                    $res = $this->sumInterfaceData($interface_id, $name, $this->moduleInfo);
+                    $res = $this->sumInterfaceData($ifce, $this->moduleInfo);
                     if ($res)
                     {
                         Swoole\Filter::safe($name);
@@ -273,5 +268,6 @@ class StatsSum
         {
             swoole_process::wait();
         }
+        unlink($lock_file);
     }
 }
