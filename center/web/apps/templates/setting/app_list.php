@@ -104,7 +104,7 @@
                                             <td><?=$d['create_time']?></td>
                                             <td><?=$d['update_time']?></td>
                                             <td>
-                                                <a href="/project/edit/?id=<?=$d['id']?>">编辑</a>
+                                                <a href="/setting/edit_app/?id=<?=$d['id']?>">编辑</a>
                                             </td>
                                         </tr>
                                     <?php

@@ -39,3 +39,16 @@ function array_get($array, $key, $default = '')
 {
     return isset($array[$key]) ? $array[$key] : $default;
 }
+
+function filter_value($value, $trim = false, $escape = true)
+{
+    if ($trim)
+    {
+        $value = trim($value);
+    }
+    if ($escape)
+    {
+        $value = htmlspecialchars($value);
+    }
+    return $value;
+}

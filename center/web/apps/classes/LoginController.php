@@ -248,4 +248,20 @@ class LoginController extends \Swoole\Controller
 
         }
     }
+
+    protected function validate(array $data, callable $callback, &$errors)
+    {
+        return call_user_func_array($callback, [$data, &$errors]);
+    }
+
+    protected function redirect($url)
+    {
+        return $this->http->header('Location', $url);
+    }
+
+    protected function error($msg)
+    {
+        $this->assign('msg', $msg);
+        $this->display('common/error.php');
+    }
 }
