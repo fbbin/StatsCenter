@@ -54,6 +54,11 @@
                 <a href="/setting/project_list/"><i class="fa fa-lg fa-fw fa-reorder"></i>
                     <span class="menu-item-parent">项目列表</span></a>
             </li>
+            <li <?php if ($this->isActiveMenu('setting', 'app_list')){ ?>
+                class="active" <?php } ?>>
+                <a href="/setting/app_list/"><i class="fa fa-lg fa-fw fa-reorder"></i>
+                    <span class="menu-item-parent">APP管理</span></a>
+            </li>
         </ul>
         </li>
     <?php
@@ -108,6 +113,7 @@
             class="active" <?php } ?>>
             <a href="/app_host/project_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">项目列表</span></a>
             </li> -->
+            <!--
             <li <?php if ($this->isActiveMenu('app_host', 'add_host')){ ?>
                 class="active" <?php } ?>>
                 <a href="/app_host/add_host/"><i class="fa fa-lg fa-fw fa-pencil"></i> <span class="menu-item-parent">新增App接口</span></a>
@@ -123,6 +129,11 @@
             <li <?php if ($this->isActiveMenu('app_host', 'rule_list')){ ?>
                 class="active" <?php } ?>>
                 <a href="/app_host/rule_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">指定列表</span></a>
+            </li>
+            -->
+            <li <?php if ($this->isActiveMenu('app_release', 'release_list')){ ?>
+                class="active" <?php } ?>>
+                <a href="/app_release/app_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">APP版本管理</span></a>
             </li>
             <li <?php if ($this->isActiveMenu('app_script', 'index')){ ?>
                 class="active" <?php } ?>>

@@ -12,18 +12,33 @@ class Setting extends App\LoginController
 {
     protected $prefix = 'YYPUSH';
 
-    public $alert_types = array(
+    public $alert_types = [
         1 => "谈窗",
         2 => '短信'
-    );
+    ];
 
-    static $roles = array(
+    static $roles = [
         'app' => '客户端控制',
         'stats' => '模调统计',
         'url' => '短链接系统',
         'common_admin' => 'common后台管理员',
         'sms' => '短信管理',
-    );
+    ];
+
+    static $app_enable = [
+        1 => '开启',
+        2 => '关闭'
+    ];
+
+    static $app_has_init = [
+        1 => '已初始化',
+        2 => '未初始化'
+    ];
+
+    static $app_upload_dir = [
+        1 => '/data/msg_push/ios_certification/',
+        2 => '/data/msg_push/android_certification/',
+    ];
 
     function add_interface()
     {
@@ -1081,5 +1096,235 @@ class Setting extends App\LoginController
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $this->assign('data', $data);
         $this->display();
+    }
+
+    function app_list()
+    {
+        $uid = $_SESSION['user_id'];
+        //$gets['uids'] = $uid;
+        if (!empty($_POST['name']))
+        {
+            $name = trim($_POST['name']);
+            $gets['where'][] = "name like '%$name%'";;
+        }
+
+        $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
+        $gets['pageSize'] = 15;
+        $gets['order'] = 'enable asc, is_inited asc, id desc';
+        //\Swoole::$php->db->debug = 1;
+        $data = table('app', 'platform')->gets($gets,$pager);
+
+        foreach ($data as $k => $v)
+        {
+            $data[$k]['os_name'] = $this->config['os'][$v['os']];
+            $data[$k]['enable_name'] = self::$app_enable[$v['enable']];
+            $cert_info = \Swoole::$php->redis->hGetAll($v['app_key']."_".$v['os']);
+            $has_init = 2;
+            if (!empty($cert_info)
+                && ($cert_info['os'] == 1)
+                && isset($cert_info['apns_pem_file'])
+                && is_file($cert_info['apns_pem_file'])) {
+                $has_init = 1;
+            }
+            if (!empty($cert_info)
+                && ($cert_info['os'] == 2)
+                && isset($cert_info['umeng_pem_file'])
+                && isset($cert_info['umeng_key_file'])
+                && is_file($cert_info['umeng_pem_file'])
+                && is_file($cert_info['umeng_key_file'])) {
+                $has_init = 1;
+            }
+            $data[$k]['has_init_name'] = self::$app_has_init[$has_init];
+            $data[$k]['has_init'] = $has_init;
+        }
+
+        $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
+        $form['name'] = \Swoole\Form::input('name',isset($_POST['name']) ? $_POST['name'] : '',array('class'=>'form-control input-sm',
+                                                                        'placeholder'=>"APP名称"));
+        $this->assign('form', $form);
+        $this->assign('data', $data);
+        $this->display();
+    }
+
+    function add_app()
+    {
+        $errors = [];
+        $form_data['os_list'] = $this->get_app_os_list();
+
+        if (empty($_POST))
+        {
+            $form_data['enable'] = \Swoole::$php->config['setting']['app_default_status'];
+        }
+        else
+        {
+            $form_data = array_merge($form_data, $_POST);
+            $db_data = $this->validate($form_data, [$this, 'editAppCheck'], $errors);
+
+            if (empty($errors))
+            {
+                $db_data['create_time'] = $db_data['update_time'] = date('Y-m-d H:i:s');
+                $insert_id = table('app', 'platform')->put($db_data);
+                if ($insert_id)
+                {
+                    \App\Session::flash('msg', '添加APP成功！');
+                    return $this->http->header('Location', "/setting/edit_app?id={$insert_id}");
+                }
+                else
+                {
+                    $errors[] = '添加失败，请联系管理员！';
+                }
+            }
+        }
+
+        $this->assign('errors', $errors);
+        $this->assign('form_data', $form_data);
+        $this->display('setting/edit_app.php');
+    }
+
+    function edit_app()
+    {
+        $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
+        if (!is_null($id))
+        {
+            $app = table('app', 'platform')->get($id)->get();
+        }
+        if (empty($app))
+        {
+            return $this->error('APP不存在！');
+        }
+
+        $errors = [];
+        $form_data['os_list'] = $this->get_app_os_list();
+
+        if (empty($_POST))
+        {
+            $form_data = array_merge($form_data, $app);
+        }
+        else
+        {
+            $form_data = array_merge($form_data, $_POST);
+            $db_data = $this->validate($form_data, [$this, 'editAppCheck'], $errors);
+
+            if (empty($errors))
+            {
+                $db_data['update_time'] = date('Y-m-d H:i:s');
+                $result = table('app', 'platform')->set($id, $db_data);
+                if ($result)
+                {
+                    \App\Session::flash('msg', '编辑APP成功！');
+                    return $this->redirect("/setting/edit_app?id={$id}");
+                }
+                else
+                {
+                    $errors[] = '编辑失败，请联系管理员！';
+                }
+            }
+        }
+
+        $this->assign('msg', \App\Session::get('msg'));
+        $this->assign('errors', $errors);
+        $this->assign('form_data', $form_data);
+        $this->display('setting/edit_app.php');
+    }
+
+    function app_gen_cert()
+    {
+        $id = array_get($_POST, 'id');
+        if (empty($id))
+        {
+            return \Swoole\JS::js_back("操作失败,请联系管理员");
+        }
+        $app = table('project', 'platform')->get($id)->get();
+
+        if ($app['os'] == 2) {
+            //umeng 证书初始化
+            $p12 = $app['umeng_cert'];
+            $pwd = $app['umeng_pwd'];
+
+            $file_name = basename($p12,'.p12');
+            $dir_name = dirname($p12);
+            //key
+            exec("openssl pkcs12 -nodes -nocerts -out $dir_name/$file_name.key -in $p12 -passin pass:$pwd",$outpot1);
+            \Swoole::$php->log->trace("openssl pkcs12 -nodes -nocerts -out $dir_name/$file_name.key -in $p12 -passin pass:$pwd".var_export($outpot1,1));            //cert
+            exec("openssl pkcs12 -nokeys -out $dir_name/$file_name.pem -in $p12 -passin pass:$pwd",$output2);
+            \Swoole::$php->log->trace("openssl pkcs12 -nokeys -out $dir_name/$file_name.pem -in $p12 -passin pass:$pwd".var_export($output2,1));
+            $app['umeng_pem_file'] = "$dir_name/$file_name.pem";
+            $app['umeng_key_file'] = "$dir_name/$file_name.key";
+            \Swoole::$php->redis->hMset($app['app_key']."_".$app['os'],$app);
+            \Swoole::$php->redis->sAdd(\Swoole::$php->config['redis_key']['app_sets'],$app['app_key']."_".$app['os']);
+
+            $insert['is_inited'] = 1;
+            $insert['update_time'] = date("Y-m-d H:i:s");
+            table('project', 'platform')->set($id,$insert);
+            \Swoole\JS::js_goto("初始化成功", "/setting/edit_app/?id={$id}");
+        } elseif ($app['os'] == 1) {
+            $p12 = $app['apns_cert'];
+            $pwd = $app['apns_pwd'];
+
+            $file_name = basename($p12,'.p12');
+            $dir_name = dirname($p12);
+            //key
+            $key_file = "$dir_name/$file_name.key";
+            exec("openssl pkcs12 -nodes -nocerts -out $key_file -in $p12 -passin pass:$pwd",$outpot1);
+            \Swoole::$php->log->trace("openssl pkcs12 -nodes -nocerts -out $key_file -in $p12 -passin pass:$pwd".var_export($outpot1,1));
+            //cert
+            $cert_file = "$dir_name/$file_name.cert";
+            exec("openssl pkcs12 -nokeys -out $cert_file -in $p12 -passin pass:$pwd",$output2);
+            \Swoole::$php->log->trace("openssl pkcs12 -nokeys -out $cert_file -in $p12 -passin pass:$pwd".var_export($output2,1));
+            //合成pem
+            exec("cat $key_file $cert_file >$dir_name/$file_name.pem",$output3);
+            \Swoole::$php->log->trace("cat $key_file $cert_file >$dir_name/$file_name.pem".var_export($output3,1));
+            $app['apns_pem_file'] = "$dir_name/$file_name.pem";
+            \Swoole::$php->redis->hMset($app['app_key']."_".$app['os'],$app);
+            \Swoole::$php->redis->sAdd(\Swoole::$php->config['redis_key']['app_sets'],$app['app_key']."_".$app['os']);
+
+            $insert['is_inited'] = 1;
+            $insert['update_time'] = date("Y-m-d H:i:s");
+            table('project', 'platform')->set($id,$insert);
+            \Swoole\JS::js_goto("初始化成功", "/setting/edit_app/?id={$id}");
+        } else {
+            \Swoole\JS::js_back("数据错误,请联系管理员");
+        }
+    }
+
+    private function get_app_os_list()
+    {
+        $os_list = \Swoole::$php->config['setting']['app_os'];
+        unset($os_list[3]);
+        return $os_list;
+    }
+
+    protected function editAppCheck(array $data, &$errors)
+    {
+        $db_data['name'] = trim(array_get($data, 'name'));
+        if ($db_data['name'] === '')
+        {
+            $errors[] = 'APP名称不能为空！';
+        }
+        $db_data['package_name'] = trim(array_get($data, 'package_name'));
+        if ($db_data['package_name'] === '')
+        {
+            $errors[] = '包名不能为空！';
+        }
+        $db_data['app_key'] = trim(array_get($data, 'app_key'));
+        if ($db_data['app_key'] === '')
+        {
+            $errors[] = 'app_key不能为空！';
+        }
+        $db_data['os'] = intval(array_get($data, 'os'));
+        if (!in_array($db_data['os'], array_keys($data['os_list'])))
+        {
+            $errors[] = 'OS值非法！';
+        }
+        $db_data['enable'] = intval(array_get($data, 'enable'));
+        $enable_status_list = \Swoole::$php->config['setting']['app_enable_status_list'];
+        if (!in_array($db_data['enable'], $enable_status_list))
+        {
+            $errors[] = '项目状态值非法！';
+        }
+        $db_data['apns_pwd'] = trim(array_get($data, 'apns_pwd'));
+        $db_data['umeng_pwd'] = trim(array_get($data, 'umeng_pwd'));
+
+        return $db_data;
     }
 }
