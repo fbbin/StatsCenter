@@ -46,6 +46,7 @@ class App_release extends \App\LoginController
         }
 
         $query_params = [
+            'where' => 'app_id = {$app_id}',
             'page' => intval(array_get($_GET, 'page', 1)),
             'pagesize' => 15,
             'order' => 'version_int DESC, id DESC',
