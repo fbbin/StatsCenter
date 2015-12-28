@@ -1190,7 +1190,7 @@ class Setting extends App\LoginController
         }
         if (empty($app))
         {
-            return $this->error('APP ID不存在！');
+            return $this->error('APP不存在！');
         }
 
         $errors = [];

@@ -52,3 +52,32 @@ function filter_value($value, $trim = false, $escape = true)
     }
     return $value;
 }
+
+function array_filter_value($array, $trim = false, $escape = true, $flag = null)
+{
+    $new_array = [];
+    foreach ($array as $key => $value)
+    {
+        if (($flag === ARRAY_FILTER_USE_BOTH) || ($flag === ARRAY_FILTER_USE_KEY))
+        {
+            $key = filter_value($key, $trim, $escape);
+        }
+        if (($flag === ARRAY_FILTER_USE_BOTH) || (is_null($flag)))
+        {
+            $value = filter_value($value, $trim, $escape);
+        }
+        $new_array[$key] = $value;
+    }
+    return $new_array;
+}
+
+function version_string_to_int($version)
+{
+    $segments = explode('.', $version);
+    if (count($segments) !== 3)
+    {
+        return false;
+    }
+    $segments = array_map('intval', $segments);
+    return $segments[0] * 10 * 256 * 256 + $segments[1] * 10 * 256 + $segments[2] * 10;
+}

@@ -9,8 +9,8 @@
         <ol class="breadcrumb">
             <li><a href="/">首页</a></li>
             <li><a href="/app_release/app_list">APP列表</a></li>
-            <li><a href="/app_release/channel_list">渠道列表</a></li>
-            <li>新增渠道</li>
+            <li><a href="/app_release/release_list?app_id=<?=$app['id']?>">「<?=$app['name']?>」APP版本管理</a></li>
+            <li>新增「<?=$app['name']?> <?=$release['version_number']?>」渠道包</li>
         </ol>
         </ol>
     </div>
@@ -42,25 +42,24 @@
                      data-widget-editbutton="false" role="widget" style="width: 600px;float: left">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-pencil"></i> </span>
-                        <h2>新增渠道</h2>
+                        <h2>新增「<?=$app['name']?> <?=$release['version_number']?>」渠道包</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div class="widget-body">
                         <form id="form1" class="smart-form" role="form" action="" method="post" enctype="multipart/form-data">
                             <fieldset>
                                 <section>
-                                    <label class="label">渠道名称 <b class="text-danger">*</b></label>
-                                    <label class="input">
-                                        <?=\Swoole\Form::input('name', filter_value(array_get($form_data, 'name'), true))?>
+                                    <label class="label">渠道 <b class="text-danger">*</b></label>
+                                    <label class="select">
+                                        <?=\Swoole\Form::select('app_channel', array_filter_value(array_get($form_data, 'channel_list'), true), filter_value(array_get($form_data, 'app_channel'), true), false, ['class' => 'select2'], false)?>
                                     </label>
                                 </section>
                             </fieldset>
                             <fieldset>
                                 <section>
-                                    <label class="label">渠道标识符 <b class="text-danger">*</b></label>
+                                    <label class="label">下载地址 <b class="text-danger">*</b></label>
                                     <label class="input">
-                                        <?=\Swoole\Form::input('channel_key', filter_value(array_get($form_data, 'channel_key')))?>
+                                        <?=\Swoole\Form::input('release_link', filter_value(array_get($form_data, 'release_link')))?>
                                     </label>
-                                    <div class="note">英文数字字母组合</div>
                                 </section>
                             </fieldset>
                             <footer>

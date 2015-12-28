@@ -133,7 +133,7 @@
             -->
             <li <?php if ($this->isActiveMenu('app_release', 'release_list')){ ?>
                 class="active" <?php } ?>>
-                <a href="/app_release/release_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">APP新版本管理</span></a>
+                <a href="/app_release/app_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">APP版本管理</span></a>
             </li>
             <li <?php if ($this->isActiveMenu('app_script', 'index')){ ?>
                 class="active" <?php } ?>>
