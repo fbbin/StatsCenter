@@ -463,6 +463,7 @@ class App_release extends \App\LoginController
         }
         $force_upgrade_strategy = intval($force_upgrade_strategy);
         $db_data['force_upgrade'] = 0;
+        $db_data['force_upgrade_version'] = '';
         if ($force_upgrade_strategy === APP_FORCE_UPGRADE_STRATEGY_ALL)
         {
             $db_data['force_upgrade'] = 1;
