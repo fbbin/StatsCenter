@@ -264,10 +264,27 @@ class App_release extends \App\LoginController
         {
             return $this->error('APP渠道为空，<a href="/app_release/add_channel">点这里新增APP渠道</a>！');
         }
+
+        // 找出已有下载包的渠道
+        $query_params = [
+            'where' => sprintf('release_id = %d AND app_id = %d', $release_id, $app_id),
+        ];
+        $link_list = table('app_release_link', 'platform')->gets($query_params);
+        $released_channel_id_list = array_map('intval', array_rebuild($link_list, 'channel_id', 'channel_id'));
+
         $form_data['channel_list'] = [];
         foreach ($channel_list as $channel)
         {
-            $form_data['channel_list'][$channel['id']] = $channel['name'];
+            // 只记录没有下载包的渠道
+            if (!in_array($channel['id'], $released_channel_id_list))
+            {
+                $form_data['channel_list'][$channel['id']] = $channel['name'];
+            }
+        }
+
+        if (empty($form_data['channel_list']))
+        {
+            return $this->error('所有渠道都有下载包了！');
         }
 
         if (!empty($_POST))
@@ -489,14 +506,14 @@ class App_release extends \App\LoginController
                 if (isset($data['release_id']))
                 {
                     $query_params = [
-                        'where' => sprintf("version_number = '%s' AND id != %d", $db_data['version_number'], $data['release_id']),
+                        'where' => sprintf("app_id = %d AND version_number = '%s' AND id != %d", $data['app_id'], $db_data['version_number'], $data['release_id']),
                     ];
                     $num_releases = table('app_release', 'platform')->count($query_params);
                 }
                 else
                 {
                     $query_params = [
-                        'where' => sprintf("version_number = '%s'", $db_data['version_number']),
+                        'where' => sprintf("app_id = %d AND version_number = '%s'", $data['app_id'], $db_data['version_number']),
                     ];
                     $num_releases = table('app_release', 'platform')->gets($query_params);
                 }
