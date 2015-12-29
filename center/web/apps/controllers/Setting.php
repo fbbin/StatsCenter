@@ -1200,6 +1200,7 @@ class Setting extends App\LoginController
         }
 
         $errors = [];
+        $form_data['app_id'] = $id;
         $form_data['os_list'] = $this->get_app_os_list();
 
         if (empty($_POST))
@@ -1331,6 +1332,49 @@ class Setting extends App\LoginController
         }
         $db_data['apns_pwd'] = trim(array_get($data, 'apns_pwd'));
         $db_data['umeng_pwd'] = trim(array_get($data, 'umeng_pwd'));
+
+        if (empty($errors))
+        {
+            if (!empty($data['app_id']))
+            {
+                $query_params = [
+                    'where' => sprintf('os = %d AND (package_name = "%s" OR app_key = %s) AND id != %d', $db_data['os'], $db_data['package_name'], $data['app_key'], $data['app_id']),
+                ];
+            }
+            else
+            {
+                $query_params = [
+                    'where' => sprintf('os = %d AND (package_name = "%s" OR app_key = "%s")', $db_data['os'], $db_data['package_name'], $data['app_key']),
+                ];
+            }
+            $app_list = table('app', 'platform')->gets($query_params);
+            if (!empty($app_list))
+            {
+                $key_exists = false;
+                $package_exists = false;
+                foreach ($app_list as $app)
+                {
+                    if ($app['package_name'] === $db_data['package_name'])
+                    {
+                        $package_exists = true;
+                    }
+                    if ($app['app_key'] === $db_data['app_key'])
+                    {
+                        $key_exists = true;
+                    }
+                }
+
+                if ($package_exists)
+                {
+                    $errors[] = sprintf('同一系统(%s)不能存在相同包名(%s)', $data['os_list'][$db_data['os']], $db_data['package_name']);
+                }
+
+                if ($key_exists)
+                {
+                    $errors[] = sprintf('同一系统(%s)不能存在相同的app_key(%s)', $data['os_list'][$db_data['os']], $db_data['app_key']);
+                }
+            }
+        }
 
         return $db_data;
     }

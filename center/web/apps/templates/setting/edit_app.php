@@ -34,16 +34,15 @@
 
             <!-- NEW WIDGET START -->
             <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-
                 <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0"
                      data-widget-editbutton="false" role="widget" style="width: 600px;float: left">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-pencil"></i> </span>
-                        <h2>项目管理</h2>
+                        <h2><?=$page_title?></h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div class="widget-body">
                         <form id="form1" class="smart-form" role="form" action="" method="post" enctype="multipart/form-data">
-                            <legend><strong>项目信息</strong></legend>
+                            <legend><strong>APP信息</strong></legend>
                             <fieldset>
                                 <section>
                                     <label class="label">APP名称 <b class="text-danger">*</b></label>
