@@ -54,7 +54,6 @@
                             <table id="data_table_stats" class="table table-bordered table-">
                                 <thead>
                                     <tr>
-                                        <th style="width: 50px">序列</th>
                                         <th>ID</th>
                                         <th>APP</th>
                                         <th>包名</th>
@@ -70,11 +69,10 @@
                                 </thead>
                                 <tbody id="data_table_body">
                                     <?php
-                                    foreach ($data as $k=>$d)
+                                    foreach ($data as $d)
                                     {
                                     ?>
                                         <tr>
-                                            <td><?= $k + 1 ?></td>
                                             <td><?= $d['id'] ?></td>
                                             <td><?= $d['name'] ?></td>
                                             <td><?= $d['package_name'] ?></td>

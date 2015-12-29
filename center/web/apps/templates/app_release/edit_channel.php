@@ -10,7 +10,7 @@
             <li><a href="/">首页</a></li>
             <li><a href="/app_release/app_list">APP列表</a></li>
             <li><a href="/app_release/channel_list">渠道列表</a></li>
-            <li>新增渠道</li>
+            <li><?=$page_title?></li>
         </ol>
         </ol>
     </div>
@@ -42,7 +42,7 @@
                      data-widget-editbutton="false" role="widget" style="width: 600px;float: left">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-pencil"></i> </span>
-                        <h2>新增渠道</h2>
+                        <h2><?=$page_title?></h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div class="widget-body">
                         <form id="form1" class="smart-form" role="form" action="" method="post" enctype="multipart/form-data">

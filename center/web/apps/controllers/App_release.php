@@ -14,6 +14,7 @@ class App_release extends \App\LoginController
         $data = table('app', 'platform')->gets($query_params, $pager);
 
         $os_list = model('App')->getOSList();
+        $app_id_list = [];
         foreach ($data as &$row)
         {
             if (isset($os_list[$row['os']]))
@@ -25,11 +26,23 @@ class App_release extends \App\LoginController
                 $row['os_name'] = \Swoole::$php->config['setting']['app_os_name'][APP_OS_UNKNOWN];
                 $row['os'] = APP_OS_UNKNOWN;
             }
+
+            $app_id_list[] = intval($row['id']);
         }
         unset($row);
 
+        $query_params = [
+            'select' => 'app_id, max(version_int) max_version, count(*) num_version',
+            'where' => sprintf('app_id IN (%s)', implode(',', $app_id_list)),
+            'group' => 'app_id',
+        ];
+        $release_info_list = table('app_release', 'platform')->gets($query_params);
+        $release_info_list = array_rebuild($release_info_list, 'app_id');
+
+        $this->assign('page_title', 'APP列表');
         $this->assign('pager', $pager);
         $this->assign('data', $data);
+        $this->assign('release_info_list', $release_info_list);
         $this->display();
     }
 
@@ -148,16 +161,27 @@ class App_release extends \App\LoginController
 
     function edit_release()
     {
-        $release_id = !empty($_GET['id']) ? intval($_GET['id']) : null;
-        if (!is_null($release_id))
+        $release = null;
+        if (!empty($_GET['id']))
         {
+            $release_id = intval($_GET['id']);
             $release = table('app_release', 'platform')->get($release_id)->get();
         }
+        else
+        {
+            if (isset($_GET['version']))
+            {
+                $version_number = trim(array_get($_GET, 'version'));
+                $release = table('app_release', 'platform')->get($version_number, 'version_number')->get();
+            }
+        }
+
         if (empty($release))
         {
             return $this->error('APP版本不存在！');
         }
         $app_id = intval($release['app_id']);
+        $release_id = intval($release['id']);
         $app = table('app', 'platform')->get($app_id)->get();
         if (empty($app))
         {
@@ -168,6 +192,7 @@ class App_release extends \App\LoginController
         {
             $form_data = $_POST;
             $form_data['app_id'] = $app_id;
+            $form_data['release_id'] = $release_id;
             $db_data = $this->validate($form_data, [$this, 'editReleaseCheck'], $errors);
             if (empty($errors))
             {
@@ -353,7 +378,7 @@ class App_release extends \App\LoginController
             $db_data = $this->validate($form_data, [$this, 'editChannelCheck'], $errors);
             if (empty($errors))
             {
-                $db_data['create_time'] = $db_date['update_time'] = date('Y-m-d H:i:s');
+                $db_data['create_time'] = $db_data['update_time'] = date('Y-m-d H:i:s');
                 $insert_id = table('app_channel', 'platform')->put($db_data);
                 if ($insert_id)
                 {
@@ -367,6 +392,7 @@ class App_release extends \App\LoginController
             }
         }
 
+        $this->assign('page_title', '新增渠道');
         $this->assign('form_data', !empty($form_data) ? $form_data : []);
         $this->assign('errors', !empty($errors) ? $errors : []);
         $this->display('app_release/edit_channel.php');
@@ -387,7 +413,8 @@ class App_release extends \App\LoginController
         if (!empty($_POST))
         {
             $form_data = $_POST;
-            $form_data['channel'] = $channel;
+            $form_data['channel_id'] = $id;
+            // $form_data['channel'] = $channel;
             $db_data = $this->validate($form_data, [$this, 'editChannelCheck'], $errors);
             if (empty($errors))
             {
@@ -409,6 +436,7 @@ class App_release extends \App\LoginController
             $form_data = $channel;
         }
 
+        $this->assign('page_title', '编辑渠道');
         $this->assign('form_data', $form_data);
         $this->assign('msg', \App\Session::get('msg'));
         $this->assign('errors', !empty($errors) ? $errors : []);
@@ -440,8 +468,22 @@ class App_release extends \App\LoginController
                 $db_data['version_number'] = sprintf('%d.%d.%d', $version_high, $version_middle, $version_low);
                 $db_data['version_int'] = version_string_to_int($db_data['version_number']);
 
-                $record = table('app_release', 'platform')->get($db_data['version_number'], 'version_number');
-                if ($record->exist())
+                if (isset($data['release_id']))
+                {
+                    $query_params = [
+                        'where' => sprintf("version_number = '%s' AND id != %d", $db_data['version_number'], $data['release_id']),
+                    ];
+                    $num_releases = table('app_release', 'platform')->count($query_params);
+                }
+                else
+                {
+                    $query_params = [
+                        'where' => sprintf("version_number = '%s'", $db_data['version_number']),
+                    ];
+                    $num_releases = table('app_release', 'platform')->gets($query_params);
+                }
+
+                if ($num_releases)
                 {
                     $errors[] = "欲增加的版本号({$db_data['version_number']})已存在！";
                 }
@@ -573,9 +615,20 @@ class App_release extends \App\LoginController
         }
         if (empty($errors))
         {
-            $query_params = [
-                'where' => "`name` = '{$db_data['name']}' OR `channel_key` = '{$db_data['channel_key']}'",
-            ];
+            $db = \Swoole::$php->db('platform');
+            if (isset($data['channel_id']))
+            {
+                $query_params = [
+                    'where' => sprintf("(`name` = '%s' OR `channel_key` = '%s') AND `id` != %d", $db->quote($db_data['name']), $db->quote($db_data['channel_key']), intval($data['channel_id'])),
+                ];
+            }
+            else
+            {
+                $query_params = [
+                    'where' => sprintf("`name` = '%s' OR `channel_key` = '%s'", $db->quote($db_data['name']), $db->quote($db_data['channel_key'])),
+                ];
+            }
+
             $channel_list = table('app_channel', 'platform')->gets($query_params);
             $name_exists = false;
             $key_exists = false;
@@ -590,11 +643,11 @@ class App_release extends \App\LoginController
                     $key_exists = true;
                 }
             }
-            if ($name_exists && ($data['channel']['name'] !== $db_data['name']))
+            if ($name_exists)
             {
                 $errors[] = '已存在同名的渠道名称！';
             }
-            if ($key_exists && ($data['channel']['channel_key'] !== $db_data['channel_key']))
+            if ($key_exists)
             {
                 $errors[] = '已存在同名的渠道标识符！';
             }

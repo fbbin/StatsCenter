@@ -79,5 +79,16 @@ function version_string_to_int($version)
         return false;
     }
     $segments = array_map('intval', $segments);
-    return $segments[0] * 10 * 256 * 256 + $segments[1] * 10 * 256 + $segments[2] * 10;
+    return $segments[0] * 256 * 256 + $segments[1] * 256 + $segments[2];
+}
+
+function version_int_to_string($num)
+{
+    $list = [];
+    while ($num !== 0)
+    {
+        $list[] = $num % 256;
+        $num = intval($num / 256);
+    }
+    return implode('.', array_reverse($list));
 }
