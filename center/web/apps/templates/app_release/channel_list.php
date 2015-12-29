@@ -56,7 +56,7 @@
                                         <td><?=$row['update_time']?></td>
                                         <td>
                                             <a href="/app_release/edit_channel?id=<?=$row['id']?>" class="btn btn-info btn-xs">编辑</a>
-                                            <a href="/app_release/delete_channel?id=<?=$row['id']?>" class="btn btn-danger btn-xs">删除</a>
+                                            <a href="/app_release/delete_channel?id=<?=$row['id']?>" class="btn btn-danger btn-xs btn-delete">删除</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -85,6 +85,9 @@
         pageSetUp();
         $("#submit").click(function(){
             $("#form").submit();
+        });
+        $('.btn-delete').click(function () {
+            return confirm('确认删除？');
         });
     });
 </script>
