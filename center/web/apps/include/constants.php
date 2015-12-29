@@ -1,5 +1,9 @@
 <?php
 
+define('DB_STATUS_DISABLED', 0);
+define('DB_STATUS_ENABLED', 1);
+define('DB_STATUS_DELETED', 2);
+
 define('APP_STATUS_ENABLED', 1);
 define('APP_STATUS_DISABLED', 2);
 define('APP_OS_UNKNOWN', 0);

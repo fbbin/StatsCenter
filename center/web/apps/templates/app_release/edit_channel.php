@@ -60,7 +60,7 @@
                                     <label class="input">
                                         <?=\Swoole\Form::input('channel_key', filter_value(array_get($form_data, 'channel_key')))?>
                                     </label>
-                                    <div class="note">英文数字字母组合</div>
+                                    <div class="note">英文数字字母组合，区分大小写，即“ABC”等价于“abc”</div>
                                 </section>
                             </fieldset>
                             <footer>

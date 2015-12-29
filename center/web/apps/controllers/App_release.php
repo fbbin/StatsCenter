@@ -59,7 +59,7 @@ class App_release extends \App\LoginController
         }
 
         $query_params = [
-            'where' => "app_id = {$app_id}",
+            'where' => sprintf("app_id = %d AND status != %d", $app_id, DB_STATUS_DELETED),
             'page' => intval(array_get($_GET, 'page', 1)),
             'pagesize' => 15,
             'order' => 'version_int DESC, id DESC',
@@ -359,6 +359,7 @@ class App_release extends \App\LoginController
     function channel_list()
     {
         $query_params = [
+            'where' => sprintf('status != %d', DB_STATUS_DELETED),
             'page' => intval(array_get($_GET, 'page', 1)),
             'pagesize' => 15,
             'order' => 'id desc',
@@ -403,18 +404,21 @@ class App_release extends \App\LoginController
         $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
         if (!is_null($id))
         {
-            $channel = table('app_channel', 'platform')->get($id)->get();
+            $query_params = [
+                'where' => sprintf('id = %d AND status != %d', $id, DB_STATUS_DELETED),
+            ];
+            $channel_list = table('app_channel', 'platform')->gets($query_params);
         }
-        if (empty($channel))
+        if (empty($channel_list))
         {
             return $this->error('APP渠道不存在！');
         }
+        $channel = reset($channel_list);
 
         if (!empty($_POST))
         {
             $form_data = $_POST;
             $form_data['channel_id'] = $id;
-            // $form_data['channel'] = $channel;
             $db_data = $this->validate($form_data, [$this, 'editChannelCheck'], $errors);
             if (empty($errors))
             {
@@ -445,7 +449,26 @@ class App_release extends \App\LoginController
 
     function delete_channel()
     {
-        exit('wait');
+        $channel_id = intval(array_get($_GET, 'id', null));
+        if (!is_null($channel_id))
+        {
+            $query_params = [
+                'where' => sprintf('channel_id = %d AND status != %d', $channel_id, DB_STATUS_DELETED),
+            ];
+            $num_link = table('app_release_link', 'platform')->count($query_params);
+            if ($num_link)
+            {
+                return $this->error('该渠道的下载包不为空，请先清空改渠道的下载包。');
+            }
+
+            $result = table('app_channel', 'platform')->set($channel_id, ['status' => DB_STATUS_DELETED]);
+            if (!$result)
+            {
+                return $this->error('DB错误，请联系管理员！');
+            }
+        }
+
+        return $this->success('操作成功！', '/app_release/channel_list');
     }
 
     function editReleaseCheck($data, &$errors)
@@ -609,6 +632,7 @@ class App_release extends \App\LoginController
         {
             $errors[] = '渠道标识符不能为空！';
         }
+        $db_data['channel_key_lowercase'] = strtolower($db_data['channel_key']);
         if (!preg_match('/^[a-zA-Z0-9]+$/', $db_data['channel_key']))
         {
             $errors[] = '渠道标识符只能是英文数字字母组合！';
@@ -619,13 +643,13 @@ class App_release extends \App\LoginController
             if (isset($data['channel_id']))
             {
                 $query_params = [
-                    'where' => sprintf("(`name` = '%s' OR `channel_key` = '%s') AND `id` != %d", $db->quote($db_data['name']), $db->quote($db_data['channel_key']), intval($data['channel_id'])),
+                    'where' => sprintf("(`name` = '%s' OR `channel_key_lowercase` = '%s') AND `id` != %d", $db->quote($db_data['name']), $db->quote($db_data['channel_key_lowercase']), intval($data['channel_id'])),
                 ];
             }
             else
             {
                 $query_params = [
-                    'where' => sprintf("`name` = '%s' OR `channel_key` = '%s'", $db->quote($db_data['name']), $db->quote($db_data['channel_key'])),
+                    'where' => sprintf("`name` = '%s' OR `channel_key_lowercase` = '%s'", $db->quote($db_data['name']), $db->quote($db_data['channel_key_lowercase'])),
                 ];
             }
 
@@ -638,7 +662,7 @@ class App_release extends \App\LoginController
                 {
                     $name_exists = true;
                 }
-                if ($channel['channel_key'] === $db_data['channel_key'])
+                if ($channel['channel_key_lowercase'] === $db_data['channel_key_lowercase'])
                 {
                     $key_exists = true;
                 }

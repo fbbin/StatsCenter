@@ -266,6 +266,11 @@ class LoginController extends \Swoole\Controller
         return $this->http->header('Location', $url);
     }
 
+    protected function success($msg, $url)
+    {
+        return \Swoole\JS::js_goto($msg, $url);
+    }
+
     protected function error($msg)
     {
         $this->assign('msg', $msg);

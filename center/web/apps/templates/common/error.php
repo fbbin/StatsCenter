@@ -10,12 +10,8 @@
 
         <!-- breadcrumb -->
         <ol class="breadcrumb">
-            <li>
-                <a href="/">首页</a>
-            </li>
-            <li>
-                出错了！
-            </li>
+            <li><a href="/">首页</a></li>
+            <li>出错了！</li>
         </ol>
         <!-- end breadcrumb -->
 
