@@ -374,6 +374,27 @@ class App_release extends \App\LoginController
         $this->display('app_release/edit_channel_release_link.php');
     }
 
+    function delete_channel_release_link()
+    {
+        $release_link_id = intval(array_get($_GET, 'id', null));
+        if (!is_null($release_link_id))
+        {
+            $release_link = table('app_release_link', 'platform')->get($release_link_id)->get();
+        }
+        if (empty($release_link))
+        {
+            return $this->error('APP渠道包不存在！');
+        }
+
+        $result = table('app_release_link', 'platform')->del($release_link_id);
+        if (!$result)
+        {
+            return $this->error('DB错误，请联系管理员！');
+        }
+
+        return $this->success('操作成功', '/app_release/release_list?app_id=' . intval($release_link['app_id']));
+    }
+
     function channel_list()
     {
         $query_params = [

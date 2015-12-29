@@ -92,7 +92,10 @@
                                                                 <td>否</td>
                                                                 -->
                                                                 <td><a href="<?=$link['release_link']?>"><?=$link['release_link']?></a></td>
-                                                                <td><a href="/app_release/edit_channel_release_link?id=<?=$link['id']?>" class="btn btn-info btn-xs">编辑</a></td>
+                                                                <td>
+                                                                    <a href="/app_release/edit_channel_release_link?id=<?=$link['id']?>" class="btn btn-info btn-xs">编辑</a>
+                                                                    <a href="/app_release/delete_channel_release_link?id=<?=$link['id']?>" class="btn btn-danger btn-xs btn-delete">删除</a>
+                                                                </td>
                                                             </tr>
                                                         <?php endforeach; ?>
                                                     </tbody>
@@ -162,7 +165,9 @@
 <script>
     $(function() {
         pageSetUp();
-        $('[data-toggle="tooltip"]').tooltip();
+        $('.btn-delete').click(function () {
+            return confirm('确认删除？');
+        });
         /**
         $('.downswitch').click(function () {
             var release_id = $(this).data('releaseid');
