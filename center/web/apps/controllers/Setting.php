@@ -1114,9 +1114,10 @@ class Setting extends App\LoginController
         //\Swoole::$php->db->debug = 1;
         $data = table('app', 'platform')->gets($gets,$pager);
 
+        $os_list = $this->get_app_os_list();
         foreach ($data as $k => $v)
         {
-            $data[$k]['os_name'] = $this->config['os'][$v['os']];
+            $data[$k]['os_name'] = $os_list[$v['os']];
             $data[$k]['enable_name'] = self::$app_enable[$v['enable']];
             $cert_info = \Swoole::$php->redis->hGetAll($v['app_key']."_".$v['os']);
             $has_init = 2;
@@ -1141,6 +1142,7 @@ class Setting extends App\LoginController
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $form['name'] = \Swoole\Form::input('name',isset($_POST['name']) ? $_POST['name'] : '',array('class'=>'form-control input-sm',
                                                                         'placeholder'=>"APP名称"));
+
         $this->assign('form', $form);
         $this->assign('data', $data);
         $this->display();
