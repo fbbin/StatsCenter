@@ -840,6 +840,9 @@ class Setting extends App\LoginController
             $this->assign('crowdUser', $crowdUser);
         }
 
+        // var_dump($form['rules'] = Swoole\Form::muti_select('rules[]', self::$roles, explode(',', $user['rules']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false));
+        // exit;
+
         $form['project_id'] = Swoole\Form::muti_select('project_id[]', $projects, explode(',', $user['project_id']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
         $form['rules'] = Swoole\Form::muti_select('rules[]', self::$roles, explode(',', $user['rules']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
         $form['uid'] = Swoole\Form::input('uid', $user['uid']);
@@ -1178,6 +1181,7 @@ class Setting extends App\LoginController
             }
         }
 
+        $this->assign('page_title', '添加APP');
         $this->assign('errors', $errors);
         $this->assign('form_data', $form_data);
         $this->display('setting/edit_app.php');
@@ -1223,6 +1227,7 @@ class Setting extends App\LoginController
             }
         }
 
+        $this->assign('page_title', '编辑APP');
         $this->assign('msg', \App\Session::get('msg'));
         $this->assign('errors', $errors);
         $this->assign('form_data', $form_data);

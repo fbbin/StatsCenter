@@ -101,19 +101,25 @@
                                 <section>
                                     <label class="label">强制更新策略 <b class="text-danger">*</b></label>
                                     <label class="radio">
-                                        <input type="radio" name="force_upgrade_strategy" value="0"<?php if (array_get($form_data, 'force_upgrade_stategy') === 0) : ?> checked="checked"<?php endif; ?>>
+    <input type="radio" name="force_upgrade_strategy" value="3"<?php if (intval(array_get($form_data, 'force_upgrade_strategy')) === 3) : ?> checked="checked"<?php endif; ?>>
+                                        <i></i> 不强制更新
+                                    </label>
+                                    <label class="radio">
+    <input type="radio" name="force_upgrade_strategy" value="0"<?php if (intval(array_get($form_data, 'force_upgrade_strategy')) === 0) : ?> checked="checked"<?php endif; ?>>
                                         <i></i> 所有版本强制更新
                                     </label>
                                     <label class="radio">
-                                        <input type="radio" name="force_upgrade_strategy" value="1"<?php if (array_get($form_data, 'force_upgrade_stategy') === 1) : ?> checked="checked"<?php endif; ?>>
+    <input type="radio" name="force_upgrade_strategy" value="1"<?php if (intval(array_get($form_data, 'force_upgrade_strategy')) === 1) : ?> checked="checked"<?php endif; ?>>
                                         <i></i> 上一个版本强制更新
                                     </label>
-                                    <!--
                                     <label class="radio">
-                                        <input type="radio" name="enable" value="2">
+    <input type="radio" name="force_upgrade_strategy" value="2"<?php if (intval(array_get($form_data, 'force_upgrade_strategy')) === 2) : ?> checked="checked"<?php endif; ?>>
                                         <i></i> 指定版本强制更新
                                     </label>
-                                    -->
+                                    <label class="input">
+    <?=\Swoole\Form::input('force_upgrade_version', filter_value(array_get($form_data, 'force_upgrade_version')))?>
+                                        <div class="note">用半角逗号隔开，如“1.1.2,1.2.3”</div>
+                                    </label>
                                 </section>
                             </fieldset>
                             <footer>
@@ -139,6 +145,7 @@
 <script>
     $(function() {
         pageSetUp();
+    });
 </script>
 
 </body>

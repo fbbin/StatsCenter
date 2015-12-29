@@ -8,7 +8,7 @@
         <ol class="breadcrumb">
             <li><a href="/">首页</a></li>
             <li><a href="/setting/app_list">APP列表</a></li>
-            <li>编辑APP</li>
+            <li><?=$page_title?></li>
         </ol>
     </div>
 

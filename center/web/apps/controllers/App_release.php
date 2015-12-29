@@ -135,6 +135,10 @@ class App_release extends \App\LoginController
                 }
             }
         }
+        else
+        {
+            $form_data['force_upgrade_strategy'] = APP_FORCE_UPGRADE_STRATEGY_OPTIONAL;
+        }
 
         $this->assign('app', $app);
         $this->assign('form_data', !empty($form_data) ? $form_data : []);
@@ -185,7 +189,18 @@ class App_release extends \App\LoginController
             $form_data = $release;
             if ($form_data['force_upgrade'])
             {
-                $form_data['force_upgrade_stategy'] = APP_FORCE_UPGRADE_STRATEGY_ALL;
+                $form_data['force_upgrade_strategy'] = APP_FORCE_UPGRADE_STRATEGY_ALL;
+            }
+            else
+            {
+                if (trim($form_data['force_upgrade_version']) !== '')
+                {
+                    $form_data['force_upgrade_strategy'] = APP_FORCE_UPGRADE_STRATEGY_SPECIFIC;
+                }
+                else
+                {
+                    $form_data['force_upgrade_strategy'] = APP_FORCE_UPGRADE_STRATEGY_OPTIONAL;
+                }
             }
         }
 
@@ -408,7 +423,7 @@ class App_release extends \App\LoginController
     function editReleaseCheck($data, &$errors)
     {
         $version_number = trim(array_get($data, 'version_number'));
-        if (preg_match('/^(\d+)\.(\d+).(\d+)$/', $version_number, $matches))
+        if ($this->isValidVersionFormat($version_number, $matches))
         {
             $version_high = (int) $matches[1];
             $version_middle = (int) $matches[2];
@@ -424,6 +439,12 @@ class App_release extends \App\LoginController
             {
                 $db_data['version_number'] = sprintf('%d.%d.%d', $version_high, $version_middle, $version_low);
                 $db_data['version_int'] = version_string_to_int($db_data['version_number']);
+
+                $record = table('app_release', 'platform')->get($db_data['version_number'], 'version_number');
+                if ($record->exist())
+                {
+                    $errors[] = "欲增加的版本号({$db_data['version_number']})已存在！";
+                }
             }
         }
         else
@@ -458,18 +479,19 @@ class App_release extends \App\LoginController
         }
         $force_upgrade_strategy = array_get($data, 'force_upgrade_strategy');
         if (($force_upgrade_strategy === '')
-            || (!in_array($force_upgrade_strategy, [APP_FORCE_UPGRADE_STRATEGY_ALL, APP_FORCE_UPGRADE_STRATEGY_PREVIOUS])))
+            || (!in_array($force_upgrade_strategy, [APP_FORCE_UPGRADE_STRATEGY_ALL, APP_FORCE_UPGRADE_STRATEGY_PREVIOUS, APP_FORCE_UPGRADE_STRATEGY_OPTIONAL, APP_FORCE_UPGRADE_STRATEGY_SPECIFIC])))
         {
             $errors[] = '必须指定强制更新策略！';
         }
         $force_upgrade_strategy = intval($force_upgrade_strategy);
-        $db_data['force_upgrade'] = 0;
         if ($force_upgrade_strategy === APP_FORCE_UPGRADE_STRATEGY_ALL)
         {
-            $db_data['force_upgrade'] = 1;
+            $db_data['force_upgrade'] = APP_FORCE_UPGRADE_ENABLED;
         }
         elseif ($force_upgrade_strategy === APP_FORCE_UPGRADE_STRATEGY_PREVIOUS)
         {
+            $db_data['force_upgrade'] = APP_FORCE_UPGRADE_DISABLED;
+
             // 只在version_int不为空的情况才查询数据库
             if (isset($db_data['version_int']))
             {
@@ -489,6 +511,46 @@ class App_release extends \App\LoginController
                     $errors[] = '找不到APP上个版本！';
                 }
             }
+        }
+        elseif ($force_upgrade_strategy === APP_FORCE_UPGRADE_STRATEGY_SPECIFIC)
+        {
+            $force_upgrade_version = trim(array_get($data, 'force_upgrade_version'));
+            if ($force_upgrade_version !== '')
+            {
+                $version_list = array_filter(explode(',', $force_upgrade_version));
+                $valid_version_list = [];
+                foreach ($version_list as $version)
+                {
+                    if ($this->isValidVersionFormat($version, $matches))
+                    {
+                        if (version_string_to_int($version) < $db_data['version_int'])
+                        {
+                            $valid_version_list[] = $version;
+                        }
+                        else
+                        {
+                            $errors[] = "指定强制更新的({$version})版本号不应大于或等于新增的APP版本号({$db_data['version_number']})";
+                        }
+                    }
+                    else
+                    {
+                        $errors[] = "指定强制更新的版本中，{$version}不是合法的版本号格式";
+                    }
+                }
+
+                if (!empty($valid_version_list))
+                {
+                    $db_data['force_upgrade_version'] = implode(',', $version_list);
+                }
+            }
+            else
+            {
+                $errors[] = '指定强制更新的版本不能为空！';
+            }
+        }
+        else
+        {
+            $db_data['force_upgrade'] = APP_FORCE_UPGRADE_DISABLED;
         }
         return $db_data;
     }
@@ -568,5 +630,10 @@ class App_release extends \App\LoginController
             $errors[] = '请填写正确的下载地址！';
         }
         return $output;
+    }
+
+    function isValidVersionFormat($version_number, &$matches)
+    {
+        return preg_match('/^(\d+)\.(\d+).(\d+)$/', $version_number, $matches);
     }
 }
