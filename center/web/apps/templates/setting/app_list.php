@@ -4,14 +4,12 @@
 <div id="main" role="main">
 
 <!-- RIBBON -->
-<div id="ribbon">
-    <!-- breadcrumb -->
-    <ol class="breadcrumb">
-        <li>Home</li>
-        <li>APP管理</li>
-    </ol>
-
-</div>
+    <div id="ribbon">
+        <ol class="breadcrumb">
+            <li><a href="/">首页</a></li>
+            <li>APP列表</li>
+        </ol>
+    </div>
 
 <div id="content">
         <!-- row -->
@@ -59,11 +57,12 @@
                                         <th style="width: 50px">序列</th>
                                         <th>ID</th>
                                         <th>APP</th>
+                                        <th>包名</th>
                                         <th>APP_KEY</th>
                                         <th>OS</th>
                                         <th>状态</th>
                                         <th>是否初始化</th>
-                                        <th>过期时间</th>
+                                        <th>证书过期时间</th>
                                         <th>创建时间</th>
                                         <th>更新时间</th>
                                         <th>操作</th>
@@ -78,6 +77,7 @@
                                             <td><?= $k + 1 ?></td>
                                             <td><?= $d['id'] ?></td>
                                             <td><?= $d['name'] ?></td>
+                                            <td><?= $d['package_name'] ?></td>
                                             <td><?= $d['app_key'] ?></td>
                                             <td><?= $d['os_name'] ?></td>
                                             <td
