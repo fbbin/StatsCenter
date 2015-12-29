@@ -10,7 +10,7 @@
             <li><a href="/">首页</a></li>
         <li><a href="/app_release/app_list">APP列表</a></li>
         <li><a href="/app_release/release_list?app_id=<?=$app['id']?>">「<?=$app['name']?>」APP版本管理</a></li>
-        <li>新增「<?=$app['name']?>」APP版本</li>
+        <li><?=VIEW_NAME === 'new_release' ? '新增' : '编辑'?>「<?=$app['name']?>」APP版本</li>
         </ol>
     </div>
 
@@ -41,7 +41,7 @@
                      data-widget-editbutton="false" role="widget" style="width: 600px;float: left">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-pencil"></i> </span>
-                        <h2>新增「<?=$app['name']?>」APP版本【APP ID：<?=$app['id']?>】</h2>
+                        <h2><?=VIEW_NAME === 'new_release' ? '新增' : '编辑'?>「<?=$app['name']?>」APP版本【APP ID：<?=$app['id']?>】</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div class="widget-body">
                         <form id="form1" class="smart-form" role="form" action="" method="post" enctype="multipart/form-data">
