@@ -359,7 +359,6 @@ class App_release extends \App\LoginController
     function channel_list()
     {
         $query_params = [
-            'where' => sprintf('status != %d', DB_STATUS_DELETED),
             'page' => intval(array_get($_GET, 'page', 1)),
             'pagesize' => 15,
             'order' => 'id desc',
@@ -404,16 +403,12 @@ class App_release extends \App\LoginController
         $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
         if (!is_null($id))
         {
-            $query_params = [
-                'where' => sprintf('id = %d AND status != %d', $id, DB_STATUS_DELETED),
-            ];
-            $channel_list = table('app_channel', 'platform')->gets($query_params);
+            $channel = table('app_channel', 'platform')->get($id);
         }
-        if (empty($channel_list))
+        if (empty($channel))
         {
             return $this->error('APP渠道不存在！');
         }
-        $channel = reset($channel_list);
 
         if (!empty($_POST))
         {
@@ -461,7 +456,7 @@ class App_release extends \App\LoginController
                 return $this->error('该渠道的下载包不为空，请先清空改渠道的下载包。');
             }
 
-            $result = table('app_channel', 'platform')->set($channel_id, ['status' => DB_STATUS_DELETED]);
+            $result = table('app_channel', 'platform')->del($channel_id);
             if (!$result)
             {
                 return $this->error('DB错误，请联系管理员！');
