@@ -5,15 +5,11 @@
 
     <!-- RIBBON -->
     <div id="ribbon">
-
-    <span class="ribbon-button-alignment">
-
-        <!-- breadcrumb -->
         <ol class="breadcrumb">
-            <li>Home</li>
-            <li>项目管理</li>
+            <li><a href="/">首页</a></li>
+            <li><a href="/setting/app_list">APP列表</a></li>
+            <li>编辑APP</li>
         </ol>
-
     </div>
 
     <div id="content">
