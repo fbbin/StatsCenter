@@ -335,6 +335,7 @@ class App_release extends \App\LoginController
         }
         $app_id = intval($release_link['app_id']);
         $app = table('app', 'platform')->get($app_id)->get();
+
         if (empty($app))
         {
             return $this->error('APP不存在，请联系管理员！');

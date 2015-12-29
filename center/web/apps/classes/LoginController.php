@@ -22,7 +22,7 @@ class LoginController extends \Swoole\Controller
         $swoole->session->start();
 
         // 控制器方法名
-        define('VIEW_NAME', \Swoole::$php->env['mvc']['view']);
+        define('VIEW_NAME', trim(\Swoole::$php->env['mvc']['view']));
 
         if (!$this->user->isLogin())
         {
