@@ -77,7 +77,7 @@ class App_release extends \App\LoginController
 
             $query_params = [
                 'select' => 'app_release_link.*, app_channel.name AS channel_name',
-                'order' => 'app_release_link.channel_id DESC',
+                'order' => 'fallback_link DESC, app_release_link.channel_id DESC',
                 'where' => "app_release_link.app_id = {$app_id} AND app_release_link.release_id IN (" . implode(',', $release_id_list) . ')',
                 'leftjoin' => ['app_channel', 'app_release_link.channel_id = app_channel.id'],
             ];
@@ -236,6 +236,36 @@ class App_release extends \App\LoginController
         $this->display('app_release/edit_release.php');
     }
 
+    function delete_release()
+    {
+        $release_id = intval(array_get($_GET, 'id'));
+        if (!empty($release_id))
+        {
+            $release = table('app_release', 'platform')->get($release_id)->get();
+        }
+        if (empty($release))
+        {
+            return $this->error('APP版本不存在！');
+        }
+
+        $query_params = [
+            'where' => sprintf('release_id = %d', $release_id),
+        ];
+        $num_link = table('app_release_link', 'platform')->count($query_params);
+        if ($num_link)
+        {
+            return $this->error('该版本的下载包不为空，请先清空该版本的下载包！');
+        }
+
+        $result = table('app_release', 'platform')->del($release_id);
+        if (!$result)
+        {
+            return $this->error('DB错误，请联系管理员！');
+        }
+
+        return $this->success('操作成功！', '/app_release/release_list?app_id=' . intval($release['app_id']));
+    }
+
     function add_channel_release_link()
     {
         $release_id = !empty($_GET['release_id']) ? intval($_GET['release_id']) : null;
@@ -269,8 +299,18 @@ class App_release extends \App\LoginController
         $query_params = [
             'where' => sprintf('release_id = %d AND app_id = %d', $release_id, $app_id),
         ];
+        $has_fallback_link = false;
+        $released_channel_id_list = [];
         $link_list = table('app_release_link', 'platform')->gets($query_params);
-        $released_channel_id_list = array_map('intval', array_rebuild($link_list, 'channel_id', 'channel_id'));
+        foreach ($link_list as $link)
+        {
+            $released_channel_id_list[$link['channel_id']] = intval($link['channel_id']);
+            // 有缺省下载地址
+            if ($link['fallback_link'])
+            {
+                $has_fallback_link = true;
+            }
+        }
 
         $form_data['channel_list'] = [];
         foreach ($channel_list as $channel)
@@ -290,6 +330,8 @@ class App_release extends \App\LoginController
         if (!empty($_POST))
         {
             $form_data = array_merge($form_data, $_POST);
+            $form_data['app_id'] = $app_id;
+            $form_data['release_id'] = $release_id;
             $data = $this->validate($form_data, [$this, 'editChannelReleaseLinkCheck'], $errors);
             if (empty($errors))
             {
@@ -311,6 +353,7 @@ class App_release extends \App\LoginController
 
         $this->assign('app', $app);
         $this->assign('release', $release);
+        $this->assign('has_fallback_link', $has_fallback_link);
         $this->assign('form_data', !empty($form_data) ? $form_data : []);
         $this->assign('errors', !empty($errors) ? $errors : []);
         $this->display('app_release/edit_channel_release_link.php');
@@ -341,10 +384,21 @@ class App_release extends \App\LoginController
             return $this->error('APP不存在，请联系管理员！');
         }
 
+        // 是否已有缺省下载地址
+        $query_params = [
+            'where' => sprintf('release_id = %d AND app_id = %d AND fallback_link = 1', $release_id, $app_id),
+        ];
+        $has_fallback_link = table('app_release_link', 'platform')->count($query_params) ? true : false;
+        // 当前下载地址是否缺省下载地址
+        $is_fallback_link = (bool) $release_link['fallback_link'];
+
         if (!empty($_POST))
         {
             $form_data = $_POST;
             $form_data['app_channel'] = intval($release_link['channel_id']);
+            $form_data['app_id'] = $app_id;
+            $form_data['release_id'] = $release_id;
+            $form_data['release_link_id'] = $release_link_id;
             $data = $this->validate($form_data, [$this, 'editChannelReleaselinkCheck'], $errors);
             if (empty($errors))
             {
@@ -368,6 +422,8 @@ class App_release extends \App\LoginController
 
         $this->assign('app', $app);
         $this->assign('release', $release);
+        $this->assign('has_fallback_link', $has_fallback_link);
+        $this->assign('is_fallback_link', $is_fallback_link);
         $this->assign('form_data', $form_data);
         $this->assign('msg', \App\Session::get('msg'));
         $this->assign('errors', !empty($errors) ? $errors : []);
@@ -376,8 +432,8 @@ class App_release extends \App\LoginController
 
     function delete_channel_release_link()
     {
-        $release_link_id = intval(array_get($_GET, 'id', null));
-        if (!is_null($release_link_id))
+        $release_link_id = intval(array_get($_GET, 'id'));
+        if (!empty($release_link_id))
         {
             $release_link = table('app_release_link', 'platform')->get($release_link_id)->get();
         }
@@ -483,11 +539,11 @@ class App_release extends \App\LoginController
 
     function delete_channel()
     {
-        $channel_id = intval(array_get($_GET, 'id', null));
-        if (!is_null($channel_id))
+        $channel_id = intval(array_get($_GET, 'id'));
+        if (!empty($channel_id))
         {
             $query_params = [
-                'where' => sprintf('channel_id = %d AND status != %d', $channel_id, DB_STATUS_DELETED),
+                'where' => sprintf('channel_id = %d', $channel_id),
             ];
             $num_link = table('app_release_link', 'platform')->count($query_params);
             if ($num_link)
@@ -740,6 +796,31 @@ class App_release extends \App\LoginController
         {
             $errors[] = '请填写正确的下载地址！';
         }
+
+        $output['fallback_link'] = !empty($input['fallback_link']) ? true : false;
+
+        if (empty($errors) && $output['fallback_link'])
+        {
+            $release_link_id = intval(array_get($input, 'release_link_id'));
+            if (empty($release_link_id))
+            {
+                $query_params = [
+                    'where' => sprintf('app_id = %d AND release_id = %d AND fallback_link = 1', $input['app_id'], $input['release_id']),
+                ];
+            }
+            else
+            {
+                $query_params = [
+                    'where' => sprintf('app_id = %d AND release_id = %d AND fallback_link = 1 AND id != %d', $input['app_id'], $input['release_id'], $release_link_id),
+                ];
+            }
+            $num_link = table('app_release_link', 'platform')->count($query_params);
+            if ($num_link)
+            {
+                $errors[] = '只有一个渠道能设置缺省下载地址';
+            }
+        }
+
         return $output;
     }
 

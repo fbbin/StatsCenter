@@ -45,13 +45,18 @@
                                                     <div class="col-md-4">版本<?=$row['version_number']?></div>
                                                     <div class="col-md-8 text-align-right">
                                                         <div class="btn-group">
-                                                            <a href="/app_release/edit_release?id=<?=$row['id']?>" class="btn btn-primary btn-xs">
+                                                            <a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>" class="btn btn-info btn-xs">
+                                                                <i class="fa fa-plus"></i> 新增渠道包
+                                                            </a>
+                                                        </div>
+                                                        <div class="btn-group">
+                                                            <a href="/app_release/edit_release?id=<?=$row['id']?>" class="btn btn-info btn-xs">
                                                                 <i class="fa fa-pencil"></i> 编辑
                                                             </a>
                                                         </div>
                                                         <div class="btn-group">
-                                                            <a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>" class="btn btn-primary btn-xs">
-                                                                <i class="fa fa-plus"></i> 新增渠道包
+                                                            <a href="/app_release/delete_release?id=<?=$row['id']?>" class="btn btn-danger btn-xs btn-delete">
+                                                                <i class="fa fa-pencil"></i> 删除
                                                             </a>
                                                         </div>
                                                         <!--
@@ -76,21 +81,23 @@
                                                     <thead>
                                                         <tr>
                                                             <th>渠道名称</th>
-                                                            <!--
-                                                            <th>缺省渠道 <i class="fa fa-question-circle text-primary" data-toggle="tooltip" data-placement="top" title="没有指定下载地址的渠道，都会使用该渠道的下载地址"></i>
+                                                            <th>缺省下载地址 <i class="fa fa-question-circle text-primary" data-toggle="tooltip" data-placement="top" title="没有指定下载地址的渠道，都使用该渠道的下载地址"></i>
                                                             </th>
-                                                            -->
                                                             <th>下载地址</th>
                                                             <th>操作</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <?php foreach ($row['release_link_list'] as $link) : ?>
-                                                            <tr>
+                                                            <tr<?php if ($link['fallback_link']) : ?> class="success"<?php endif; ?>>
                                                                 <td><?=$link['channel_name']?></td>
-                                                                <!--
-                                                                <td>否</td>
-                                                                -->
+                                                                <td>
+                                                                    <?php if ($link['fallback_link']) : ?>
+                                                                        <i class="fa fa-check-circle text-success"></i>
+                                                                    <?php else : ?>
+                                                                        <i class="fa fa-times-circle text-danger"></i>
+                                                                    <?php endif; ?>
+                                                                </td>
                                                                 <td><a href="<?=$link['release_link']?>"><?=$link['release_link']?></a></td>
                                                                 <td>
                                                                     <a href="/app_release/edit_channel_release_link?id=<?=$link['id']?>" class="btn btn-info btn-xs">编辑</a>
@@ -165,6 +172,7 @@
 <script>
     $(function() {
         pageSetUp();
+        $('[data-toggle="tooltip"]').tooltip();
         $('.btn-delete').click(function () {
             return confirm('确认删除？');
         });
