@@ -39,10 +39,10 @@
                                 <tr>
                                     <th>APP ID</th>
                                     <th>APP名称</th>
+                                    <th>手机操作系统</th>
                                     <th>包名</th>
                                     <th>最新版本号</th>
                                     <th>已发布版本数</th>
-                                    <th>手机操作系统</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
@@ -51,6 +51,13 @@
                                     <tr>
                                         <td><?=$row['id']?></td>
                                         <td><a href="/app_release/release_list?app_id=<?=$row['id']?>"><?=$row['name']?></a></td>
+                                        <td>
+                                            <?php if ($row['os'] !== APP_OS_UNKNOWN) : ?>
+                                                <?=$row['os_name']?>
+                                            <?php else : ?>
+                                                <?=$row['os_name']?>
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?=$row['package_name']?></td>
                                         <?php if (isset($release_info_list[$row['id']])) : ?>
                                             <td><a href="/app_release/edit_release?version=<?=urlencode(version_int_to_string($release_info_list[$row['id']]['max_version']))?>"><?=version_int_to_string($release_info_list[$row['id']]['max_version'])?></a></td>
@@ -59,13 +66,6 @@
                                             <td>暂无</td>
                                             <td><a href="/app_release/release_list?app_id=<?=$row['id']?>" class="badge">0</a></td>
                                         <?php endif; ?>
-                                        <td>
-                                            <?php if ($row['os'] !== APP_OS_UNKNOWN) : ?>
-                                                <?=$row['os_name']?>
-                                            <?php else : ?>
-                                                <?=$row['os_name']?>
-                                            <?php endif; ?>
-                                        </td>
                                         <td>
                                             <a href="/app_release/release_list?app_id=<?=$row['id']?>" class="btn btn-info btn-xs">版本管理</a>
                                         </td>

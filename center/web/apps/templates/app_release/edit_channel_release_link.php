@@ -10,7 +10,7 @@
             <li><a href="/">首页</a></li>
             <li><a href="/app_release/app_list">APP列表</a></li>
             <li><a href="/app_release/release_list?app_id=<?=$app['id']?>">「<?=$app['name']?>」APP版本管理</a></li>
-            <li><?=isset($_GET['id']) ? '编辑' : '新增'?>「<?=$app['name']?> <?=$release['version_number']?>」下载包</li>
+            <li><?=isset($_GET['id']) ? '编辑' : '新增'?>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」下载包</li>
         </ol>
         </ol>
     </div>
@@ -42,7 +42,7 @@
                      data-widget-editbutton="false" role="widget" style="width: 600px;float: left">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-pencil"></i> </span>
-                        <h2><?=isset($_GET['id']) ? '编辑' : '新增'?>「<?=$app['name']?> <?=$release['version_number']?>」下载包</h2>
+                        <h2><?=isset($_GET['id']) ? '编辑' : '新增'?>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」下载包</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div class="widget-body">
                         <form id="form1" class="smart-form" role="form" action="" method="post" enctype="multipart/form-data">
@@ -63,11 +63,11 @@
                                         <?=\Swoole\Form::input('release_link', filter_value(array_get($form_data, 'release_link')))?>
                                     </label>
                                 </section>
-                                <?php if (!$has_fallback_link || $is_fallback_link) : ?>
+                                <?php if (!$has_fallback_link || !empty($is_fallback_link)) : ?>
                                     <section>
                                         <label class="label">缺省下载地址</label>
                                         <label class="checkbox">
-                                            <input name="fallback_link" type="checkbox"<?php if ($is_fallback_link) : ?> checked="checked"<?php endif; ?>><i></i>
+                                            <input name="fallback_link" type="checkbox"<?php if (!empty($is_fallback_link)) : ?> checked="checked"<?php endif; ?>><i></i>
                                             没有指定下载地址的渠道，都使用该渠道的下载地址
                                         </label>
                                     </section>
@@ -75,7 +75,7 @@
                                     <section>
                                         <label class="label">缺省下载地址</label>
                                         <label class="checkbox state-disabled">
-                                            <input name="fallback_link" type="checkbox"><i></i>
+                                            <input name="fallback_link" type="checkbox" disabled="disabled"><i></i>
                                             没有指定下载地址的渠道，都使用该渠道的下载地址
                                         </label>
                                         <div class="note">只能有一个缺省下载地址，所以这里无法勾选</div>

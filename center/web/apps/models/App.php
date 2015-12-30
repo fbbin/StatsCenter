@@ -11,4 +11,17 @@ class App extends \Swoole\Model
         unset($os_list[3]);
         return $os_list;
     }
+
+    function getOSName($os)
+    {
+        $os = intval($os);
+        if (!empty(\Swoole::$php->config['setting']['app_os'][$os]))
+        {
+            return \Swoole::$php->config['setting']['app_os'][$os];
+        }
+        else
+        {
+            return \Swoole::$php->config['setting']['app_os_name'][APP_OS_UNKNOWN];
+        }
+    }
 }

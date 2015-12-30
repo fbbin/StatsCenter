@@ -53,7 +53,11 @@ class App_release extends \App\LoginController
         {
             $app = table('app', 'platform')->get($app_id)->get();
         }
-        if (empty($app))
+        if (!empty($app))
+        {
+            $app['os_name'] = \Swoole::$php->config['setting']['app_os'][$app['os']];
+        }
+        else
         {
             return $this->error('APP不存在！');
         }
@@ -460,8 +464,26 @@ class App_release extends \App\LoginController
         ];
         $data = table('app_channel', 'platform')->gets($query_params, $pager);
 
+        $release_link_info = [];
+        if (!empty($data))
+        {
+            $channel_id_list = array_map('intval', array_rebuild($data, 'id', 'id'));
+
+            $query_params = [
+                'select' => 'channel_id, count(*) num_release_link',
+                'where' => sprintf('channel_id IN (%s)', implode(', ', $channel_id_list)),
+                'group' => 'channel_id',
+            ];
+            $release_link_data = table('app_release_link', 'platform')->gets($query_params);
+            if (!empty($release_link_data))
+            {
+                $release_link_info = array_rebuild($release_link_data, 'channel_id');
+            }
+        }
+
         $this->assign('pager', $pager);
         $this->assign('data', $data);
+        $this->assign('release_link_info', $release_link_info);
         $this->display();
     }
 

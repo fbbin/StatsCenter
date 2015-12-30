@@ -41,6 +41,7 @@
                                     <th>渠道ID</th>
                                     <th>渠道名称</th>
                                     <th>渠道标识符</th>
+                                    <th>下载包数量</th>
                                     <th>添加时间</th>
                                     <th>更新时间</th>
                                     <th>操作</th>
@@ -52,6 +53,7 @@
                                         <td><?=$row['id']?></td>
                                         <td><?=$row['name']?></td>
                                         <td><?=$row['channel_key']?></td>
+                                        <td><?=isset($release_link_info[$row['id']]) ? $release_link_info[$row['id']]['num_release_link'] : 0?></td>
                                         <td><?=$row['create_time']?></td>
                                         <td><?=$row['update_time']?></td>
                                         <td>

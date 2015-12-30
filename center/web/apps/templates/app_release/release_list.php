@@ -9,7 +9,7 @@
     <ol class="breadcrumb">
         <li><a href="/">首页</a></li>
         <li><a href="/app_release/app_list">APP列表</a></li>
-        <li>「<?=$app['name']?>」APP版本管理</li>
+        <li>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?>」APP版本管理</li>
     </ol>
 
 </div>
@@ -21,7 +21,7 @@
                  data-widget-editbutton="false" role="widget" style="">
                 <header role="heading">
                     <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-                    <h2>「<?=$app['name']?>」APP版本管理</h2>
+                    <h2>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?>」APP版本管理</h2>
                     <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
                 </header>
                 <div role="content">
