@@ -67,7 +67,7 @@
                                     <section>
                                         <label class="label">缺省下载地址</label>
                                         <label class="checkbox">
-                                            <input name="fallback_link" type="checkbox"<?php if (!empty($is_fallback_link)) : ?> checked="checked"<?php endif; ?>><i></i>
+                                            <input name="fallback_link" type="checkbox"<?php if (!empty($is_fallback_link) || !empty(array_get($form_data, 'fallback_link'))) : ?> checked="checked"<?php endif; ?>><i></i>
                                             没有指定下载地址的渠道，都使用该渠道的下载地址
                                         </label>
                                     </section>

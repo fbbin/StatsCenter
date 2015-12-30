@@ -42,7 +42,14 @@
                                         <div class="panel-heading">
                                             <h3 class="panel-title">
                                                 <div class="row">
-                                                    <div class="col-md-4">版本<?=$row['version_number']?></div>
+                                                    <div class="col-md-4">
+                                                        版本<?=$row['version_number']?>
+                                                        <?php if ($row['status']) : ?>
+                                                            <span class="label label-success">已发布</span>
+                                                        <?php else : ?>
+                                                            <span class="label label-default">未发布</span>
+                                                        <?php endif; ?>
+                                                    </div>
                                                     <div class="col-md-8 text-align-right">
                                                         <div class="btn-group">
                                                             <a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>" class="btn btn-info btn-xs">
@@ -59,18 +66,19 @@
                                                                 <i class="fa fa-pencil"></i> 删除
                                                             </a>
                                                         </div>
-                                                        <!--
-                                                        <div class="onoffswitch-container downswitch" data-releaseid="<?=$row['id']?>">
-                                                            <span class="onoffswitch-title"></span>
-                                                            <span class="onoffswitch">
-                                                                <input class="onoffswitch-checkbox" id="autoopen" type="checkbox">
-                                                                <label class="onoffswitch-label" for="autoopen">
-                                                                    <span class="onoffswitch-inner" data-swchon-text="启用" data-swchoff-text="停用"></span>
-                                                                    <span class="onoffswitch-switch"></span>
-                                                                </label>
-                                                            </span>
+                                                        <?php if (!$row['status']) : ?>
+                                                        <div class="btn-group">
+                                                            <a href="/app_release/enable_release?id=<?=$row['id']?>" class="btn btn-primary btn-xs">
+                                                                <i class="fa fa-arrow-circle-up"></i> 发布
+                                                            </a>
                                                         </div>
-                                                        -->
+                                                        <?php else : ?>
+                                                        <div class="btn-group">
+                                                            <a href="/app_release/disable_release?id=<?=$row['id']?>" class="btn btn-danger btn-xs">
+                                                                <i class="fa fa-arrow-circle-down"></i> 下架
+                                                            </a>
+                                                        </div>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                             </h3>
@@ -115,6 +123,18 @@
                                                 没有渠道下载包，<a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>">点击新增渠道下载包</a>
                                             </div>
                                         <?php endif; ?>
+                                        <div class="panel-footer">
+                                            <?php if ($row['force_upgrade']) : ?>
+                                                所有版本强制更新
+                                            <?php elseif (!empty($row['force_upgrade_version'])) : ?>
+                                                版本 <?=$row['force_upgrade_version']?> 强制更新
+                                            <?php else : ?>
+                                                不强制更新
+                                            <?php endif; ?>
+                                            <?php if ($row['prompt_interval']) : ?>
+                                                ，升级弹窗提示周期 <?=$row['prompt_interval']?> 秒</span>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>

@@ -270,6 +270,57 @@ class App_release extends \App\LoginController
         return $this->success('操作成功！', '/app_release/release_list?app_id=' . intval($release['app_id']));
     }
 
+    function enable_release()
+    {
+        $release_id = intval(array_get($_GET, 'id'));
+        if (!empty($release_id))
+        {
+            $release = table('app_release', 'platform')->get($release_id)->get();
+        }
+        if (empty($release))
+        {
+            return $this->error('APP版本不存在！');
+        }
+
+        $query_params = [
+            'where' => sprintf('release_id = %d', $release_id),
+        ];
+        $num_release_link = table('app_release_link', 'platform')->count($query_params);
+        if (!$num_release_link)
+        {
+            return $this->error('请确保渠道下载包数量不为0，再发布！');
+        }
+
+        $result = table('app_release', 'platform')->set($release_id, ['status' => DB_STATUS_ENABLED]);
+        if (!$result)
+        {
+            return $this->error('DB错误，请联系管理员！');
+        }
+
+        \Swoole\JS::js_back('APP发布成功！');
+    }
+
+    function disable_release()
+    {
+        $release_id = intval(array_get($_GET, 'id'));
+        if (!empty($release_id))
+        {
+            $release = table('app_release', 'platform')->get($release_id)->get();
+        }
+        if (empty($release))
+        {
+            return $this->error('APP版本不存在！');
+        }
+
+        $result = table('app_release', 'platform')->set($release_id, ['status' => DB_STATUS_DISABLED]);
+        if (!$result)
+        {
+            return $this->error('DB错误，请联系管理员！');
+        }
+
+        \Swoole\JS::js_back('APP下架成功！');
+    }
+
     function add_channel_release_link()
     {
         $release_id = !empty($_GET['release_id']) ? intval($_GET['release_id']) : null;
@@ -444,6 +495,24 @@ class App_release extends \App\LoginController
         if (empty($release_link))
         {
             return $this->error('APP渠道下载包不存在！');
+        }
+
+        $query_params = [
+            'where' => sprintf('app_id = %d AND release_id = %d', $release_link['app_id'], $release_link['release_id']),
+        ];
+        $num_release_link = table('app_release_link', 'platform')->count($query_params);
+        // 下载包数量小于等于1的时候，需要APP版本下架才能删除下载包
+        if ($num_release_link <= 1)
+        {
+            $release = table('app_release', 'platform')->get($release_link['release_id']);
+            if (empty($release))
+            {
+                return $this->error('下载包对应的APP版本不存在，请联系管理员！');
+            }
+            if (intval($release['status']) === DB_STATUS_ENABLED)
+            {
+                return $this->error('只剩最后一个下载包，请先让APP下架再删除！');
+            }
         }
 
         $result = table('app_release_link', 'platform')->del($release_link_id);
@@ -664,6 +733,8 @@ class App_release extends \App\LoginController
         if ($force_upgrade_strategy === APP_FORCE_UPGRADE_STRATEGY_ALL)
         {
             $db_data['force_upgrade'] = APP_FORCE_UPGRADE_ENABLED;
+            // 强制更新的话，提示升级弹窗周期改为0
+            $db_data['prompt_interval'] = 0;
         }
         elseif ($force_upgrade_strategy === APP_FORCE_UPGRADE_STRATEGY_PREVIOUS)
         {
