@@ -81,6 +81,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>渠道名称</th>
+                                                            <th>渠道标识符</th>
                                                             <th>缺省下载地址 <i class="fa fa-question-circle text-primary" data-toggle="tooltip" data-placement="top" title="没有指定下载地址的渠道，都使用该渠道的下载地址"></i>
                                                             </th>
                                                             <th>下载地址</th>
@@ -90,7 +91,8 @@
                                                     <tbody>
                                                         <?php foreach ($row['release_link_list'] as $link) : ?>
                                                             <tr<?php if ($link['fallback_link']) : ?> class="success"<?php endif; ?>>
-<td><?=$link['channel_name']?> (<?=$link['channel_key']?>)</td>
+                                                                <td><?=$link['channel_name']?></td>
+                                                                <td><?=$link['channel_key']?></td>
                                                                 <td>
                                                                     <?php if ($link['fallback_link']) : ?>
                                                                         <i class="fa fa-check-circle text-success"></i>
