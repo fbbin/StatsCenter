@@ -80,7 +80,7 @@ class App_release extends \App\LoginController
             unset($row);
 
             $query_params = [
-                'select' => 'app_release_link.*, app_channel.name AS channel_name',
+                'select' => 'app_release_link.*, app_channel.name AS channel_name, app_channel.channel_key AS channel_key',
                 'order' => 'fallback_link DESC, app_release_link.channel_id DESC',
                 'where' => "app_release_link.app_id = {$app_id} AND app_release_link.release_id IN (" . implode(',', $release_id_list) . ')',
                 'leftjoin' => ['app_channel', 'app_release_link.channel_id = app_channel.id'],

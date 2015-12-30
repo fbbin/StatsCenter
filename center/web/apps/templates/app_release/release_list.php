@@ -90,7 +90,7 @@
                                                     <tbody>
                                                         <?php foreach ($row['release_link_list'] as $link) : ?>
                                                             <tr<?php if ($link['fallback_link']) : ?> class="success"<?php endif; ?>>
-                                                                <td><?=$link['channel_name']?></td>
+<td><?=$link['channel_name']?> (<?=$link['channel_key']?>)</td>
                                                                 <td>
                                                                     <?php if ($link['fallback_link']) : ?>
                                                                         <i class="fa fa-check-circle text-success"></i>
