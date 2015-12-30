@@ -46,7 +46,7 @@
                                                     <div class="col-md-8 text-align-right">
                                                         <div class="btn-group">
                                                             <a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>" class="btn btn-info btn-xs">
-                                                                <i class="fa fa-plus"></i> 新增渠道包
+                                                                <i class="fa fa-plus"></i> 新增下载包
                                                             </a>
                                                         </div>
                                                         <div class="btn-group">
@@ -112,7 +112,7 @@
                                             </div>
                                         <?php else : ?>
                                             <div class="panel-body">
-                                                没有渠道包，<a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>">点击新增渠道包</a>
+                                                没有渠道下载包，<a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>">点击新增渠道下载包</a>
                                             </div>
                                         <?php endif; ?>
                                     </div>

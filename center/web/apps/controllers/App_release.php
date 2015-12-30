@@ -345,7 +345,7 @@ class App_release extends \App\LoginController
                 $insert_id = table('app_release_link', 'platform')->put($data);
                 if ($insert_id)
                 {
-                    \App\Session::flash('msg', '添加渠道包成功！');
+                    \App\Session::flash('msg', '添加渠道下载包成功！');
                     return $this->redirect("/app_release/edit_channel_release_link?id={$insert_id}");
                 }
                 else
@@ -372,7 +372,7 @@ class App_release extends \App\LoginController
         }
         if (empty($release_link))
         {
-            return $this->error('APP渠道包不存在！');
+            return $this->error('APP渠道下载包不存在！');
         }
         $release_id = intval($release_link['release_id']);
         $release = table('app_release', 'platform')->get($release_id)->get();
@@ -410,7 +410,7 @@ class App_release extends \App\LoginController
                 $result = table('app_release_link', 'platform')->set($release_link_id, $data);
                 if ($result)
                 {
-                    \App\Session::flash('msg', '编辑APP渠道包成功！');
+                    \App\Session::flash('msg', '编辑APP渠道下载包成功！');
                     return $this->redirect("/app_release/edit_channel_release_link?id={$release_link_id}");
                 }
                 else
@@ -443,7 +443,7 @@ class App_release extends \App\LoginController
         }
         if (empty($release_link))
         {
-            return $this->error('APP渠道包不存在！');
+            return $this->error('APP渠道下载包不存在！');
         }
 
         $result = table('app_release_link', 'platform')->del($release_link_id);
@@ -669,8 +669,7 @@ class App_release extends \App\LoginController
         {
             $db_data['force_upgrade'] = APP_FORCE_UPGRADE_DISABLED;
 
-            // 只在version_int不为空的情况才查询数据库
-            if (isset($db_data['version_int']))
+            if (empty($errors))
             {
                 $data['app_id'] = intval($data['app_id']);
                 $query_params = [
@@ -685,7 +684,7 @@ class App_release extends \App\LoginController
                 }
                 else
                 {
-                    $errors[] = '找不到APP上个版本！';
+                    $errors[] = sprintf('找不到APP (%s) 的上个版本！', version_int_to_string($db_data['version_int']));
                 }
             }
         }
@@ -728,6 +727,8 @@ class App_release extends \App\LoginController
         else
         {
             $db_data['force_upgrade'] = APP_FORCE_UPGRADE_DISABLED;
+            // 不强制更新，需要清空设置的“强制更新的版本”
+            $db_data['force_upgrade_version'] = '';
         }
         return $db_data;
     }
