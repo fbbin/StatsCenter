@@ -1041,6 +1041,7 @@ class Setting extends App\LoginController
             $inserts['name'] = trim($_POST['name']);
             $inserts['intro'] = trim($_POST['intro']);
             $inserts['ckey'] = trim($_POST['ckey']);
+            $inserts['type'] = intval($_POST['type']);
 
             $update = !empty($_POST['id']);
 
@@ -1093,10 +1094,10 @@ class Setting extends App\LoginController
 
         if (empty($_GET))
         {
+            $res['type'] = key($project_type_list);
             $form['name'] = \Swoole\Form::input('name');
             $form['intro'] = \Swoole\Form::text('intro');
             $form['ckey'] = \Swoole\Form::input('ckey');
-            $res['type'] = key($project_type_list);
         }
         else
         {
@@ -1132,8 +1133,10 @@ class Setting extends App\LoginController
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
         $data = table('project', 'platform')->gets($gets,$pager);
+        $project_type_list = \Swoole::$php->config['setting']['project_type'];
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $this->assign('data', $data);
+        $this->assign('project_type_list', $project_type_list);
         $this->display();
     }
 

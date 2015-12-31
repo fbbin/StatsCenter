@@ -70,6 +70,17 @@
                                         </label>
                                     </section>
                                     <section>
+                                        <label class="label">项目类型</label>
+                                        <div class="inline-group">
+                                            <?php foreach ($project_type_list as $value => $name) : ?>
+                                                <label class="radio">
+                                                    <input type="radio" name="type" value="<?=$value?>"<?php if (isset($pro['type']) && (intval($pro['type']) === intval($value))) : ?> checked=" checked"<?php endif; ?>>
+                                                    <i></i> <?=$name?>
+                                                </label>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </section>
+                                    <section>
                                         <label class="label">项目代号</label>
                                         <label class="input">
                                             <?=$form['ckey']?>
