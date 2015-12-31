@@ -13,4 +13,5 @@ class RedisKey
      */
     const CLUSTER_SERVICE_PROJECTS = self::PREFIX.':setting:cluster:service:projects';
     const APP_RELEASE_LINK = 'app-release:release-link';
+    const APP_HOST_LIST = 'app-host:list';
 }

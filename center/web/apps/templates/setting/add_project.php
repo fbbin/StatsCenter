@@ -33,8 +33,9 @@
 
         <!-- breadcrumb -->
         <ol class="breadcrumb">
-            <li>Home</li>
-            <li>Dashboard</li>
+            <li><a href="/">首页</a></li>
+            <li><a href="/setting/project_list">WEB项目列表</a></li>
+            <li>WEB项目管理</li>
         </ol>
 
     </div>
@@ -49,7 +50,7 @@
                         <ul class="nav nav-tabs pull-left in">
                             <li class="active">
                                 <a><i class="fa fa-clock-o"></i>
-                                    <span class="hidden-mobile hidden-tablet">项目管理</span>
+                                    <span class="hidden-mobile hidden-tablet">WEB项目管理</span>
                                 </a>
                             </li>
                         </ul>
@@ -68,17 +69,6 @@
                                         <label class="input">
                                             <?=$form['name']?>
                                         </label>
-                                    </section>
-                                    <section>
-                                        <label class="label">项目类型</label>
-                                        <div class="inline-group">
-                                            <?php foreach ($project_type_list as $value => $name) : ?>
-                                                <label class="radio">
-                                                    <input type="radio" name="type" value="<?=$value?>"<?php if (isset($pro['type']) && (intval($pro['type']) === intval($value))) : ?> checked=" checked"<?php endif; ?>>
-                                                    <i></i> <?=$name?>
-                                                </label>
-                                            <?php endforeach; ?>
-                                        </div>
                                     </section>
                                     <section>
                                         <label class="label">项目代号</label>

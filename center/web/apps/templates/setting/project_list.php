@@ -15,8 +15,8 @@
 
     <!-- breadcrumb -->
     <ol class="breadcrumb">
-        <li>Home</li>
-        <li>Dashboard</li>
+        <li><a href="/">首页</a></li>
+        <li>WEB项目列表</li>
     </ol>
 
 </div>
@@ -31,7 +31,7 @@
                      data-widget-editbutton="false" role="widget" style="">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-                        <h2>项目列表</h2>
+                        <h2>WEB项目列表</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div role="content">
                         <div id="delete_tip">
@@ -41,8 +41,14 @@
                         </div>
 
                         <div class="widget-body no-padding">
-                            <div class="widget-body-toolbar" style="height: 40px;">
-
+                            <div class="widget-body-toolbar">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="/setting/add_project" class="btn btn-primary pull-right">
+                                            <i class="fa fa-plus"></i> 新增WEB项目
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                             <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
                                 <div class="dt-top-row">
@@ -73,7 +79,6 @@
                                         <tr>
                                             <th style="width: 80px; overflow-x: hidden;">项目ID</th>
                                             <th>项目名称</th>
-                                            <th>项目分类</th>
                                             <th>项目代号</th>
                                             <th>添加时间</th>
                                             <th>操作</th>
@@ -88,7 +93,6 @@
             <td class=" "><?=$d['id']?></td>
             <td class=" ">
                 <a href="/setting/module_list/?project=<?= $d['id'] ?>"> <?= $d['name'] ?></a></td>
-            <td><?=$project_type_list[$d['type']]?></td>
             <td class=" "><?=$d['ckey']?></td>
             <td class=" "><?=$d['add_time']?></td>
             <td class=" ">

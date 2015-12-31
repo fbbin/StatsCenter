@@ -1090,11 +1090,9 @@ class Setting extends App\LoginController
             $this->assign('msg', $msg);
         }
 
-        $project_type_list = \Swoole::$php->config['setting']['project_type'];
-
         if (empty($_GET))
         {
-            $res['type'] = key($project_type_list);
+            $res = [];
             $form['name'] = \Swoole\Form::input('name');
             $form['intro'] = \Swoole\Form::text('intro');
             $form['ckey'] = \Swoole\Form::input('ckey');
@@ -1109,7 +1107,6 @@ class Setting extends App\LoginController
             $form['id'] = \Swoole\Form::hidden('id', $res['id']);
         }
         $this->assign('pro', $res);
-        $this->assign('project_type_list', $project_type_list);
         $this->assign('form', $form);
         $this->display();
     }
@@ -1133,11 +1130,110 @@ class Setting extends App\LoginController
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
         $data = table('project', 'platform')->gets($gets,$pager);
-        $project_type_list = \Swoole::$php->config['setting']['project_type'];
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $this->assign('data', $data);
-        $this->assign('project_type_list', $project_type_list);
         $this->display();
+    }
+
+    function app_project_list()
+    {
+        $params = [
+            'page' => intval(array_get($_GET, 'page', 1)),
+            'pagesize' => 15,
+            'order' => 'id desc',
+        ];
+        $data = table('app_project', 'platform')->gets($params, $pager);
+
+        $this->assign('page_title', 'APP项目管理');
+        $this->assign('data', $data);
+        $this->assign('pager', $pager);
+        $this->display();
+    }
+
+    function add_app_project()
+    {
+        if (!empty($_POST))
+        {
+            $form_data = $_POST;
+            $data = $this->validate($form_data, [$this, 'editAppProjectCheck'], $errors);
+            if (empty($errors))
+            {
+                $data['create_time'] = $data['update_time'] = date('Y-m-d H:i:s');
+                $insert_id = table('app_project', 'platform')->put($data);
+                if ($insert_id)
+                {
+                    \App\Session::flash('msg', '添加APP项目成功！');
+                    return $this->redirect("/setting/edit_app_project?id={$insert_id}");
+                }
+                else
+                {
+                    $errors[] = '添加失败，请联系管理员！';
+                }
+            }
+        }
+
+        $this->assign('page_title', '新增APP项目');
+        $this->assign('form_data', !empty($form_data) ? $form_data : []);
+        $this->assign('errors', !empty($errors) ? $errors : []);
+        $this->display('setting/edit_app_project.php');
+    }
+
+    function edit_app_project()
+    {
+        $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
+        if (!is_null($id))
+        {
+            $app_project = table('app_project', 'platform')->get($id);
+        }
+        if (empty($app_project))
+        {
+            return $this->error('APP项目不存在！');
+        }
+
+        if (!empty($_POST))
+        {
+            $form_data = $_POST;
+            $form_data['app_project_id'] = $id;
+            $data = $this->validate($form_data, [$this, 'editAppProjectCheck'], $errors);
+            if (empty($errors))
+            {
+                $db_data['update_time'] = date('Y-m-d H:i:s');
+                $result = table('app_project', 'platform')->set($id, $data);
+                if ($result)
+                {
+                    \App\Session::flash('msg', '编辑APP项目成功！');
+                    return $this->redirect("/setting/edit_app_project?id={$id}");
+                }
+                else
+                {
+                    $errors[] = '编辑失败，请联系管理员！';
+                }
+            }
+        }
+        else
+        {
+            $form_data = $app_project;
+        }
+
+        $this->assign('page_title', '编辑APP项目');
+        $this->assign('form_data', !empty($form_data) ? $form_data : []);
+        $this->assign('msg', \App\Session::get('msg'));
+        $this->assign('errors', !empty($errors) ? $errors : []);
+        $this->display('setting/edit_app_project.php');
+    }
+
+    function delete_app_project()
+    {
+        $id = intval(array_get($_GET, 'id'));
+        if (!empty($id))
+        {
+            $result = table('app_project', 'platform')->del($id);
+            if (!$result)
+            {
+                return $this->error('DB错误，请联系管理员！');
+            }
+        }
+        return $this->success('操作成功！', '/setting/app_project_list');
     }
 
     function app_list()
@@ -1339,6 +1435,41 @@ class Setting extends App\LoginController
         $os_list = \Swoole::$php->config['setting']['app_os'];
         unset($os_list[3]);
         return $os_list;
+    }
+
+    protected function editAppProjectCheck(array $input, &$errors)
+    {
+        $output['name'] = trim(array_get($input, 'name'));
+        if ($output['name'] === '')
+        {
+            $errors[] = 'APP项目名称不能为空！';
+        }
+        $output['app_key'] = trim(array_get($input, 'app_key'));
+        if ($output['app_key'] !== '')
+        {
+            if (isset($input['app_project_id']))
+            {
+                $params = [
+                    'where' => sprintf("app_key = '%s' AND id != %d", $output['app_key'], $input['app_project_id']),
+                ];
+            }
+            else
+            {
+                $params = [
+                    'where' => sprintf("app_key = '%s'", $output['app_key']),
+                ];
+            }
+            $count = table('app_project', 'platform')->count($params);
+            if ($count)
+            {
+                $errors[] = '已存在同名APP_KEY！';
+            }
+        }
+        else
+        {
+            $errors[] = 'APP_KEY不能为空！';
+        }
+        return $output;
     }
 
     protected function editAppCheck(array $data, &$errors)

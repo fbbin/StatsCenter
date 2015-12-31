@@ -139,41 +139,6 @@
                                 <?php endforeach; ?>
                             </div>
                         </div>
-
-                        <!--
-                        <table id="data_table_stats" class="table table-bordered table-">
-                            <thead>
-                                <tr>
-                                    <th>APP ID</th>
-                                    <th>APP名称</th>
-                                    <th>包名</th>
-                                    <th>手机操作系统</th>
-                                    <th>最新版本</th>
-                                </tr>
-                            </thead>
-                            <tbody id="data_table_body">
-                                <tr>
-                                    <?php foreach ($data as $row) : ?>
-                                        <tr>
-                                            <td><?=$row['id']?></td>
-                                            <td><a href="/app_release/release_list?app_id=<?=$row['id']?>"><?=$row['name']?></a></td>
-                                            <td><?=$row['package_name']?></td>
-                                            <td>
-                                                <?php if ($row['os'] !== APP_OS_UNKNOWN) : ?>
-                                                <?=$row['os_name']?>
-                                                <?php else : ?>
-                                                <?=$row['os_name']?>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td>1.2.3</td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        -->
-
                         <div class="dt-row dt-bottom-row">
                             <div class="pager">
                                 <span>总计：<strong><?=$pager->total?></strong>条</span>
