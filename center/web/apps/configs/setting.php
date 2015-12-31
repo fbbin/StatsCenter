@@ -11,5 +11,9 @@ return [
     ],
     // 1开启，2关闭
     'app_default_status' => 2,
-    'app_enable_status_list' => [1, 2]
+    'app_enable_status_list' => [1, 2],
+    'project_type' => [
+        0 => '未分类',
+        1 => 'APP',
+    ],
 ];

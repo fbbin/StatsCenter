@@ -1056,12 +1056,14 @@ class Setting extends App\LoginController
             $this->assign('msg', $msg);
         }
 
+        $project_type_list = \Swoole::$php->config['setting']['project_type'];
+
         if (empty($_GET))
         {
             $form['name'] = \Swoole\Form::input('name');
             $form['intro'] = \Swoole\Form::text('intro');
             $form['ckey'] = \Swoole\Form::input('ckey');
-            $res = [];
+            $res['type'] = key($project_type_list);
         }
         else
         {
@@ -1073,6 +1075,7 @@ class Setting extends App\LoginController
             $form['id'] = \Swoole\Form::hidden('id', $res['id']);
         }
         $this->assign('pro', $res);
+        $this->assign('project_type_list', $project_type_list);
         $this->assign('form', $form);
         $this->display();
     }
