@@ -140,7 +140,11 @@ class App_host extends \App\LoginController
                 }
 
                 $host = trim($host);
-                if ($host === '' || (!is_valid_url($host)))
+                if ($host !== '' && is_valid_url($host))
+                {
+                    $host = rtrim($host, '/');
+                }
+                else
                 {
                     $errors[] = sprintf('%s的接口不符合正确的URL格式！', $env_name);
                 }
