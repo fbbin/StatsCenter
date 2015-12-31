@@ -44,7 +44,7 @@ class App_host extends \App\LoginController
 
             foreach ($env_list as $env_id => $env_name)
             {
-                $host = $redis->hGet(\App\RedisKey::APP_HOST_LIST, "{$env_id}@{$row['ckey']}");
+                $host = $redis->hGet(\App\RedisKey::APP_HOST_LIST, strtolower("{$env_id}@{$row['ckey']}"));
                 $row['host_list'][] = [
                     'env_id' => $env_id,
                     'env_name' => $env_name,
@@ -90,7 +90,7 @@ class App_host extends \App\LoginController
             {
                 foreach ($data['host_list'] as $env_id => $host)
                 {
-                    $redis->hSet(\App\RedisKey::APP_HOST_LIST, "{$env_id}@{$project['ckey']}", $host);
+                    $redis->hSet(\App\RedisKey::APP_HOST_LIST, strtolower("{$env_id}@{$project['ckey']}"), $host);
                 }
 
                 \App\Session::flash('msg', '编辑接口成功！');
@@ -102,7 +102,7 @@ class App_host extends \App\LoginController
             $form_data['host_list'] = [];
             foreach ($env_list as $env_id => $env_name)
             {
-                $host = $redis->hGet(\App\RedisKey::APP_HOST_LIST, "{$env_id}@{$project['ckey']}");
+                $host = $redis->hGet(\App\RedisKey::APP_HOST_LIST, strtolower("{$env_id}@{$project['ckey']}"));
                 $form_data['host_list'][$env_id] = $host;
             }
         }

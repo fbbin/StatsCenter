@@ -34,7 +34,7 @@
                                         <h3 class="panel-title">
                                             <div class="row">
                                                 <div class="col-md-4">
-                                                    <?=filter_value($row['name'], true)?>
+                                                    <?=filter_value($row['name'], true)?>「<?=filter_value($row['ckey'], true)?>」
                                                 </div>
                                                 <div class="col-md-8 text-align-right">
                                                     <div class="btn-group">
@@ -90,14 +90,6 @@
 <script>
     $(function() {
         pageSetUp();
-        $('[data-toggle="tooltip"]').tooltip();
-        $('.btn-delete').click(function () {
-            return confirm('确认删除？');
-        });
-        /**
-        $('.downswitch').click(function () {
-            var release_id = $(this).data('releaseid');
-        }); **/
     });
 </script>
 
