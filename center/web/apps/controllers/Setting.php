@@ -1038,21 +1038,54 @@ class Setting extends App\LoginController
     {
         if (!empty($_POST['name']))
         {
-            $inserts['name'] = $_POST['name'];
-            $inserts['intro'] = $_POST['intro'];
-            $inserts['ckey'] = $_POST['ckey'];
-            $msg['code'] = 0;
+            $inserts['name'] = trim($_POST['name']);
+            $inserts['intro'] = trim($_POST['intro']);
+            $inserts['ckey'] = trim($_POST['ckey']);
 
-            if (empty($_POST['id']))
+            $update = !empty($_POST['id']);
+
+            if ($inserts['ckey'] !== '')
             {
-                $res = table('project', 'platform')->put($inserts);
-                $msg['message'] = $res ? "添加成功，ID: " . $res : "添加失败";
+                $inserts['ckey'] = strtolower($inserts['ckey']);
+
+                $project_table = table('project', 'platform');
+
+                if ($update)
+                {
+                    $params = [
+                        'where' => sprintf("ckey = '%s' AND id != %d", $project_table->db->quote($inserts['ckey']), intval($_POST['id'])),
+                    ];
+                }
+                else
+                {
+                    $params = [
+                        'where' => sprintf("ckey = '%s'", $project_table->db->quote($inserts['ckey'])),
+                    ];
+                }
+
+                $ckey_exists = (bool) $project_table->count($params);
+            }
+
+            if (!$ckey_exists)
+            {
+                $msg['code'] = 0;
+                if (!$update)
+                {
+                    $res = table('project', 'platform')->put($inserts);
+                    $msg['message'] = $res ? "添加成功，ID: " . $res : "添加失败";
+                }
+                else
+                {
+                    $res = table('project', 'platform')->set(intval($_POST['id']),$inserts);
+                    $msg['message'] = $res ? "修改成功" : "修改失败";
+                }
             }
             else
             {
-                $res = table('project', 'platform')->set(intval($_POST['id']),$inserts);
-                $msg['message'] = $res ? "修改成功" : "修改失败";
+                $msg['code'] = 1;
+                $msg['message'] = '已存在同名项目代号！';
             }
+
             $this->assign('msg', $msg);
         }
 
