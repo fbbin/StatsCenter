@@ -237,10 +237,6 @@ class App_host extends \App\LoginController
                     $form_data['project_list'][$project_key] = true;
                 }
             }
-            else
-            {
-                $errors[] = 'Redis获取数据失败，请联系管理员！';
-            }
         }
 
         $page_title = sprintf('「%s (%s)」APP项目接口列表编辑', $project['name'], $project['app_key']);
