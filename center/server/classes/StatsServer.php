@@ -1172,7 +1172,7 @@ class StatsServer extends Server
             'worker_num' => 24,
             'task_worker_num' => 24,
             'max_request' => 0,
-            //'dispatch_mode' => 4,
+            'dispatch_mode' => 1,
         );
 
         $this->pid_file = $_setting['pid_file'];

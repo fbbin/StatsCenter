@@ -33,8 +33,9 @@
 
         <!-- breadcrumb -->
         <ol class="breadcrumb">
-            <li>Home</li>
-            <li>Dashboard</li>
+            <li><a href="/">首页</a></li>
+            <li><a href="/setting/project_list">WEB项目列表</a></li>
+            <li>WEB项目管理</li>
         </ol>
 
     </div>
@@ -49,7 +50,7 @@
                         <ul class="nav nav-tabs pull-left in">
                             <li class="active">
                                 <a><i class="fa fa-clock-o"></i>
-                                    <span class="hidden-mobile hidden-tablet">项目管理</span>
+                                    <span class="hidden-mobile hidden-tablet">WEB项目管理</span>
                                 </a>
                             </li>
                         </ul>
