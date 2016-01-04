@@ -11,6 +11,7 @@ class Msg extends \App\LoginController
         2 => '漫道',
         3 => '梦网',
         4 => '亿美广告',
+        5 => '云信',
     );
 
     static $msg_type = array(
