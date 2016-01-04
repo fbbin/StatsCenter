@@ -125,6 +125,134 @@ class App_host extends \App\LoginController
         $this->display();
     }
 
+    function app_host_list()
+    {
+        $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
+        if (!is_null($id))
+        {
+            $project = table('app_project', 'platform')->get($id);
+        }
+        if (empty($project))
+        {
+            return $this->error('APP项目不存在！');
+        }
+
+        $data = [];
+        $app_key = strtolower(trim($project['app_key']));
+
+        $redis = \Swoole::$php->redis('platform');
+        $project_key_list = unserialize($redis->hGet(\App\RedisKey::APP_HOST_APP_KEY_HOSTS_MAP, $app_key));
+        if (!empty($project_key_list))
+        {
+            $env_list = \Swoole::$php->config['setting']['env_list'];
+
+            $project_key_list = array_map([table('project', 'platform')->db, 'quote'], $project_key_list);
+            $params = [
+                'where' => sprintf("ckey IN ('%s')", implode("', '", $project_key_list)),
+            ];
+            $project_list = table('project', 'platform')->gets($params);
+            if (count($project_list) === count($project_key_list))
+            {
+                $project_list = array_rebuild($project_list, 'ckey');
+
+                foreach ($project_key_list as $project_key)
+                {
+                    $row = $project_list[$project_key];
+                    $row['host_list'] = [];
+
+                    foreach ($env_list as $env_id => $env_name)
+                    {
+                        $hash_field = strtolower("{$env_id}@{$project_key}");
+                        $host = $redis->hGet(\App\RedisKey::APP_HOST_LIST, $hash_field);
+                        $row['host_list'][] = [
+                            'env_id' => $env_id,
+                            'env_name' => $env_name,
+                            'host' => $host,
+                        ];
+                    }
+
+                    $data[] = $row;
+                }
+            }
+            else
+            {
+                $errors[] = '项目查询失败，请联系管理员！';
+            }
+        }
+
+        $page_title = sprintf('「%s (%s)」APP项目接口列表', $project['name'], $project['app_key']);
+        $this->assign('data', $data);
+        $this->assign('project_id', $id);
+        $this->assign('page_title', $page_title);
+        $this->assign('errors', !empty($errors) ? $errors : []);
+        $this->display();
+    }
+
+    function edit_app_host_list()
+    {
+        $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
+        if (!is_null($id))
+        {
+            $project = table('app_project', 'platform')->get($id);
+        }
+        if (empty($project))
+        {
+            return $this->error('APP项目不存在！');
+        }
+
+        $redis = \Swoole::$php->redis('platform');
+        $app_key = strtolower(trim($project['app_key']));
+
+        if (!empty($_POST))
+        {
+            $form_data = $_POST;
+            $data = $this->validate($form_data, [$this, 'editAppHostListCheck'], $errors);
+            if (empty($errors))
+            {
+                $result = $redis->hSet(\App\RedisKey::APP_HOST_APP_KEY_HOSTS_MAP, $app_key, serialize($data['project_list']));
+                if ($result !== false)
+                {
+                    \App\Session::flash('msg', '编辑接口列表成功！');
+                    return $this->redirect("/app_host/edit_app_host_list?id={$id}");
+                }
+                else
+                {
+                    $errors[] = '编辑失败，请联系管理员！';
+                }
+            }
+        }
+        else
+        {
+            $params = [
+                'order' => 'id desc',
+                'where' => "ckey != ''",
+            ];
+            $project_list = table('project', 'platform')->gets($params);
+            $project_key_list = unserialize($redis->hGet(\App\RedisKey::APP_HOST_APP_KEY_HOSTS_MAP, $app_key));
+            if (is_array($project_key_list))
+            {
+                $form_data['project_list'] = [];
+                foreach ($project_key_list as $project_key)
+                {
+                    $form_data['project_list'][$project_key] = true;
+                }
+            }
+            else
+            {
+                $errors[] = 'Redis获取数据失败，请联系管理员！';
+            }
+        }
+
+        $page_title = sprintf('「%s (%s)」APP项目接口列表编辑', $project['name'], $project['app_key']);
+        $this->assign('page_title', $page_title);
+        $this->assign('project', $project);
+        $this->assign('data', $project_list);
+        $this->assign('msg', \App\Session::get('msg'));
+        $this->assign('errors', !empty($errors) ? $errors : []);
+        $this->assign('form_data', !empty($form_data) ? $form_data : []);
+        $this->display();
+    }
+
     function editHostsCheck(array $input, &$errors)
     {
         $output['host_list'] = array_get($input, 'host_list');
@@ -156,6 +284,20 @@ class App_host extends \App\LoginController
             $output['host_list'] = [];
         }
 
+        return $output;
+    }
+
+    function editAppHostListCheck(array $input, &$errors)
+    {
+        $project_list = array_get($input, 'project_list', []);
+        if (is_array($project_list))
+        {
+            $output['project_list'] = array_keys($project_list);
+        }
+        else
+        {
+            $errors[] = '接口列表编辑失败，请联系管理员！';
+        }
         return $output;
     }
 

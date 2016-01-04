@@ -46,16 +46,22 @@
                             <tbody id="data_table_body">
                                 <?php foreach ($data as $row) : ?>
                                     <tr>
-                                        <td><?=$row['id']?></td>
-                                        <td><?=$row['name']?></td>
-                                        <td><?=$row['app_key']?></td>
+                                        <td><?=intval($row['id'])?></td>
+                                        <td><?=filter_value($row['name'], true)?></td>
+                                        <td><?=filter_value($row['app_key'], true)?></td>
                                         <td>
-                                            <a href="/app_host/host_list" class="btn btn-info btn-xs">下发接口列表</a>
+                                            <a href="/app_host/app_host_list?id=<?=intval($row['id'])?>" class="btn btn-info btn-xs">下发接口列表</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
+                        <div class="dt-row dt-bottom-row">
+                            <div class="pager">
+                                <span>总计：<strong><?=$pager->total?></strong>条</span>
+                            </div>
+                            <?=$pager->render()?>
+                        </div>
                     </div>
                 </div>
             </div>
