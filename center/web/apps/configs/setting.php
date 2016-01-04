@@ -14,7 +14,7 @@ return [
     'app_enable_status_list' => [1, 2],
     'env_list' => [
         'product' => '生产环境',
-        'env' => '预发环境',
+        'pre' => '预发环境',
         'test' => '测试环境',
     ],
 ];
