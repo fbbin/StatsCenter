@@ -12,18 +12,33 @@ class Setting extends App\LoginController
 {
     protected $prefix = 'YYPUSH';
 
-    public $alert_types = array(
+    public $alert_types = [
         1 => "谈窗",
         2 => '短信'
-    );
+    ];
 
-    static $roles = array(
+    static $roles = [
         'app' => '客户端控制',
         'stats' => '模调统计',
         'url' => '短链接系统',
         'common_admin' => 'common后台管理员',
         'sms' => '短信管理',
-    );
+    ];
+
+    static $app_enable = [
+        1 => '开启',
+        2 => '关闭'
+    ];
+
+    static $app_has_init = [
+        1 => '已初始化',
+        2 => '未初始化'
+    ];
+
+    static $app_upload_dir = [
+        1 => '/data/msg_push/ios_certification/',
+        2 => '/data/msg_push/android_certification/',
+    ];
 
     function add_interface()
     {
@@ -825,6 +840,9 @@ class Setting extends App\LoginController
             $this->assign('crowdUser', $crowdUser);
         }
 
+        // var_dump($form['rules'] = Swoole\Form::muti_select('rules[]', self::$roles, explode(',', $user['rules']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false));
+        // exit;
+
         $form['project_id'] = Swoole\Form::muti_select('project_id[]', $projects, explode(',', $user['project_id']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
         $form['rules'] = Swoole\Form::muti_select('rules[]', self::$roles, explode(',', $user['rules']), null, array('class' => 'select2 select2-offscreen', 'multiple' => "1", 'style' => "width:100%"), false);
         $form['uid'] = Swoole\Form::input('uid', $user['uid']);
@@ -1020,30 +1038,64 @@ class Setting extends App\LoginController
     {
         if (!empty($_POST['name']))
         {
-            $inserts['name'] = $_POST['name'];
-            $inserts['intro'] = $_POST['intro'];
-            $inserts['ckey'] = $_POST['ckey'];
-            $msg['code'] = 0;
+            $inserts['name'] = trim($_POST['name']);
+            $inserts['intro'] = trim($_POST['intro']);
+            $inserts['ckey'] = trim($_POST['ckey']);
+            $inserts['type'] = intval($_POST['type']);
 
-            if (empty($_POST['id']))
+            $update = !empty($_POST['id']);
+
+            if ($inserts['ckey'] !== '')
             {
-                $res = table('project', 'platform')->put($inserts);
-                $msg['message'] = $res ? "添加成功，ID: " . $res : "添加失败";
+                $inserts['ckey'] = strtolower($inserts['ckey']);
+
+                $project_table = table('project', 'platform');
+
+                if ($update)
+                {
+                    $params = [
+                        'where' => sprintf("ckey = '%s' AND id != %d", $project_table->db->quote($inserts['ckey']), intval($_POST['id'])),
+                    ];
+                }
+                else
+                {
+                    $params = [
+                        'where' => sprintf("ckey = '%s'", $project_table->db->quote($inserts['ckey'])),
+                    ];
+                }
+
+                $ckey_exists = (bool) $project_table->count($params);
+            }
+
+            if (!$ckey_exists)
+            {
+                $msg['code'] = 0;
+                if (!$update)
+                {
+                    $res = table('project', 'platform')->put($inserts);
+                    $msg['message'] = $res ? "添加成功，ID: " . $res : "添加失败";
+                }
+                else
+                {
+                    $res = table('project', 'platform')->set(intval($_POST['id']),$inserts);
+                    $msg['message'] = $res ? "修改成功" : "修改失败";
+                }
             }
             else
             {
-                $res = table('project', 'platform')->set(intval($_POST['id']),$inserts);
-                $msg['message'] = $res ? "修改成功" : "修改失败";
+                $msg['code'] = 1;
+                $msg['message'] = '已存在同名项目代号！';
             }
+
             $this->assign('msg', $msg);
         }
 
         if (empty($_GET))
         {
+            $res = [];
             $form['name'] = \Swoole\Form::input('name');
             $form['intro'] = \Swoole\Form::text('intro');
             $form['ckey'] = \Swoole\Form::input('ckey');
-            $res = [];
         }
         else
         {
@@ -1081,5 +1133,419 @@ class Setting extends App\LoginController
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $this->assign('data', $data);
         $this->display();
+    }
+
+    function app_project_list()
+    {
+        $params = [
+            'page' => intval(array_get($_GET, 'page', 1)),
+            'pagesize' => 15,
+            'order' => 'id desc',
+        ];
+        $data = table('app_project', 'platform')->gets($params, $pager);
+
+        $this->assign('page_title', 'APP项目管理');
+        $this->assign('data', $data);
+        $this->assign('pager', $pager);
+        $this->display();
+    }
+
+    function add_app_project()
+    {
+        if (!empty($_POST))
+        {
+            $form_data = $_POST;
+            $data = $this->validate($form_data, [$this, 'editAppProjectCheck'], $errors);
+            if (empty($errors))
+            {
+                $data['create_time'] = $data['update_time'] = date('Y-m-d H:i:s');
+                $insert_id = table('app_project', 'platform')->put($data);
+                if ($insert_id)
+                {
+                    \App\Session::flash('msg', '添加APP项目成功！');
+                    return $this->redirect("/setting/edit_app_project?id={$insert_id}");
+                }
+                else
+                {
+                    $errors[] = '添加失败，请联系管理员！';
+                }
+            }
+        }
+
+        $this->assign('page_title', '新增APP项目');
+        $this->assign('form_data', !empty($form_data) ? $form_data : []);
+        $this->assign('errors', !empty($errors) ? $errors : []);
+        $this->display('setting/edit_app_project.php');
+    }
+
+    function edit_app_project()
+    {
+        $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
+        if (!is_null($id))
+        {
+            $app_project = table('app_project', 'platform')->get($id);
+        }
+        if (empty($app_project))
+        {
+            return $this->error('APP项目不存在！');
+        }
+
+        if (!empty($_POST))
+        {
+            $form_data = $_POST;
+            $form_data['app_project_id'] = $id;
+            $data = $this->validate($form_data, [$this, 'editAppProjectCheck'], $errors);
+            if (empty($errors))
+            {
+                $db_data['update_time'] = date('Y-m-d H:i:s');
+                $result = table('app_project', 'platform')->set($id, $data);
+                if ($result)
+                {
+                    \App\Session::flash('msg', '编辑APP项目成功！');
+                    return $this->redirect("/setting/edit_app_project?id={$id}");
+                }
+                else
+                {
+                    $errors[] = '编辑失败，请联系管理员！';
+                }
+            }
+        }
+        else
+        {
+            $form_data = $app_project;
+        }
+
+        $this->assign('page_title', '编辑APP项目');
+        $this->assign('form_data', !empty($form_data) ? $form_data : []);
+        $this->assign('msg', \App\Session::get('msg'));
+        $this->assign('errors', !empty($errors) ? $errors : []);
+        $this->display('setting/edit_app_project.php');
+    }
+
+    function delete_app_project()
+    {
+        $id = intval(array_get($_GET, 'id'));
+        if (!empty($id))
+        {
+            $result = table('app_project', 'platform')->del($id);
+            if (!$result)
+            {
+                return $this->error('DB错误，请联系管理员！');
+            }
+        }
+        return $this->success('操作成功！', '/setting/app_project_list');
+    }
+
+    function app_list()
+    {
+        $uid = $_SESSION['user_id'];
+        //$gets['uids'] = $uid;
+        if (!empty($_POST['name']))
+        {
+            $name = trim($_POST['name']);
+            $gets['where'][] = "name like '%$name%'";;
+        }
+
+        $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
+        $gets['pageSize'] = 15;
+        $gets['order'] = 'enable asc, is_inited asc, id desc';
+        //\Swoole::$php->db->debug = 1;
+        $data = table('app', 'platform')->gets($gets,$pager);
+
+        $os_list = $this->get_app_os_list();
+        foreach ($data as $k => $v)
+        {
+            $data[$k]['os_name'] = $os_list[$v['os']];
+            $data[$k]['enable_name'] = self::$app_enable[$v['enable']];
+            $cert_info = \Swoole::$php->redis->hGetAll($v['app_key']."_".$v['os']);
+            $has_init = 2;
+            if (!empty($cert_info)
+                && ($cert_info['os'] == 1)
+                && isset($cert_info['apns_pem_file'])
+                && is_file($cert_info['apns_pem_file'])) {
+                $has_init = 1;
+            }
+            if (!empty($cert_info)
+                && ($cert_info['os'] == 2)
+                && isset($cert_info['umeng_pem_file'])
+                && isset($cert_info['umeng_key_file'])
+                && is_file($cert_info['umeng_pem_file'])
+                && is_file($cert_info['umeng_key_file'])) {
+                $has_init = 1;
+            }
+            $data[$k]['has_init_name'] = self::$app_has_init[$has_init];
+            $data[$k]['has_init'] = $has_init;
+        }
+
+        $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
+        $form['name'] = \Swoole\Form::input('name',isset($_POST['name']) ? $_POST['name'] : '',array('class'=>'form-control input-sm',
+                                                                        'placeholder'=>"APP名称"));
+
+        $this->assign('form', $form);
+        $this->assign('data', $data);
+        $this->display();
+    }
+
+    function add_app()
+    {
+        $errors = [];
+        $form_data['os_list'] = $this->get_app_os_list();
+
+        if (empty($_POST))
+        {
+            $form_data['enable'] = \Swoole::$php->config['setting']['app_default_status'];
+        }
+        else
+        {
+            $form_data = array_merge($form_data, $_POST);
+            $db_data = $this->validate($form_data, [$this, 'editAppCheck'], $errors);
+
+            if (empty($errors))
+            {
+                $db_data['create_time'] = $db_data['update_time'] = date('Y-m-d H:i:s');
+                $insert_id = table('app', 'platform')->put($db_data);
+                if ($insert_id)
+                {
+                    \App\Session::flash('msg', '添加APP成功！');
+                    return $this->http->header('Location', "/setting/edit_app?id={$insert_id}");
+                }
+                else
+                {
+                    $errors[] = '添加失败，请联系管理员！';
+                }
+            }
+        }
+
+        $this->assign('page_title', '添加APP');
+        $this->assign('errors', $errors);
+        $this->assign('form_data', $form_data);
+        $this->display('setting/edit_app.php');
+    }
+
+    function edit_app()
+    {
+        $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
+        if (!is_null($id))
+        {
+            $app = table('app', 'platform')->get($id)->get();
+        }
+        if (empty($app))
+        {
+            return $this->error('APP不存在！');
+        }
+
+        $errors = [];
+        $form_data['app_id'] = $id;
+        $form_data['os_list'] = $this->get_app_os_list();
+
+        if (empty($_POST))
+        {
+            $form_data = array_merge($form_data, $app);
+        }
+        else
+        {
+            $form_data = array_merge($form_data, $_POST);
+            $db_data = $this->validate($form_data, [$this, 'editAppCheck'], $errors);
+
+            if (empty($errors))
+            {
+                $db_data['update_time'] = date('Y-m-d H:i:s');
+                $result = table('app', 'platform')->set($id, $db_data);
+                if ($result)
+                {
+                    \App\Session::flash('msg', '编辑APP成功！');
+                    return $this->redirect("/setting/edit_app?id={$id}");
+                }
+                else
+                {
+                    $errors[] = '编辑失败，请联系管理员！';
+                }
+            }
+        }
+
+        $this->assign('page_title', '编辑APP');
+        $this->assign('msg', \App\Session::get('msg'));
+        $this->assign('errors', $errors);
+        $this->assign('form_data', $form_data);
+        $this->display('setting/edit_app.php');
+    }
+
+    function app_gen_cert()
+    {
+        $id = array_get($_POST, 'id');
+        if (empty($id))
+        {
+            return \Swoole\JS::js_back("操作失败,请联系管理员");
+        }
+        $app = table('project', 'platform')->get($id)->get();
+
+        if ($app['os'] == 2) {
+            //umeng 证书初始化
+            $p12 = $app['umeng_cert'];
+            $pwd = $app['umeng_pwd'];
+
+            $file_name = basename($p12,'.p12');
+            $dir_name = dirname($p12);
+            //key
+            exec("openssl pkcs12 -nodes -nocerts -out $dir_name/$file_name.key -in $p12 -passin pass:$pwd",$outpot1);
+            \Swoole::$php->log->trace("openssl pkcs12 -nodes -nocerts -out $dir_name/$file_name.key -in $p12 -passin pass:$pwd".var_export($outpot1,1));            //cert
+            exec("openssl pkcs12 -nokeys -out $dir_name/$file_name.pem -in $p12 -passin pass:$pwd",$output2);
+            \Swoole::$php->log->trace("openssl pkcs12 -nokeys -out $dir_name/$file_name.pem -in $p12 -passin pass:$pwd".var_export($output2,1));
+            $app['umeng_pem_file'] = "$dir_name/$file_name.pem";
+            $app['umeng_key_file'] = "$dir_name/$file_name.key";
+            \Swoole::$php->redis->hMset($app['app_key']."_".$app['os'],$app);
+            \Swoole::$php->redis->sAdd(\Swoole::$php->config['redis_key']['app_sets'],$app['app_key']."_".$app['os']);
+
+            $insert['is_inited'] = 1;
+            $insert['update_time'] = date("Y-m-d H:i:s");
+            table('project', 'platform')->set($id,$insert);
+            \Swoole\JS::js_goto("初始化成功", "/setting/edit_app/?id={$id}");
+        } elseif ($app['os'] == 1) {
+            $p12 = $app['apns_cert'];
+            $pwd = $app['apns_pwd'];
+
+            $file_name = basename($p12,'.p12');
+            $dir_name = dirname($p12);
+            //key
+            $key_file = "$dir_name/$file_name.key";
+            exec("openssl pkcs12 -nodes -nocerts -out $key_file -in $p12 -passin pass:$pwd",$outpot1);
+            \Swoole::$php->log->trace("openssl pkcs12 -nodes -nocerts -out $key_file -in $p12 -passin pass:$pwd".var_export($outpot1,1));
+            //cert
+            $cert_file = "$dir_name/$file_name.cert";
+            exec("openssl pkcs12 -nokeys -out $cert_file -in $p12 -passin pass:$pwd",$output2);
+            \Swoole::$php->log->trace("openssl pkcs12 -nokeys -out $cert_file -in $p12 -passin pass:$pwd".var_export($output2,1));
+            //合成pem
+            exec("cat $key_file $cert_file >$dir_name/$file_name.pem",$output3);
+            \Swoole::$php->log->trace("cat $key_file $cert_file >$dir_name/$file_name.pem".var_export($output3,1));
+            $app['apns_pem_file'] = "$dir_name/$file_name.pem";
+            \Swoole::$php->redis->hMset($app['app_key']."_".$app['os'],$app);
+            \Swoole::$php->redis->sAdd(\Swoole::$php->config['redis_key']['app_sets'],$app['app_key']."_".$app['os']);
+
+            $insert['is_inited'] = 1;
+            $insert['update_time'] = date("Y-m-d H:i:s");
+            table('project', 'platform')->set($id,$insert);
+            \Swoole\JS::js_goto("初始化成功", "/setting/edit_app/?id={$id}");
+        } else {
+            \Swoole\JS::js_back("数据错误,请联系管理员");
+        }
+    }
+
+    private function get_app_os_list()
+    {
+        $os_list = \Swoole::$php->config['setting']['app_os'];
+        unset($os_list[3]);
+        return $os_list;
+    }
+
+    protected function editAppProjectCheck(array $input, &$errors)
+    {
+        $output['name'] = trim(array_get($input, 'name'));
+        if ($output['name'] === '')
+        {
+            $errors[] = 'APP项目名称不能为空！';
+        }
+        $output['app_key'] = trim(array_get($input, 'app_key'));
+        if ($output['app_key'] !== '')
+        {
+            if (isset($input['app_project_id']))
+            {
+                $params = [
+                    'where' => sprintf("app_key = '%s' AND id != %d", $output['app_key'], $input['app_project_id']),
+                ];
+            }
+            else
+            {
+                $params = [
+                    'where' => sprintf("app_key = '%s'", $output['app_key']),
+                ];
+            }
+            $count = table('app_project', 'platform')->count($params);
+            if ($count)
+            {
+                $errors[] = '已存在同名APP_KEY！';
+            }
+        }
+        else
+        {
+            $errors[] = 'APP_KEY不能为空！';
+        }
+        return $output;
+    }
+
+    protected function editAppCheck(array $data, &$errors)
+    {
+        $db_data['name'] = trim(array_get($data, 'name'));
+        if ($db_data['name'] === '')
+        {
+            $errors[] = 'APP名称不能为空！';
+        }
+        $db_data['package_name'] = trim(array_get($data, 'package_name'));
+        if ($db_data['package_name'] === '')
+        {
+            $errors[] = '包名不能为空！';
+        }
+        $db_data['app_key'] = trim(array_get($data, 'app_key'));
+        if ($db_data['app_key'] === '')
+        {
+            $errors[] = 'app_key不能为空！';
+        }
+        $db_data['os'] = intval(array_get($data, 'os'));
+        if (!in_array($db_data['os'], array_keys($data['os_list'])))
+        {
+            $errors[] = 'OS值非法！';
+        }
+        $db_data['enable'] = intval(array_get($data, 'enable'));
+        $enable_status_list = \Swoole::$php->config['setting']['app_enable_status_list'];
+        if (!in_array($db_data['enable'], $enable_status_list))
+        {
+            $errors[] = '项目状态值非法！';
+        }
+        $db_data['apns_pwd'] = trim(array_get($data, 'apns_pwd'));
+        $db_data['umeng_pwd'] = trim(array_get($data, 'umeng_pwd'));
+
+        if (empty($errors))
+        {
+            if (!empty($data['app_id']))
+            {
+                $query_params = [
+                    'where' => sprintf('os = %d AND (package_name = "%s" OR app_key = %s) AND id != %d', $db_data['os'], $db_data['package_name'], $data['app_key'], $data['app_id']),
+                ];
+            }
+            else
+            {
+                $query_params = [
+                    'where' => sprintf('os = %d AND (package_name = "%s" OR app_key = "%s")', $db_data['os'], $db_data['package_name'], $data['app_key']),
+                ];
+            }
+            $app_list = table('app', 'platform')->gets($query_params);
+            if (!empty($app_list))
+            {
+                $key_exists = false;
+                $package_exists = false;
+                foreach ($app_list as $app)
+                {
+                    if ($app['package_name'] === $db_data['package_name'])
+                    {
+                        $package_exists = true;
+                    }
+                    if ($app['app_key'] === $db_data['app_key'])
+                    {
+                        $key_exists = true;
+                    }
+                }
+
+                if ($package_exists)
+                {
+                    $errors[] = sprintf('同一系统(%s)不能存在相同包名(%s)', $data['os_list'][$db_data['os']], $db_data['package_name']);
+                }
+
+                if ($key_exists)
+                {
+                    $errors[] = sprintf('同一系统(%s)不能存在相同的app_key(%s)', $data['os_list'][$db_data['os']], $db_data['app_key']);
+                }
+            }
+        }
+
+        return $db_data;
     }
 }

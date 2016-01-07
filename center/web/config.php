@@ -14,6 +14,7 @@ define('ENV_NAME', $env);
 
 require FRAMEWORK_PATH . '/libs/lib_config.php';
 require __DIR__ . '/apps/include/functions.php';
+require __DIR__ . '/apps/include/constants.php';
 
 if (ENV_NAME == 'local')
 {

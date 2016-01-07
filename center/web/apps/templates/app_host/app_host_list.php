@@ -16,6 +16,15 @@
 
 <div id="content">
     <div class="row">
+        <div class="col-md-12">
+            <?php if (!empty($errors)) : ?>
+                <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="alert-heading"><i class="fa fa-ban"></i> 错误</h4>
+                    <p><?=reset($errors)?></p>
+                </div>
+            <?php endif ?>
+        </div>
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
             <div class="jarviswidget jarviswidget-color-darken jarviswidget-sortable" id="wid-id-0"
                  data-widget-editbutton="false" role="widget" style="">
@@ -25,6 +34,15 @@
                     <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
                 </header>
                 <div role="content">
+                    <div class="widget-body-toolbar">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a href="/app_host/edit_app_host_list?id=<?=$project_id?>" class="btn btn-primary pull-right">
+                                    <i class="fa fa-pencil"></i> 下发接口编辑
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="widget-body">
                         <div class="row">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -33,15 +51,8 @@
                                     <div class="panel-heading">
                                         <h3 class="panel-title">
                                             <div class="row">
-                                                <div class="col-md-4">
-                                                    <?=filter_value($row['name'], true)?> (<?=filter_value($row['ckey'], true)?>)
-                                                </div>
-                                                <div class="col-md-8 text-align-right">
-                                                    <div class="btn-group">
-                                                        <a href="/app_host/edit_hosts?id=<?=intval($row['id'])?>" class="btn btn-info btn-xs">
-                                                            <i class="fa fa-pencil"></i> 编辑
-                                                        </a>
-                                                    </div>
+                                                <div class="col-md-12">
+                                                    <?=filter_value($row['name'], true)?>「<?=filter_value($row['ckey'], true)?>」
                                                 </div>
                                             </div>
                                         </h3>
@@ -68,12 +79,6 @@
                                     </div>
                                 </div>
                                 <?php endforeach; ?>
-                                <div class="dt-row dt-bottom-row">
-                                    <div class="pager">
-                                        <span>总计：<strong><?=$pager->total?></strong>条</span>
-                                    </div>
-                                    <?=$pager->render()?>
-                                </div>
                             </div>
                         </div>
                     </div>

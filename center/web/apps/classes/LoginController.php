@@ -20,6 +20,10 @@ class LoginController extends \Swoole\Controller
     {
         parent::__construct($swoole);
         $swoole->session->start();
+
+        // 控制器方法名
+        define('VIEW_NAME', trim(\Swoole::$php->env['mvc']['view']));
+
         if (!$this->user->isLogin())
         {
             if (!empty($_SERVER['REQUEST_URI']))
@@ -250,5 +254,26 @@ class LoginController extends \Swoole\Controller
             return false;
 
         }
+    }
+
+    protected function validate(array $data, callable $callback, &$errors)
+    {
+        return call_user_func_array($callback, [$data, &$errors]);
+    }
+
+    protected function redirect($url)
+    {
+        return $this->http->header('Location', $url);
+    }
+
+    protected function success($msg, $url)
+    {
+        return \Swoole\JS::js_goto($msg, $url);
+    }
+
+    protected function error($msg)
+    {
+        $this->assign('msg', $msg);
+        $this->display('common/error.php');
     }
 }
