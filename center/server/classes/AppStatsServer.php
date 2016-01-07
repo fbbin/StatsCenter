@@ -149,6 +149,10 @@ class AppStatsServer extends Server
 
     function onWorkerStart(\swoole_server $serv, $id)
     {
+        if ($serv->taskworker)
+        {
+            return;
+        }
         $serv->tick(60000, function () use ($serv) {
             //投递任务
             $serv->task($this->data);
