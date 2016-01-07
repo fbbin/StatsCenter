@@ -17,9 +17,15 @@
         <td>
             <?php if (!$this->isActiveMenu('stats', 'detail')):?><a href="/stats/detail/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>"">查看明细</a>
             &nbsp;&nbsp;|&nbsp;&nbsp; <?php endif; ?>
-            <a href="/stats/history/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">历史数据对比</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a href="/stats/client/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">主调明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a href="/stats/server/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">被调明细</a>
+            <?php if (isset($td['time_key']) and !empty($td['time_key'])) {?>
+                <a href="/stats/history/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">历史数据对比</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="/stats/client/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>&time_key=<?= $td['time_key']?>">主调明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="/stats/server/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>&time_key=<?= $td['time_key']?>">被调明细</a>
+            <?php } else { ?>
+                <a href="/stats/history/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">历史数据对比</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="/stats/client/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">主调明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="/stats/server/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">被调明细</a>
+            <?php } ?>
         </td>
     </tr>
 <?php endforeach; ?>
