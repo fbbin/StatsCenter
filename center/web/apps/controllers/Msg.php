@@ -204,7 +204,7 @@ class Msg extends \App\LoginController
         {
             $month = trim($_GET['month']);
             $gets['channel'] = (int)$_GET['channel'];
-            $this->assign("price", number_format(self::$charge[$gets['channel']],2));
+            $this->assign("price", number_format(self::$charge[$gets['channel']],3));
 
             $start = date("Y-m-d H:i:s", strtotime($month));
             $end = date("Y-m-d H:i:s", strtotime("$month +1 month"));
@@ -222,7 +222,7 @@ class Msg extends \App\LoginController
             {
                 if (!empty($d['c'])) {
                     $_cost = $d['c']*(self::$charge[$gets['channel']]);
-                    $data[$k]['cost'] = number_format($_cost,2);
+                    $data[$k]['cost'] = number_format($_cost,3);
                     $cost += $_cost;
                     $count += $data[$k]['c'];
                 }
@@ -231,7 +231,7 @@ class Msg extends \App\LoginController
 
             $this->assign('data', $data);
 
-            $this->assign("cost", number_format($cost,2));
+            $this->assign("cost", number_format($cost,3));
             $this->assign("count", $count);
         }
 
@@ -254,7 +254,7 @@ class Msg extends \App\LoginController
 
         if (isset($_GET['channel']) and !empty ($_GET['channel'])) {
             $gets['channel'] = (int)$_GET['channel'];
-           $price = number_format(self::$charge[$gets['channel']],2);
+           $price = number_format(self::$charge[$gets['channel']],3);
         } else {
             \Swoole\JS::js_back('请选择渠道');
         }
@@ -275,7 +275,7 @@ class Msg extends \App\LoginController
         foreach ($data as $k => $d)
         {
             if (!empty($d['c'])) {
-                $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),2,'.', '');
+                $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),3,'.', '');
                 $cost += $data[$k]['cost'];
                 $count += $data[$k]['c'];
             }
