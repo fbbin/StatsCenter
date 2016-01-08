@@ -17,6 +17,9 @@
         .order_asc {
             background: url("/static/smartadmin/img/sort_asc.png") no-repeat center right;
         }
+        .ui-datepicker-calendar {
+            display: none;
+        }
     </style>
 
     <!-- RIBBON -->
@@ -67,7 +70,7 @@
 
                                             <div class="form-group">
                                                 <label class="label">
-                                                    <input type="text" class="form-control datepicker"
+                                                    <input type="text" class="form-control"
                                                            data-dateformat="yy-mm" id="month" name="month"
                                                            value="<?php
                                                            if (!isset($_GET['month'])){
@@ -190,6 +193,17 @@ you can add as many as you like
 <?php include dirname(__DIR__).'/include/javascript.php'; ?>
 <script>
     pageSetUp();
+    $('#month').datepicker( {
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        dateFormat: 'yy-mm',
+        onClose: function(dateText, inst) {
+            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            $(this).datepicker('setDate', new Date(year, month, 1));
+        }
+    });
 </script>
 
 </body>
