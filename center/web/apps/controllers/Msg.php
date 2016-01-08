@@ -284,7 +284,7 @@ class Msg extends \App\LoginController
         $line .= "\n";
         $line .= ",总计条数,总计费用\n";
         $line .= ",{$count},{$cost}\n";
-        $line .= "备注: 单价 {$price}元\n";
+        $line .= "备注: 渠道 ".self::$channel[$gets['channel']]." 单价 {$price}元\n";
         $filename = self::$channel[$gets['channel']]."-".$month.".csv";
         header("Content-type:text/csv");
         header("Content-Disposition:attachment;filename=".$filename);
