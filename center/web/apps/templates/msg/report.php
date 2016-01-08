@@ -121,7 +121,7 @@
                         </div>
                         <div class="dt-row dt-bottom-row">
                             <div class="pager">
-                                <span>渠道单价：<?=$price?> 条数总计：<?=$count?>总计费用总计：<?=$cost?></span>
+                                <span>渠道单价：<?=$price?>元 条数总计：<?=$count?>条总计费用总计：<?=$cost?>元</span>
                             </div>
                         </div>
                     </div>
