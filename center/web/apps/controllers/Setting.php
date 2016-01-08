@@ -1041,7 +1041,6 @@ class Setting extends App\LoginController
             $inserts['name'] = trim($_POST['name']);
             $inserts['intro'] = trim($_POST['intro']);
             $inserts['ckey'] = trim($_POST['ckey']);
-            $inserts['type'] = intval($_POST['type']);
 
             $update = !empty($_POST['id']);
 
