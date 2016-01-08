@@ -221,8 +221,9 @@ class Msg extends \App\LoginController
             foreach ($data as $k => $d)
             {
                 if (!empty($d['c'])) {
-                    $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),2);
-                    $cost += $data[$k]['cost'];
+                    $_cost = $d['c']*(self::$charge[$gets['channel']]);
+                    $data[$k]['cost'] = number_format($_cost,2);
+                    $cost += $_cost;
                     $count += $data[$k]['c'];
                 }
             }
@@ -230,7 +231,7 @@ class Msg extends \App\LoginController
 
             $this->assign('data', $data);
 
-            $this->assign("cost", $cost);
+            $this->assign("cost", number_format($cost,2));
             $this->assign("count", $count);
         }
         unset(self::$channel[0]);
