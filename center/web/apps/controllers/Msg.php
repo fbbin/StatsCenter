@@ -14,6 +14,15 @@ class Msg extends \App\LoginController
         5 => '云信',
     );
 
+    //通道单条信息费用
+    static $charge  = array (
+        1 => 0.04,
+        2 => 0.04,
+        3 => 0.04,
+        4 => 0.04,
+        5 => 0.043,
+    );
+
     static $msg_type = array(
         0 => '全部',
         1 => '文本',
@@ -187,5 +196,98 @@ class Msg extends \App\LoginController
         $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
         $this->assign('data', $data);
         $this->display();
+    }
+
+    function report()
+    {
+        if (!empty($_GET['month']))
+        {
+            $month = trim($_GET['month']);
+        } else {
+            $month = date("Y-m");
+        }
+
+        if (isset($_GET['channel']) and !empty ($_GET['channel'])) {
+            $gets['channel'] = (int)$_GET['channel'];
+            $this->assign("price", number_format(self::$charge[$gets['channel']],2));
+        }
+
+        $start = date("Y-m-d H:i:s", strtotime($month));
+        $end = date("Y-m-d H:i:s", strtotime("$month +1 month"));
+        $gets['where'][] = 'addtime >= "'.$start.'"';
+        $gets['where'][] = 'addtime <= "'.$end.'"';
+        //\Swoole::$php->db("platform")->debug = 1;
+
+        $gets['order'] = 'id desc';
+        $gets['group'] = 'days';
+        $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c";
+        $data = table("sms_log","platform")->gets($gets);
+        $cost = 0;
+        $count = 0;
+        foreach ($data as $k => $d)
+        {
+            if (!empty($d['c'])) {
+                $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),2);
+                $cost += $data[$k]['cost'];
+                $count += $data[$k]['c'];
+            }
+        }
+
+        unset(self::$channel[0]);
+        $form['channel'] = \Swoole\Form::select('channel',self::$channel,$_GET['channel'],'',array('class'=>'form-control'));
+        $this->assign('data', $data);
+        $this->assign('form', $form);
+        $this->assign("cost", $cost);
+        $this->assign("count", $count);
+        $this->display();
+    }
+
+    function dump()
+    {
+        if (!empty($_GET['month']))
+        {
+            $month = trim($_GET['month']);
+        } else {
+            \Swoole\JS::js_back('请选择月份');
+        }
+
+        if (isset($_GET['channel']) and !empty ($_GET['channel'])) {
+            $gets['channel'] = (int)$_GET['channel'];
+           $price = number_format(self::$charge[$gets['channel']],2);
+        } else {
+            \Swoole\JS::js_back('请选择渠道');
+        }
+
+        $start = date("Y-m-d H:i:s", strtotime($month));
+        $end = date("Y-m-d H:i:s", strtotime("$month +1 month"));
+        $gets['where'][] = 'addtime >= "'.$start.'"';
+        $gets['where'][] = 'addtime <= "'.$end.'"';
+        //\Swoole::$php->db("platform")->debug = 1;
+
+        $gets['order'] = 'id desc';
+        $gets['group'] = 'days';
+        $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c";
+        $data = table("sms_log","platform")->gets($gets);
+        $cost = 0;
+        $count = 0;
+        $line = "日期,条数,费用合计\n";
+        foreach ($data as $k => $d)
+        {
+            if (!empty($d['c'])) {
+                $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),2);
+                $cost += $data[$k]['cost'];
+                $count += $data[$k]['c'];
+            }
+            $line .= "{$d['days']},{$d['c']},{$data[$k]['cost']}\n";
+        }
+        $line .= "\n";
+        $line .= "单条:{$price}，总计条数：{$count}，总计费用：{$cost}";
+        $filename = self::$channel[$gets['channel']]."-".$month.".csv";
+        header("Content-type:text/csv");
+        header("Content-Disposition:attachment;filename=".$filename);
+        header('Cache-Control:must-revalidate,post-check=0,pre-check=0');
+        header('Expires:0');
+        header('Pragma:public');
+        echo $line;
     }
 }

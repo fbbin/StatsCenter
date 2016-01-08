@@ -80,6 +80,10 @@
                     <a href="/msg/captcha_stats/"><i class="fa fa-lg fa-fw fa-folder-open"></i> <span
                             class="menu-item-parent">验证码统计</span></a>
                 </li>
+                <li <?php if ($this->isActiveMenu('msg', 'report')){ ?>class="active" <?php } ?>>
+                    <a href="/msg/report/"><i class="fa fa-lg fa-fw fa-envelope-o"></i> <span
+                            class="menu-item-parent">短信报表</span></a>
+                </li>
                 <?php if ($this->userinfo['usertype'] == 0):?>
                 <li <?php if ($this->isActiveMenu('msg', 'weight')){ ?>class="active"<?php } ?>>
                     <a href="/msg/weight/"><i class="fa fa-lg fa-fw fa-random"></i> <span
