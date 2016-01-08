@@ -68,30 +68,17 @@
                                     <div class="dataTables_filter" style="margin-left: 5px;">
                                         <form id="form" class="form-inline" novalidate="novalidate" method="get">
 
-                                            <div class="form-group">
-                                                <label class="label">
-                                                    <input type="text" class="form-control"
-                                                           data-dateformat="yy-mm" id="month" name="month"
-                                                           value="<?php
-                                                           if (!isset($_GET['month'])){
-                                                               echo date("Y-m");
-                                                           } else {
-                                                               echo $_GET['month'];
-                                                           }
-                                                           ?>" placeholder="选择月份"
-                                                        />
-                                                </label>
+                                            <div class="form-group inline-group" style="width: 200px">
+                                                <?= $form['month']?>
                                             </div>
-                                            <div class="form-group">
-                                                <label class="select">
-                                                    <?= $form['channel']?>
-                                                </label>
+                                            <div class="form-group inline-group" style="width: 200px">
+                                                <?= $form['channel']?>
                                             </div>
                                             <div class='form-group'>
                                                 <button type="submit" class="form-control btn-success input-sm">搜索
                                                 </button>
-                                                <a class="btn btn-warning input-sm" href="/msg/dump/?month=<?=$_GET['month']?>&channel=<?=$_GET['channel']?>">导出CSV
-                                                </a>
+                                                <button type="submit" id="dump" class="form-control btn-warning input-sm">导出CSV
+                                                </button>
                                             </div>
                                         </form>
                                     </div>
@@ -193,16 +180,12 @@ you can add as many as you like
 <?php include dirname(__DIR__).'/include/javascript.php'; ?>
 <script>
     pageSetUp();
-    $('#month').datepicker( {
-        changeMonth: true,
-        changeYear: true,
-        showButtonPanel: true,
-        dateFormat: 'yy-mm',
-        onClose: function(dateText, inst) {
-            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
-            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-            $(this).datepicker('setDate', new Date(year, month, 1));
-        }
+    $("#dump").click(function(){
+        var month = $("#month").val();
+        var channel = $("#channel").val();
+        console.log("/msg/dump/?month="+month+"&channel="+channel);
+        window.open("/msg/dump/?month="+month+"&channel="+channel);
+        //window.location.href="<?=\Swoole::$php->config['login']['login_url']?>;
     });
 </script>
 

@@ -234,8 +234,11 @@ class Msg extends \App\LoginController
             $this->assign("cost", number_format($cost,2));
             $this->assign("count", $count);
         }
+
+        $month  = $this->getSelect(date("Y-m"),2);
         unset(self::$channel[0]);
-        $form['channel'] = \Swoole\Form::select('channel',self::$channel,$_GET['channel'],'',array('class'=>'form-control'));
+        $form['channel'] = \Swoole\Form::select('channel',self::$channel,$_GET['channel'],'',array('class'=>'select2'),false);
+        $form['month'] = \Swoole\Form::select('month',$month,$_GET['month'],'',array('class'=>'select2'),false);
         $this->assign('form', $form);
         $this->display();
     }
@@ -289,5 +292,17 @@ class Msg extends \App\LoginController
         header('Expires:0');
         header('Pragma:public');
         echo $line;
+    }
+
+    private function getSelect($now,$count){
+        $temp = date("Y-m",strtotime("$now"));
+        $end = date("Y-m",strtotime("$now -{$count} year"));
+        $time = array();
+        while ($temp >= $end){
+            $time[$temp] = $temp;
+            $temp = date("Y-m",strtotime("$temp -1 month"));
+
+        }
+        return $time;
     }
 }
