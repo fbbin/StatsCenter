@@ -200,45 +200,42 @@ class Msg extends \App\LoginController
 
     function report()
     {
-        if (!empty($_GET['month']))
+        if (!empty($_GET['month']) and isset($_GET['channel']) and !empty ($_GET['channel']))
         {
             $month = trim($_GET['month']);
-        } else {
-            $month = date("Y-m");
-        }
-
-        if (isset($_GET['channel']) and !empty ($_GET['channel'])) {
             $gets['channel'] = (int)$_GET['channel'];
             $this->assign("price", number_format(self::$charge[$gets['channel']],2));
-        }
 
-        $start = date("Y-m-d H:i:s", strtotime($month));
-        $end = date("Y-m-d H:i:s", strtotime("$month +1 month"));
-        $gets['where'][] = 'addtime >= "'.$start.'"';
-        $gets['where'][] = 'addtime <= "'.$end.'"';
-        //\Swoole::$php->db("platform")->debug = 1;
+            $start = date("Y-m-d H:i:s", strtotime($month));
+            $end = date("Y-m-d H:i:s", strtotime("$month +1 month"));
+            $gets['where'][] = 'addtime >= "'.$start.'"';
+            $gets['where'][] = 'addtime <= "'.$end.'"';
+            //\Swoole::$php->db("platform")->debug = 1;
 
-        $gets['order'] = 'id desc';
-        $gets['group'] = 'days';
-        $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c";
-        $data = table("sms_log","platform")->gets($gets);
-        $cost = 0;
-        $count = 0;
-        foreach ($data as $k => $d)
-        {
-            if (!empty($d['c'])) {
-                $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),2);
-                $cost += $data[$k]['cost'];
-                $count += $data[$k]['c'];
+            $gets['order'] = 'id desc';
+            $gets['group'] = 'days';
+            $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c";
+            $data = table("sms_log","platform")->gets($gets);
+            $cost = 0;
+            $count = 0;
+            foreach ($data as $k => $d)
+            {
+                if (!empty($d['c'])) {
+                    $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),2);
+                    $cost += $data[$k]['cost'];
+                    $count += $data[$k]['c'];
+                }
             }
-        }
 
+
+            $this->assign('data', $data);
+
+            $this->assign("cost", $cost);
+            $this->assign("count", $count);
+        }
         unset(self::$channel[0]);
         $form['channel'] = \Swoole\Form::select('channel',self::$channel,$_GET['channel'],'',array('class'=>'form-control'));
-        $this->assign('data', $data);
         $this->assign('form', $form);
-        $this->assign("cost", $cost);
-        $this->assign("count", $count);
         $this->display();
     }
 
