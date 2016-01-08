@@ -618,18 +618,18 @@ StatsG.showDetailStats = function() {
                 stats[ip]['total_time'] += parseFloat(data[i]['total_time']);
                 if (i == 0)
                 {
-                    stats[ip]['max_time'] = data[i]['max_time'];
-                    stats[ip]['min_time'] = data[i]['min_time'];
+                    stats[ip]['max_time'] = parseFloat(data[i]['max_time']);
+                    stats[ip]['min_time'] = parseFloat(data[i]['min_time']);
                 }
                 else
                 {
-                    if (data[i]['max_time'] > stats[ip]['max_time'])
+                    if (parseFloat(data[i]['max_time']) > stats[ip]['max_time'])
                     {
-                        stats[ip]['max_time'] = data[i]['max_time'];
+                        stats[ip]['max_time'] = parseFloat(data[i]['max_time']);
                     }
-                    if (data[i]['min_time'] < stats[ip]['min_time'])
+                    if (parseFloat(data[i]['min_time']) < stats[ip]['min_time'])
                     {
-                        stats[ip]['min_time'] = data[i]['min_time'];
+                        stats[ip]['min_time'] = parseFloat(data[i]['min_time']);
                     }
                 }
             }
