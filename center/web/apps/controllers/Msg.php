@@ -272,14 +272,16 @@ class Msg extends \App\LoginController
         foreach ($data as $k => $d)
         {
             if (!empty($d['c'])) {
-                $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),2);
+                $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),2,'.', '');
                 $cost += $data[$k]['cost'];
                 $count += $data[$k]['c'];
             }
             $line .= "{$d['days']},{$d['c']},{$data[$k]['cost']}\n";
         }
         $line .= "\n";
-        $line .= "单条:{$price}，总计条数：{$count}，总计费用：{$cost}";
+        $line .= ",总计条数,总计费用\n";
+        $line .= ",{$count},{$cost}\n";
+        $line .= "备注: 单价 {$price}元\n";
         $filename = self::$channel[$gets['channel']]."-".$month.".csv";
         header("Content-type:text/csv");
         header("Content-Disposition:attachment;filename=".$filename);
