@@ -47,8 +47,8 @@ class StatsServer extends Server
                 $server_count['fail_client'] = self::tryEncode($server_count, 'fail_client');
                 $server_count['ret_code'] = self::tryEncode($server_count, 'ret_code');
                 $server_count['succ_ret_code'] = self::tryEncode($server_count, 'succ_ret_code');
-                table($table_server)->put($server_count);
-                if (!table($table_server)->put($server_count) and \Swoole::$php->db->errno() == 1146)
+                $ret = table($table_server)->put($server_count);
+                if (!$ret and \Swoole::$php->db->errno() == 1146)
                 {
                     $this->createTable1($table_server);
                     table($table_server)->put($server_count);
