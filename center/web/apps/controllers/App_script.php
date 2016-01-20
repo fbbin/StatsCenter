@@ -30,20 +30,25 @@ class App_script extends \App\LoginController
                 $table->del($id);
             }
 
-            if (!empty($_GET['app']))
+            if (!empty($_GET['app_name']))
             {
-                $gets['name'] = trim($_GET['app']);
+                $gets['name'] = trim($_GET['app_name']);
             }
             else
             {
-                $_GET['name'] = '';
+                $_GET['app_name'] = '';
+            }
+
+            if (!empty($_GET['version']))
+            {
+                $gets['version'] = trim($_GET['version']);
             }
 
             $gets['order'] = 'update_time desc';
             $data = $table->gets($gets);
 
             $users = table('user', 'platform')->getMap(['select' => 'id,realname'], 'realname');
-            $form['app_name'] = Swoole\Form::select('app_name', self::$appList, $_GET['app'], false, array('class' => 'select2 select2-offscreen'));
+            $form['app_name'] = Swoole\Form::select('app_name', self::$appList, $_GET['app_name'], false, array('class' => 'select2 select2-offscreen'));
             $this->assign('form', $form);
             $this->assign('users', $users);
             $this->assign('data', $data);

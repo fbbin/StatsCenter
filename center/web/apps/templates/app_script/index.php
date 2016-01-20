@@ -34,11 +34,25 @@
                         <h2>JS脚本下发</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div role="content">
-                        <div class="widget-body no-padding">
+                        <div class="widget-body no-padding form-inline">
                             <div class="alert alert-info no-margin fade in">
-                                <div style="float: left; width: 90px;"><a href="?entity&app=<?=$_GET['app']?>" class="btn btn-success">新增脚本</a></div>
-                                <div style="float: left; width: 300px;"><?= $form['app_name'] ?></div>
-                                <div style="clear: both"></div>
+                                <form class="smart-form" method="get">
+                                    <div class="form-group">
+                                        <a href="?entity&app=<?= $_GET['app_name'] ?>" class="btn-sm btn btn-primary">新增脚本</a>
+                                    </div>
+                                    <div class="form-group" style="width: 220px;"><?= $form['app_name'] ?></div>
+                                    <div class="form-group" >
+                                        <div class="form-group" style="width: 200px;">
+                                            <label class="input">
+                                                <input class="input" type="text" name="version" placeholder="输入版本号"
+                                                       value="<?= $this->value($_GET, 'version', '') ?>"/>
+                                            </label>
+                                        </div>
+                                        <div class="form-group" style="width: 50px;">
+                                            <button class="btn-success btn-sm btn" type="submit">搜索</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                             <table class="table table-hover table-bordered table-striped">
                                 <thead>
@@ -139,7 +153,7 @@ you can add as many as you like
         $('#app_name').change(function(){
             var app_name =  $('#app_name').val();
             window.localStorage.setItem('app_script_default_name', app_name);
-            location.href = '/app_script/index/' + '?app=' + app_name;
+            location.href = '/app_script/index/' + '?app_name=' + app_name;
         });
     });
 </script>

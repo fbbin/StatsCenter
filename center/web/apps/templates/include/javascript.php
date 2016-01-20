@@ -63,7 +63,7 @@
         $('#logs2_index_link').attr('href', $('#logs2_index_link').attr('href') + '?module=' + window.localStorage.log_module_id);
     }
     if (window.localStorage.app_script_default_name) {
-        $('#menu_app_script_index').attr('href', $('#menu_app_script_index').attr('href') + '?app=' + window.localStorage.app_script_default_name);
+        $('#menu_app_script_index').attr('href', $('#menu_app_script_index').attr('href') + '?app_name=' + window.localStorage.app_script_default_name);
     }
     $(document).ready(function () {
         $('#AlertMessage').dialog({
