@@ -5,6 +5,14 @@ use Swoole;
 
 class App_script extends \App\LoginController
 {
+    static $appList = [
+        'Chelun' => '车轮社区(Chelun)',
+        'QueryViolations' => '车轮查违章(QueryViolations)',
+        'ChelunWelfare' => '车主福利大全(ChelunWelfare)',
+        'DrivingTest' => '车轮考驾照-学员端(DrivingTest)',
+        'Coach' => '车轮考驾照-教练端(Coach)',
+    ];
+
     function index()
     {
         $table = table('app_script', 'platform');
@@ -22,24 +30,26 @@ class App_script extends \App\LoginController
                 $table->del($id);
             }
 
+            if (!empty($_GET['app']))
+            {
+                $gets['name'] = trim($_GET['app']);
+            }
+            else
+            {
+                $_GET['name'] = '';
+            }
+
             $gets['order'] = 'update_time desc';
             $data = $table->gets($gets);
 
             $users = table('user', 'platform')->getMap(['select' => 'id,realname'], 'realname');
-
+            $form['app_name'] = Swoole\Form::select('app_name', self::$appList, $_GET['app'], false, array('class' => 'select2 select2-offscreen'));
+            $this->assign('form', $form);
             $this->assign('users', $users);
             $this->assign('data', $data);
             $this->display();
         }
     }
-
-    static $appList = [
-        'Chelun' => '车轮社区(Chelun)',
-        'QueryViolations' => '车轮查违章(QueryViolations)',
-        'ChelunWelfare' => '车主福利大全(ChelunWelfare)',
-        'DrivingTest' => '车轮考驾照-学员端(DrivingTest)',
-        'Coach' => '车轮考驾照-教练端(Coach)',
-    ];
 
     protected function entity($id = 0)
     {
