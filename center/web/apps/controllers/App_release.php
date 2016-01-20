@@ -454,7 +454,7 @@ class App_release extends \App\LoginController
             $form_data['app_id'] = $app_id;
             $form_data['release_id'] = $release_id;
             $form_data['release_link_id'] = $release_link_id;
-            $data = $this->validate($form_data, [$this, 'editChannelReleaselinkCheck'], $errors);
+            $data = $this->validate($form_data, [$this, 'editChannelReleaseLinkCheck'], $errors);
             if (empty($errors))
             {
                 $data['update_time'] = date('Y-m-d H:i:s');
@@ -891,7 +891,7 @@ class App_release extends \App\LoginController
             $errors[] = '请填写正确的下载地址！';
         }
 
-        $output['fallback_link'] = !empty($input['fallback_link']) ? true : false;
+        $output['fallback_link'] = !empty($input['fallback_link']) ? 1 : 0;
 
         if (empty($errors) && $output['fallback_link'])
         {
