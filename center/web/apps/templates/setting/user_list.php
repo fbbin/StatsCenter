@@ -117,6 +117,7 @@
                                                     <a onclick="return confirm('确定要重置用户密码');"
                                                        href="/setting/reset_password/?id=<?= $d['id'] ?>"
                                                        class="btn btn-warning btn-xs">重置密码</a>
+                                                    <a href="/setting/user_list/?reset_limit=<?= $d['id'] ?>" class="btn btn-success btn-xs">重置频率限制</a>
                                                     <?php if (!$d['blocking'])
                                                     { ?>
                                                         <a onclick="return confirm('确定要禁用此用户');"

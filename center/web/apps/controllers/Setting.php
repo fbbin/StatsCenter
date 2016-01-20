@@ -721,7 +721,7 @@ class Setting extends App\LoginController
                 goto fail;
             }
         }
-
+        $this->resetLimit($user->username);
         //同步到Confluence
         App\CrowdUser::setPassword($user['username'], self::DEFAULT_PASSWORD);
 
@@ -736,6 +736,11 @@ class Setting extends App\LoginController
         }
     }
 
+    protected function  resetLimit($username)
+    {
+        $limit_key = 'App\Controller:Employee:' . $username . ':password_error';
+        $this->limit->reset($limit_key);
+    }
 
     function user_list()
     {
@@ -767,6 +772,12 @@ class Setting extends App\LoginController
                 }
             }
             return Swoole\JS::js_goto("操作失败，请重试！\\n错误信息：".$this->errMsg."\\n错误码：".$this->errCode, '/setting/user_list/');
+        }
+        elseif (!empty($_GET['reset_limit']))
+        {
+            $u = table("user", 'platform')->get(intval($_GET['reset_limit']));
+            $this->resetLimit($u->username);
+            return Swoole\JS::js_back("操作成功");
         }
 
         $gets = array();

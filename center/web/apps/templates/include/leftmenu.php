@@ -145,7 +145,7 @@
             </li>
             <li <?php if ($this->isActiveMenu('app_script', 'index')){ ?>
                 class="active" <?php } ?>>
-                <a href="/app_script/index/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">JS脚本下发</span></a>
+                <a id="menu_app_script_index" href="/app_script/index/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">JS脚本下发</span></a>
             </li>
         </ul>
     </li>

@@ -204,7 +204,7 @@ class Msg extends \App\LoginController
         {
             $month = trim($_GET['month']);
             $gets['channel'] = (int)$_GET['channel'];
-            $this->assign("price", number_format(self::$charge[$gets['channel']],2));
+            $this->assign("price", number_format(self::$charge[$gets['channel']],3));
 
             $start = date("Y-m-d H:i:s", strtotime($month));
             $end = date("Y-m-d H:i:s", strtotime("$month +1 month"));
@@ -222,7 +222,7 @@ class Msg extends \App\LoginController
             {
                 if (!empty($d['c'])) {
                     $_cost = $d['c']*(self::$charge[$gets['channel']]);
-                    $data[$k]['cost'] = number_format($_cost,2);
+                    $data[$k]['cost'] = number_format($_cost,3);
                     $cost += $_cost;
                     $count += $data[$k]['c'];
                 }
@@ -231,11 +231,14 @@ class Msg extends \App\LoginController
 
             $this->assign('data', $data);
 
-            $this->assign("cost", number_format($cost,2));
+            $this->assign("cost", number_format($cost,3));
             $this->assign("count", $count);
         }
+
+        $month  = $this->getSelect(date("Y-m"),2);
         unset(self::$channel[0]);
-        $form['channel'] = \Swoole\Form::select('channel',self::$channel,$_GET['channel'],'',array('class'=>'form-control'));
+        $form['channel'] = \Swoole\Form::select('channel',self::$channel,$_GET['channel'],'',array('class'=>'select2'),false);
+        $form['month'] = \Swoole\Form::select('month',$month,$_GET['month'],'',array('class'=>'select2'),false);
         $this->assign('form', $form);
         $this->display();
     }
@@ -251,7 +254,7 @@ class Msg extends \App\LoginController
 
         if (isset($_GET['channel']) and !empty ($_GET['channel'])) {
             $gets['channel'] = (int)$_GET['channel'];
-           $price = number_format(self::$charge[$gets['channel']],2);
+           $price = number_format(self::$charge[$gets['channel']],3);
         } else {
             \Swoole\JS::js_back('请选择渠道');
         }
@@ -272,14 +275,16 @@ class Msg extends \App\LoginController
         foreach ($data as $k => $d)
         {
             if (!empty($d['c'])) {
-                $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),2);
+                $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),3,'.', '');
                 $cost += $data[$k]['cost'];
                 $count += $data[$k]['c'];
             }
             $line .= "{$d['days']},{$d['c']},{$data[$k]['cost']}\n";
         }
         $line .= "\n";
-        $line .= "单条:{$price}，总计条数：{$count}，总计费用：{$cost}";
+        $line .= ",总计条数,总计费用\n";
+        $line .= ",{$count},{$cost}\n";
+        $line .= "备注: 渠道 ".self::$channel[$gets['channel']]." 单价 {$price}元\n";
         $filename = self::$channel[$gets['channel']]."-".$month.".csv";
         header("Content-type:text/csv");
         header("Content-Disposition:attachment;filename=".$filename);
@@ -287,5 +292,17 @@ class Msg extends \App\LoginController
         header('Expires:0');
         header('Pragma:public');
         echo $line;
+    }
+
+    private function getSelect($now,$count){
+        $temp = date("Y-m",strtotime("$now"));
+        $end = date("Y-m",strtotime("$now -{$count} year"));
+        $time = array();
+        while ($temp >= $end){
+            $time[$temp] = $temp;
+            $temp = date("Y-m",strtotime("$temp -1 month"));
+
+        }
+        return $time;
     }
 }
