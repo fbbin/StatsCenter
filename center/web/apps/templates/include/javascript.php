@@ -44,15 +44,6 @@
 <h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
 <![endif]-->
 
-<script>
-    if (window.localStorage.module_id) {
-        $('#stats_index_link').attr('href', $('#stats_index_link').attr('href') + '?module_id=' + window.localStorage.module_id);
-    }
-    if (window.localStorage.log_module_id) {
-        $('#logs2_index_link').attr('href', $('#logs2_index_link').attr('href') + '?module=' + window.localStorage.log_module_id);
-    }
-</script>
-
 <!--<div id="dialog-message" title="">-->
 <!--    <p id="dialog-content"></p>-->
 <!--</div>-->
@@ -65,6 +56,15 @@
 </div>
 
 <script>
+    if (window.localStorage.module_id) {
+        $('#stats_index_link').attr('href', $('#stats_index_link').attr('href') + '?module_id=' + window.localStorage.module_id);
+    }
+    if (window.localStorage.log_module_id) {
+        $('#logs2_index_link').attr('href', $('#logs2_index_link').attr('href') + '?module=' + window.localStorage.log_module_id);
+    }
+    if (window.localStorage.app_script_default_name) {
+        $('#menu_app_script_index').attr('href', $('#menu_app_script_index').attr('href') + '?app=' + window.localStorage.app_script_default_name);
+    }
     $(document).ready(function () {
         $('#AlertMessage').dialog({
             autoOpen: false,

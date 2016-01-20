@@ -62,9 +62,17 @@ class App_script extends \App\LoginController
         }
         else
         {
-            $entity['name'] = '';
             $entity['version'] = '';
             $entity['content'] = '';
+
+            if (!empty($_GET['app']))
+            {
+                $entity['name'] = trim($_GET['app']);
+            }
+            else
+            {
+                $entity['name'] = '';
+            }
         }
 
         if (!empty($_POST))

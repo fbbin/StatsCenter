@@ -36,7 +36,7 @@
                     <div role="content">
                         <div class="widget-body no-padding">
                             <div class="alert alert-info no-margin fade in">
-                                <div style="float: left; width: 90px;"><a href="?entity" class="btn btn-success">新增脚本</a></div>
+                                <div style="float: left; width: 90px;"><a href="?entity&app=<?=$_GET['app']?>" class="btn btn-success">新增脚本</a></div>
                                 <div style="float: left; width: 300px;"><?= $form['app_name'] ?></div>
                                 <div style="clear: both"></div>
                             </div>
@@ -137,7 +137,9 @@ you can add as many as you like
     $(function() {
         pageSetUp();
         $('#app_name').change(function(){
-            location.href = '/app_script/index/' + '?app=' + $('#app_name').val();
+            var app_name =  $('#app_name').val();
+            window.localStorage.setItem('app_script_default_name', app_name);
+            location.href = '/app_script/index/' + '?app=' + app_name;
         });
     });
 </script>
