@@ -1507,7 +1507,7 @@ class Setting extends App\LoginController
             if (!empty($data['app_id']))
             {
                 $query_params = [
-                    'where' => sprintf('os = %d AND (package_name = "%s" OR app_key = %s) AND id != %d', $db_data['os'], $db_data['package_name'], $data['app_key'], $data['app_id']),
+                    'where' => sprintf('os = %d AND (package_name = "%s" OR app_key = "%s") AND id != %d', $db_data['os'], $db_data['package_name'], $data['app_key'], $data['app_id']),
                 ];
             }
             else
