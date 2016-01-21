@@ -21,6 +21,7 @@ foreach ($modules as $module)
         $params['module_name'] = $module['name'];
         $gets = array();
         $gets['select'] = 'id,mobile,weixinid,username';
+        $alert_ids = trim($alert_ids,',');
         $gets['where'][] = 'id in (' . $alert_ids . ')';
         $tmp = table('user', 'platform')->gets($gets);
         $user = array();
