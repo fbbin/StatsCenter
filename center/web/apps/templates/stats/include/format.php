@@ -5,10 +5,18 @@
         <td><?= $td['interface_name'] ?></td>
         <td><?= empty($td['time_str']) ? '00:00 ~ 23:55' : $td['time_str'] ?></td>
         <td><?= number_format($td['total_count']) ?></td>
-        <td><a href="javascript: StatsG.openSuccPage(<?=$td['module_id']?>,<?=$td['interface_id']?>)" style="color: green">
-                <?= number_format($td['succ_count']) ?></a></td>
-        <td><a href="javascript: StatsG.openFailPage(<?=$td['module_id']?>,<?=$td['interface_id']?>)"
-               style="color: <?=$td['fail_count'] > 0? "red" :'black'?>"><?= number_format($td['fail_count']) ?></a></td>
+        <?php if (isset($td['time_key']) and !empty($td['time_key'])) {?>
+            <td><a href="javascript: StatsG.openSuccPage(<?=$td['module_id']?>,<?=$td['interface_id']?>,$td['time_key'])" style="color: green">
+                    <?= number_format($td['succ_count']) ?></a></td>
+            <td><a href="javascript: StatsG.openFailPage(<?=$td['module_id']?>,<?=$td['interface_id']?>,$td['time_key'])"
+                   style="color: <?=$td['fail_count'] > 0? "red" :'black'?>"><?= number_format($td['fail_count']) ?></a></td>
+        <?php } else { ?>
+            <td><a href="javascript: StatsG.openSuccPage(<?=$td['module_id']?>,<?=$td['interface_id']?>)" style="color: green">
+                    <?= number_format($td['succ_count']) ?></a></td>
+            <td><a href="javascript: StatsG.openFailPage(<?=$td['module_id']?>,<?=$td['interface_id']?>)"
+                   style="color: <?=$td['fail_count'] > 0? "red" :'black'?>"><?= number_format($td['fail_count']) ?></a></td>
+        <?php } ?>
+
         <td style="color: green"><?= $td['succ_rate'] ?>%</td>
         <td><?= $td['max_time'] ?>ms</td>
         <td><?= $td['min_time'] ?>ms</td>
