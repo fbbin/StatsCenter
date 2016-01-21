@@ -3,6 +3,8 @@ namespace App\Controller;
 
 class App_release extends \App\LoginController
 {
+    public $if_filter = false;
+
     function app_list()
     {
         $query_params = [
