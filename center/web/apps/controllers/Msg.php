@@ -209,7 +209,7 @@ class Msg extends \App\LoginController
             $start = date("Y-m-d H:i:s", strtotime($month));
             $end = date("Y-m-d H:i:s", strtotime("$month +1 month"));
             $gets['where'][] = 'addtime >= "'.$start.'"';
-            $gets['where'][] = 'addtime <= "'.$end.'"';
+            $gets['where'][] = 'addtime < "'.$end.'"';
             //\Swoole::$php->db("platform")->debug = 1;
 
             $gets['order'] = 'id desc';
