@@ -70,6 +70,7 @@ function del_log()
             if ($date < $last)
             {
                 dropTable($table_name);
+                echo "drop table $table_name success\n";
             }
         }
     }
