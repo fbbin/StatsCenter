@@ -149,8 +149,9 @@ class Handler
             $ret_code = json_decode($message['ret_code'],1);
             if (!empty($ret_code)) {
                 $content .= "错误码详情，";
-                foreach ($ret_code as $code => $count)
+                foreach ($ret_code as $o => $count)
                 {
+                    $code = $o > pow(2, 31) ? $o - pow(2, 32) : $o;
                     $content .= "{$code}:{$count}次，";
                 }
             }
