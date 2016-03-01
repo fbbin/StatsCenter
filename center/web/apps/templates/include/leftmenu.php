@@ -73,12 +73,12 @@
                         <span class="menu-item-parent">短信记录</span></a>
                 </li>
                 <li <?php if ($this->isActiveMenu('msg', 'msg_stats')){ ?>class="active"<?php } ?>>
-                    <a href="/msg/msg_stats/"><i class="fa fa-lg fa-fw fa-envelope-o"></i> <span
-                            class="menu-item-parent">短信统计</span></a>
+                    <a href="/msg/msg_stats/"><i class="fa fa-lg fa-fw fa-thumbs-o-up"></i> <span
+                            class="menu-item-parent">短信成功率统计</span></a>
                 </li>
                 <li <?php if ($this->isActiveMenu('msg', 'captcha_stats')){ ?>class="active" <?php } ?>>
-                    <a href="/msg/captcha_stats/"><i class="fa fa-lg fa-fw fa-folder-open"></i> <span
-                            class="menu-item-parent">验证码统计</span></a>
+                    <a href="/msg/captcha_stats/"><i class="fa fa-lg fa-fw fa-cutlery"></i> <span
+                            class="menu-item-parent">验证码使用率统计</span></a>
                 </li>
                 <li <?php if ($this->isActiveMenu('msg', 'report')){ ?>class="active" <?php } ?>>
                     <a href="/msg/report/"><i class="fa fa-lg fa-fw fa-envelope-o"></i> <span
