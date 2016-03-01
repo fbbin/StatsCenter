@@ -197,6 +197,7 @@ class Msg extends \App\LoginController
         $data = table('sms_log', 'platform')->gets($gets, $pager);
         $this->assign('pager', array('total' => $pager->total, 'render' => $pager->render()));
         $this->assign('data', $data);
+        $this->assign('channel', self::$channel);
         $this->display();
     }
 
