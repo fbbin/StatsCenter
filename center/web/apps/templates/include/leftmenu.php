@@ -84,12 +84,6 @@
                     <a href="/msg/report/"><i class="fa fa-lg fa-fw fa-envelope-o"></i> <span
                             class="menu-item-parent">短信报表</span></a>
                 </li>
-                <?php if ($this->userinfo['usertype'] == 0):?>
-                <li <?php if ($this->isActiveMenu('msg', 'weight')){ ?>class="active"<?php } ?>>
-                    <a href="/msg/weight/"><i class="fa fa-lg fa-fw fa-random"></i> <span
-                            class="menu-item-parent">权重设置</span></a>
-                </li>
-                <?php endif; ?>
             </ul>
         </li>
     <?php endif;?>
