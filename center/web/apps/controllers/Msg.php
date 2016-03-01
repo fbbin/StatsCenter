@@ -118,7 +118,7 @@ class Msg extends \App\LoginController
                 $type = $_GET['type'];
             }
 
-            \Swoole::$php->db("platform")->debug = 1;
+            //\Swoole::$php->db("platform")->debug = 1;
 
             $gets['order'] = 'id desc';
             $data = table("msg_captcha_log", "platform")->gets($gets);
@@ -150,7 +150,7 @@ class Msg extends \App\LoginController
                         $calc[$d['channel']]['no']++;
                     }
                 } else {
-                    if (!isset($calc[0]['used'])) {
+                    if (!isset($all['used'])) {
                         $all['used'] = 1;
                     } else {
                         $all['used']++;
