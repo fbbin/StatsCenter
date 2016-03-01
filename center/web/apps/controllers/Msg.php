@@ -206,6 +206,9 @@ class Msg extends \App\LoginController
         if (!empty($_GET['month']) and isset($_GET['channel']) and !empty ($_GET['channel'])) {
             $month = trim($_GET['month']);
             $gets['channel'] = (int)$_GET['channel'];
+            if (strval($month)<'2016-03') {
+                self::$charge[5] = 0.043;
+            }
             $this->assign("price", number_format(self::$charge[$gets['channel']], 3));
 
             $start = date("Y-m-d H:i:s", strtotime($month));
@@ -237,7 +240,6 @@ class Msg extends \App\LoginController
         }
 
         $month = $this->getSelect(date("Y-m"), 2);
-        unset(self::$channel[0]);
         $form['channel'] = \Swoole\Form::select('channel', self::$channel, $_GET['channel'], '', array('class' => 'select2'), false);
         $form['month'] = \Swoole\Form::select('month', $month, $_GET['month'], '', array('class' => 'select2'), false);
         $this->assign('form', $form);
