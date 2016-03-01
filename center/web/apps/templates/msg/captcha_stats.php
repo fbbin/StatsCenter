@@ -63,12 +63,12 @@
                             <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
                                 <div class="dt-top-row">
                                     <div class="dataTables_filter" style="margin-left: 5px;">
-                                        <form id="form" class="form-inline" novalidate="novalidate" method="post">
+                                        <form id="form" class="form-inline" novalidate="novalidate" method="get">
                                             <div class="form-group" style="width: 300px;">
                                                 <select class="select2" id="type" name="type">
                                                     <?php foreach ($type as $k => $v): ?>
                                                         <option value="<?= $k ?>"
-                                                            <?php if ($k == $_POST['type']) echo 'selected="selected"'; ?> ><?= $v ?>
+                                                            <?php if ($k == $_GET['type']) echo 'selected="selected"'; ?> ><?= $v ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
@@ -78,10 +78,10 @@
                                                     <input type="text" class="form-control datepicker"
                                                            data-dateformat="yy-mm-dd" id="start_time" name="start_time"
                                                            value="<?php
-                                                           if (empty($_POST['start_time'])){
+                                                           if (empty($_GET['start_time'])){
                                                                echo date("Y-m-d");
                                                            } else {
-                                                               echo $_POST['start_time'];
+                                                               echo $_GET['start_time'];
                                                            }
                                                            ?>"
                                                         />
@@ -126,8 +126,8 @@
                                         <tr>
                                             <td><?= $d['name'] ?></td>
                                             <td><?= $d['type'] ?></td>
-                                            <td><?= $d['count'] ?></td>
-                                            <td><?=$d['used']?></td>
+                                            <td><?=(int)$d['count'] ?></td>
+                                            <td><?=(int)$d['used']?></td>
                                             <td><?=$d['used_rate']?>%</td>
                                         </tr>
                                         <?php
@@ -137,7 +137,9 @@
                             </table>
                         </div>
                         <div class="dt-row dt-bottom-row">
-                            <div class="row">
+                            <div class="pager">
+                                <span>汇总：发送<?=(int)$all['count']?>条 使用<?=(int)$all['used']?>条 使用率<?=$all['used_rate']?>%
+                                </span>
                             </div>
                         </div>
                     </div>

@@ -1,173 +1,177 @@
 <?php
 namespace App\Controller;
+
 use Swoole;
 use App;
 
 class Msg extends \App\LoginController
 {
-    static $channel = array(
-        0 => '全部',
-        1 => '亿美',
-        2 => '漫道',
-        3 => '梦网',
-        4 => '亿美广告',
-        5 => '云信',
-    );
-
+    const CONFIG_DIR = "/data/config/platform/sms_channel.conf";
+    static $sms_config;
+    static $channel;
     //通道单条信息费用
-    static $charge  = array (
-        1 => 0.04,
-        2 => 0.04,
-        3 => 0.04,
-        4 => 0.04,
-        5 => 0.043,
-    );
-
+    static $charge;
     static $msg_type = array(
-        0 => '全部',
         1 => '文本',
         2 => '语音',
     );
+
+    function __construct(\Swoole $swoole)
+    {
+        parent::__construct($swoole);
+        $this->get_config();
+    }
+
+    function get_config()
+    {
+        $config = file_get_contents(self::CONFIG_DIR);
+        self::$sms_config = json_decode($config,1);
+        foreach (self::$sms_config as $id => $info)
+        {
+            self::$channel[$id] = $info['name'];
+            self::$charge[$id] = $info['price'];
+        }
+    }
+
     function msg_stats()
     {
-        if (!empty($_POST['start_time']))
-        {
-            $start = trim($_POST['start_time'])." 00:00:00";
-            $end = trim($_POST['start_time'])." 23:59:59";
+        if (!empty($_GET['start_time'])) {
+            $start = trim($_GET['start_time']) . " 00:00:00";
+            $end = trim($_GET['start_time']) . " 23:59:59";
 
-        } else {
-            $today = date("Y-m-d");
-            $start = $today." 00:00:00";
-            $end = $today." 23:59:59";
-        }
+            $gets['where'][] = 'addtime >= "' . $start . '"';
+            $gets['where'][] = 'addtime <= "' . $end . '"';
+            //\Swoole::$php->db("platform")->debug = 1;
 
-        $gets['where'][] = 'addtime >= "'.$start.'"';
-        $gets['where'][] = 'addtime <= "'.$end.'"';
-        //\Swoole::$php->db("platform")->debug = 1;
-
-        $gets['order'] = 'id desc';
-        $data = table("sms_log","platform")->gets($gets);
-        $calc = array();
-        foreach ($data as $k => $d)
-        {
-            if (!isset($calc[0]['count'])) {
-                $calc[0]['count'] = 1;
-            } else {
-                $calc[0]['count'] ++;
-            }
-            if (!isset($calc[$d['channel']]['count'])) {
-                $calc[$d['channel']]['count'] = 1;
-            } else {
-                $calc[$d['channel']]['count'] ++;
-            }
-
-            if ($d['success'] == 0) {
-                if (!isset($calc[0]['success'])) {
-                    $calc[0]['success'] = 1;
+            $gets['order'] = 'id desc';
+            $data = table("sms_log", "platform")->gets($gets);
+            $calc = array();
+            $all = array();
+            foreach ($data as $k => $d) {
+                if (!isset($all['count'])) {
+                    $all['count'] = 1;
                 } else {
-                    $calc[0]['success'] ++;
+                    $all['count']++;
                 }
-                if (!isset($calc[$d['channel']]['success'])) {
-                    $calc[$d['channel']]['success'] = 1;
+                if (!isset($calc[$d['channel']]['count'])) {
+                    $calc[$d['channel']]['count'] = 1;
                 } else {
-                    $calc[$d['channel']]['success'] ++;
+                    $calc[$d['channel']]['count']++;
                 }
-            } else {
-                if (!isset($calc[0]['failed'])) {
-                    $calc[0]['failed'] = 1;
+
+                if ($d['success'] == 0) {
+                    if (!isset($all['success'])) {
+                        $all['success'] = 1;
+                    } else {
+                        $all['success']++;
+                    }
+                    if (!isset($calc[$d['channel']]['success'])) {
+                        $calc[$d['channel']]['success'] = 1;
+                    } else {
+                        $calc[$d['channel']]['success']++;
+                    }
                 } else {
-                    $calc[0]['failed'] ++;
-                }
-                if (!isset($calc[$d['channel']]['failed'])) {
-                    $calc[$d['channel']]['failed'] = 1;
-                } else {
-                    $calc[$d['channel']]['failed'] ++;
+                    if (!isset($all['failed'])) {
+                        $all['failed'] = 1;
+                    } else {
+                        $all['failed']++;
+                    }
+                    if (!isset($calc[$d['channel']]['failed'])) {
+                        $calc[$d['channel']]['failed'] = 1;
+                    } else {
+                        $calc[$d['channel']]['failed']++;
+                    }
                 }
             }
-        }
+            foreach ($calc as $k => $v) {
+                $calc[$k]['name'] = self::$channel[$k];
+                $calc[$k]['success_rate'] = number_format(($v['success'] / $v['count']) * 100, 2);
+                $calc[$k]['failed_rate'] = number_format(($v['failed'] / $v['count']) * 100, 2);
+            }
+            $all['success_rate'] = number_format(($all['success'] / $all['count']) * 100, 2);
+            $all['failed_rate'] = number_format(($all['failed'] / $all['count']) * 100, 2);
 
-        foreach ($calc as $k => $v)
-        {
-            $calc[$k]['name'] = self::$channel[$k];
-            $calc[$k]['success_rate'] = number_format(($v['success']/$v['count'])*100,2);
-            $calc[$k]['failed_rate'] = number_format(($v['failed']/$v['count'])*100,2);
+            $this->assign('data', $calc);
+            $this->assign('all', $all);
         }
-        $this->assign('data', $calc);
         $this->display();
     }
 
+
+    /**
+     * 文本验证码使用率按天统计
+     * @throws \Exception
+     */
     function captcha_stats()
     {
-        if (!empty($_POST['start_time']))
-        {
-            $start = trim($_POST['start_time'])." 00:00:00";
-            $end = trim($_POST['start_time'])." 23:59:59";
-        } else {
-            $today = date("Y-m-d");
-            $start = $today." 00:00:00";
-            $end = $today." 23:59:59";
-        }
-        $gets['where'][] = 'add_time >= "'.strtotime($start).'"';
-        $gets['where'][] = 'add_time <= "'.strtotime($end).'"';
+        if (!empty($_GET['start_time'])) {
+            $start = trim($_GET['start_time']) . " 00:00:00";
+            $end = trim($_GET['start_time']) . " 23:59:59";
 
-        $type = 0;
-        if (!empty($_POST['type']))
-        {
-            $gets['type'] = $_POST['type'];
-            $type = $_POST['type'];
-        }
+            $gets['where'][] = 'add_time >= "' . strtotime($start) . '"';
+            $gets['where'][] = 'add_time <= "' . strtotime($end) . '"';
 
-            //\Swoole::$php->db("platform")->debug = 1;
-
-        $gets['order'] = 'id desc';
-        $data = table("msg_captcha_log","platform")->gets($gets);
-        $calc = array();
-        foreach ($data as $k => $d)
-        {
-            if (!isset($calc[0]['count'])) {
-                $calc[0]['count'] = 1;
-            } else {
-                $calc[0]['count'] ++;
+            $type = 0;
+            if (!empty($_GET['type']))
+            {
+                $gets['type'] = (int)$_GET['type'];
+                $type = $_GET['type'];
             }
 
-            if (!isset($calc[$d['channel']]['count'])) {
-                $calc[$d['channel']]['count'] = 1;
-            } else {
-                $calc[$d['channel']]['count'] ++;
+            \Swoole::$php->db("platform")->debug = 1;
+
+            $gets['order'] = 'id desc';
+            $data = table("msg_captcha_log", "platform")->gets($gets);
+            //debug($data);
+            $calc = array();
+            $all = array();
+            foreach ($data as $k => $d) {
+                if (!isset($all['count'])) {
+                    $all['count'] = 1;
+                } else {
+                    $all['count']++;
+                }
+
+                if (!isset($calc[$d['channel']]['count'])) {
+                    $calc[$d['channel']]['count'] = 1;
+                } else {
+                    $calc[$d['channel']]['count']++;
+                }
+
+                if ($d['is_used'] == 0) {
+                    if (!isset($all['success'])) {
+                        $all['no'] = 1;
+                    } else {
+                        $all['no']++;
+                    }
+                    if (!isset($calc[$d['channel']]['no'])) {
+                        $calc[$d['channel']]['no'] = 1;
+                    } else {
+                        $calc[$d['channel']]['no']++;
+                    }
+                } else {
+                    if (!isset($calc[0]['used'])) {
+                        $all['used'] = 1;
+                    } else {
+                        $all['used']++;
+                    }
+                    if (!isset($calc[$d['channel']]['used'])) {
+                        $calc[$d['channel']]['used'] = 1;
+                    } else {
+                        $calc[$d['channel']]['used']++;
+                    }
+                }
             }
 
-            if ($d['is_used'] == 0) {
-                if (!isset($calc[0]['no'])) {
-                    $calc[0]['no'] = 1;
-                } else {
-                    $calc[0]['no'] ++;
-                }
-                if (!isset($calc[$d['channel']]['no'])) {
-                    $calc[$d['channel']]['no'] = 1;
-                } else {
-                    $calc[$d['channel']]['no'] ++;
-                }
-            } else {
-                if (!isset($calc[0]['used'])) {
-                    $calc[0]['used'] = 1;
-                } else {
-                    $calc[0]['used'] ++;
-                }
-                if (!isset($calc[$d['channel']]['used'])) {
-                    $calc[$d['channel']]['used'] = 1;
-                } else {
-                    $calc[$d['channel']]['used'] ++;
-                }
+            foreach ($calc as $k => $v) {
+                $calc[$k]['type'] = self::$msg_type[$type];
+                $calc[$k]['name'] = self::$channel[$k];
+                $calc[$k]['used_rate'] = number_format(($v['used'] / $v['count']) * 100, 2);
             }
+            $all['used_rate'] = number_format(($all['used'] / $all['count']) * 100, 2);
+            $this->assign('data', $calc);
+            $this->assign('all', $all);
         }
-
-        foreach ($calc as $k => $v)
-        {
-            $calc[$k]['type'] = self::$msg_type[$type];
-            $calc[$k]['name'] = self::$channel[$k];
-            $calc[$k]['used_rate'] = number_format(($v['used']/$v['count'])*100,2);
-        }
-        $this->assign('data', $calc);
         $this->assign('type', self::$msg_type);
         $this->display();
     }
@@ -179,50 +183,46 @@ class Msg extends \App\LoginController
         $gets['page'] = !empty($_GET['page']) ? $_GET['page'] : 1;
         $gets['pagesize'] = 20;
 
-        if (empty($_GET['date']))
-        {
+        if (empty($_GET['date'])) {
             $_GET['date'] = date('Y-m-d');
         }
 
-        $gets['where'][] = 'addtime >= "'.$_GET['date'].' 00:00:00'.'"';
-        $gets['where'][] = 'addtime <= "'.$_GET['date'].' 23:59:59'.'"';
+        $gets['where'][] = 'addtime >= "' . $_GET['date'] . ' 00:00:00' . '"';
+        $gets['where'][] = 'addtime <= "' . $_GET['date'] . ' 23:59:59' . '"';
 
-        if (!empty($_GET['mobile']))
-        {
+        if (!empty($_GET['mobile'])) {
             $gets['mobile'] = intval($_GET['mobile']);
         }
 
         $data = table('sms_log', 'platform')->gets($gets, $pager);
-        $this->assign('pager', array('total'=>$pager->total,'render'=>$pager->render()));
+        $this->assign('pager', array('total' => $pager->total, 'render' => $pager->render()));
         $this->assign('data', $data);
         $this->display();
     }
 
     function report()
     {
-        if (!empty($_GET['month']) and isset($_GET['channel']) and !empty ($_GET['channel']))
-        {
+        if (!empty($_GET['month']) and isset($_GET['channel']) and !empty ($_GET['channel'])) {
             $month = trim($_GET['month']);
             $gets['channel'] = (int)$_GET['channel'];
-            $this->assign("price", number_format(self::$charge[$gets['channel']],3));
+            $this->assign("price", number_format(self::$charge[$gets['channel']], 3));
 
             $start = date("Y-m-d H:i:s", strtotime($month));
             $end = date("Y-m-d H:i:s", strtotime("$month +1 month"));
-            $gets['where'][] = 'addtime >= "'.$start.'"';
-            $gets['where'][] = 'addtime < "'.$end.'"';
+            $gets['where'][] = 'addtime >= "' . $start . '"';
+            $gets['where'][] = 'addtime < "' . $end . '"';
             //\Swoole::$php->db("platform")->debug = 1;
 
             $gets['order'] = 'id desc';
             $gets['group'] = 'days';
             $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c";
-            $data = table("sms_log","platform")->gets($gets);
+            $data = table("sms_log", "platform")->gets($gets);
             $cost = 0;
             $count = 0;
-            foreach ($data as $k => $d)
-            {
+            foreach ($data as $k => $d) {
                 if (!empty($d['c'])) {
-                    $_cost = $d['c']*(self::$charge[$gets['channel']]);
-                    $data[$k]['cost'] = number_format($_cost,3);
+                    $_cost = $d['c'] * (self::$charge[$gets['channel']]);
+                    $data[$k]['cost'] = number_format($_cost, 3);
                     $cost += $_cost;
                     $count += $data[$k]['c'];
                 }
@@ -231,22 +231,21 @@ class Msg extends \App\LoginController
 
             $this->assign('data', $data);
 
-            $this->assign("cost", number_format($cost,3));
+            $this->assign("cost", number_format($cost, 3));
             $this->assign("count", $count);
         }
 
-        $month  = $this->getSelect(date("Y-m"),2);
+        $month = $this->getSelect(date("Y-m"), 2);
         unset(self::$channel[0]);
-        $form['channel'] = \Swoole\Form::select('channel',self::$channel,$_GET['channel'],'',array('class'=>'select2'),false);
-        $form['month'] = \Swoole\Form::select('month',$month,$_GET['month'],'',array('class'=>'select2'),false);
+        $form['channel'] = \Swoole\Form::select('channel', self::$channel, $_GET['channel'], '', array('class' => 'select2'), false);
+        $form['month'] = \Swoole\Form::select('month', $month, $_GET['month'], '', array('class' => 'select2'), false);
         $this->assign('form', $form);
         $this->display();
     }
 
     function dump()
     {
-        if (!empty($_GET['month']))
-        {
+        if (!empty($_GET['month'])) {
             $month = trim($_GET['month']);
         } else {
             \Swoole\JS::js_back('请选择月份');
@@ -254,28 +253,27 @@ class Msg extends \App\LoginController
 
         if (isset($_GET['channel']) and !empty ($_GET['channel'])) {
             $gets['channel'] = (int)$_GET['channel'];
-           $price = number_format(self::$charge[$gets['channel']],3);
+            $price = number_format(self::$charge[$gets['channel']], 3);
         } else {
             \Swoole\JS::js_back('请选择渠道');
         }
 
         $start = date("Y-m-d H:i:s", strtotime($month));
         $end = date("Y-m-d H:i:s", strtotime("$month +1 month"));
-        $gets['where'][] = 'addtime >= "'.$start.'"';
-        $gets['where'][] = 'addtime <= "'.$end.'"';
+        $gets['where'][] = 'addtime >= "' . $start . '"';
+        $gets['where'][] = 'addtime <= "' . $end . '"';
         //\Swoole::$php->db("platform")->debug = 1;
 
         $gets['order'] = 'id desc';
         $gets['group'] = 'days';
         $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c";
-        $data = table("sms_log","platform")->gets($gets);
+        $data = table("sms_log", "platform")->gets($gets);
         $cost = 0;
         $count = 0;
         $line = "日期,条数,费用合计\n";
-        foreach ($data as $k => $d)
-        {
+        foreach ($data as $k => $d) {
             if (!empty($d['c'])) {
-                $data[$k]['cost'] = number_format($d['c']*(self::$charge[$gets['channel']]),3,'.', '');
+                $data[$k]['cost'] = number_format($d['c'] * (self::$charge[$gets['channel']]), 3, '.', '');
                 $cost += $data[$k]['cost'];
                 $count += $data[$k]['c'];
             }
@@ -284,23 +282,24 @@ class Msg extends \App\LoginController
         $line .= "\n";
         $line .= ",总计条数,总计费用\n";
         $line .= ",{$count},{$cost}\n";
-        $line .= "备注: 渠道 ".self::$channel[$gets['channel']]." 单价 {$price}元\n";
-        $filename = self::$channel[$gets['channel']]."-".$month.".csv";
+        $line .= "备注: 渠道 " . self::$channel[$gets['channel']] . " 单价 {$price}元\n";
+        $filename = self::$channel[$gets['channel']] . "-" . $month . ".csv";
         header("Content-type:text/csv");
-        header("Content-Disposition:attachment;filename=".$filename);
+        header("Content-Disposition:attachment;filename=" . $filename);
         header('Cache-Control:must-revalidate,post-check=0,pre-check=0');
         header('Expires:0');
         header('Pragma:public');
         echo $line;
     }
 
-    private function getSelect($now,$count){
-        $temp = date("Y-m",strtotime("$now"));
-        $end = date("Y-m",strtotime("$now -{$count} year"));
+    private function getSelect($now, $count)
+    {
+        $temp = date("Y-m", strtotime("$now"));
+        $end = date("Y-m", strtotime("$now -{$count} year"));
         $time = array();
-        while ($temp >= $end){
+        while ($temp >= $end) {
             $time[$temp] = $temp;
-            $temp = date("Y-m",strtotime("$temp -1 month"));
+            $temp = date("Y-m", strtotime("$temp -1 month"));
 
         }
         return $time;
