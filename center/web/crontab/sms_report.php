@@ -79,7 +79,7 @@ $data = array(
     'subject' => "{$all['time']} 短信报表",
     'content' => "$string",
 );
-debug($data);
+
 $res = $curl->post($url,$data);
 $end_time = microtime(1);
 $take_time = $end_time-$start_time;
