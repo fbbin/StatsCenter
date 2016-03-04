@@ -259,13 +259,14 @@ you can add as many as you like
                 };
                 //通道初始化
                 for (var i in channel) {
+                    var name = channel[i];
+                    var name1 = channel[i]+"成功";
+                    var name2 = channel[i]+"使用";
                     var init = {
-                        name : channel[i],
+                        name : name,
                         type: 'bar',
                         data: []
                     };
-                    var name1 = channel[i]+"成功";
-                    var name2 = channel[i]+"使用";
                     var init_1 = {
                         name : name1,
                         type: 'bar',
