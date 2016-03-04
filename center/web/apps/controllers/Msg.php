@@ -213,9 +213,9 @@ class Msg extends \App\LoginController
                 $time[] = $start_date;
                 $start_date = date("Y-m-d", strtotime("$start_date +1 day"));
             }
-//            if (count($time) > 3) {
-//                \Swoole\JS::js_goto("最多选择3天时间跨度，请重新选择","/msg/msg_dis");
-//            }
+            if (count($time) > 3) {
+                \Swoole\JS::js_goto("最多选择3天时间跨度，请重新选择","/msg/msg_dis");
+            }
             $start = trim($_GET['start_time']) . " 00:00:00";
             $end = trim($_GET['end_time']) . " 23:59:59";
             $gets['where'][] = 'addtime >= "' . $start . '"';

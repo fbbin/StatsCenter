@@ -286,19 +286,12 @@ you can add as many as you like
                         {
                             var index = j*2-2;//渠道对应数据数组
                             if (sms[day][j] != undefined) {
-                                var number = sms[day][j].count;
                                 option1.series[index].data.push(sms[day][j].count);
                             } else {
                                 option1.series[index].data.push(0);
                             }
                             var index = j*2-1;//渠道对应数据数组
                             if (sms[day][j] != undefined) {
-                                if (number && sms[day][j].success) {
-                                    var rate = number_format((sms[day][j].success/number)*100,2);
-                                    var new_name = channel[j]+"成功"+rate+"%";
-                                    option1.series[index].name = new_name;
-                                    option1.legend.data[index] = new_name;
-                                }
                                 option1.series[index].data.push(sms[day][j].success);
                             } else {
                                 option1.series[index].data.push(0);
@@ -338,19 +331,12 @@ you can add as many as you like
                         {
                             var index = j*2-2;//渠道对应数据数组
                             if (captcha[day][j]) {
-                                var number1 = captcha[day][j].count;
                                 option2.series[index].data.push(captcha[day][j].count);
                             } else {
                                 option2.series[index].data.push(0);
                             }
                             var index = j*2-1;//渠道对应数据数组
                             if (captcha[day][j]) {
-                                if (number1 && sms[day][j].success) {
-                                    var rate = number_format((captcha[day][j].is_used/number1)*100,2);
-                                    var new_name = channel[j]+"成功"+rate+"%";
-                                    option2.series[index].name = new_name;
-                                    option2.legend.data[index] = new_name;
-                                }
                                 option2.series[index].data.push(captcha[day][j].is_used);
                             } else {
                                 option2.series[index].data.push(0);
