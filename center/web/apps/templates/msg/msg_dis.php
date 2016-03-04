@@ -295,7 +295,7 @@ you can add as many as you like
                             if (sms[day][j] != undefined) {
                                 if (number && sms[day][j].success) {
                                     var rate = number_format((sms[day][j].success/number)*100,2);
-                                    var new_name = option1.series[index].name+rate+"%";
+                                    var new_name = channel[j]+"成功"+rate+"%";
                                     option1.series[index].name = new_name;
                                     option1.legend.data[index] = new_name;
                                 }
@@ -347,7 +347,7 @@ you can add as many as you like
                             if (captcha[day][j]) {
                                 if (number1 && sms[day][j].success) {
                                     var rate = number_format((captcha[day][j].is_used/number1)*100,2);
-                                    var new_name = option2.series[index].name+rate+"%";
+                                    var new_name = channel[j]+"成功"+rate+"%";
                                     option2.series[index].name = new_name;
                                     option2.legend.data[index] = new_name;
                                 }
