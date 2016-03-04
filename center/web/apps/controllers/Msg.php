@@ -201,6 +201,100 @@ class Msg extends \App\LoginController
         $this->display();
     }
 
+    function msg_dis()
+    {
+        if (!empty($_GET['start_time']) and !empty($_GET['end_time'])) {
+            //\Swoole::$php->db("platform")->debug = 1;
+            $start = trim($_GET['start_time']) . " 00:00:00";
+            $end = trim($_GET['end_time']) . " 23:59:59";
+            $gets['where'][] = 'addtime >= "' . $start . '"';
+            $gets['where'][] = 'addtime <= "' . $end . '"';
+            $gets['order'] = 'id asc';
+            $data = table("sms_log", "platform")->gets($gets);
+            $sms_log = array();
+            $x_sms = array();
+            foreach ($data as $k => $d) {
+                $day = substr($d['addtime'],0,10);
+                if (!isset($sms_log[$day][$d['channel']]['count'])) {
+                    $sms_log[$day][$d['channel']]['count'] = 1;
+                    $x_sms[] = $day;
+                } else {
+                    $sms_log[$day][$d['channel']]['count']++;
+                }
+                if ($d['success'] == 0) {
+                    if (!isset($sms_log[$day][$d['channel']]['success'])) {
+                        $sms_log[$day][$d['channel']]['success'] = 1;
+                    } else {
+                        $sms_log[$day][$d['channel']]['success']++;
+                    }
+                } else {
+                    if (!isset($sms_log[$day][$d['channel']]['failed'])) {
+                        $sms_log[$day][$d['channel']]['failed'] = 1;
+                    } else {
+                        $sms_log[$day][$d['channel']]['failed']++;
+                    }
+                }
+            }
+            foreach ($sms_log as $d => $info)
+            {
+                ksort($info);
+                $sms_log[$d] = $info;
+            }
+            //验证码数据
+            $gets = array();
+            $gets['where'][] = 'add_time >= "' . strtotime($start) . '"';
+            $gets['where'][] = 'add_time <= "' . strtotime($end) . '"';
+            $gets['order'] = 'id asc';
+            $data = table("msg_captcha_log", "platform")->gets($gets);
+            $captcha_log = array();
+            $x_captcha = array();
+            foreach ($data as $k => $d) {
+                $day = date("Y-m-d",$d['add_time']);
+                if (!isset($captcha_log[$day][$d['channel']]['count'])) {
+                    $captcha_log[$day][$d['channel']]['count'] = 1;
+                    $x_captcha[] = $day;
+                } else {
+                    $captcha_log[$day][$d['channel']]['count']++;
+                }
+                if ($d['success'] == 0) {
+                    if (!isset($captcha_log[$day][$d['channel']]['success'])) {
+                        $captcha_log[$day][$d['channel']]['success'] = 1;
+                    } else {
+                        $captcha_log[$day][$d['channel']]['success']++;
+                    }
+                } else {
+                    if (!isset($captcha_log[$day][$d['channel']]['failed'])) {
+                        $captcha_log[$day][$d['channel']]['failed'] = 1;
+                    } else {
+                        $captcha_log[$day][$d['channel']]['failed']++;
+                    }
+                }
+            }
+            foreach ($captcha_log as $d => $info)
+            {
+                ksort($info);
+                $captcha_log[$d] = $info;
+            }
+
+            $start_date = trim($_GET['start_time']);
+            $end_date = trim($_GET['end_time']);
+
+            $time = array();
+            while ($start_date <= $end_date) {
+                $time[] = $start_date;
+                $start_date = date("Y-m-d", strtotime("$start_date +1 day"));
+            }
+            if ($_GET['test'])
+                debug($sms_log);
+
+            $this->assign('time', $time);
+            $this->assign('sms', $sms_log);
+            $this->assign('captcha', $captcha_log);
+            $this->assign('channel', self::$channel);
+        }
+        $this->display();
+    }
+
     function report()
     {
         if (!empty($_GET['month']) and isset($_GET['channel']) and !empty ($_GET['channel'])) {

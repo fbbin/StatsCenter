@@ -80,9 +80,13 @@
                     <a href="/msg/captcha_stats/"><i class="fa fa-lg fa-fw fa-cutlery"></i> <span
                             class="menu-item-parent">验证码使用率统计</span></a>
                 </li>
+                <li <?php if ($this->isActiveMenu('msg', 'captcha_stats')){ ?>class="active" <?php } ?>>
+                    <a href="/msg/msg_dis/"><i class="fa fa-lg fa-fw fa-circle"></i> <span
+                            class="menu-item-parent">短信使用分布</span></a>
+                </li>
                 <li <?php if ($this->isActiveMenu('msg', 'report')){ ?>class="active" <?php } ?>>
                     <a href="/msg/report/"><i class="fa fa-lg fa-fw fa-envelope-o"></i> <span
-                            class="menu-item-parent">短信报表</span></a>
+                            class="menu-item-parent">短信费用报表</span></a>
                 </li>
             </ul>
         </li>
