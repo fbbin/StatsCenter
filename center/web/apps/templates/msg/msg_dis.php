@@ -261,15 +261,10 @@ you can add as many as you like
                 //通道初始化
                 for (var i in channel) {
                     var name = channel[i];
-                    var name1 = channel[i]+"成功";
+                    var name1 = channel[i]+"/成功";
                     var init = {
                         name : name,
                         type: 'bar',
-                        markLine : {
-                            data : [
-                                {type : 'average', name : '平均值'}
-                            ]
-                        },
                         data: []
                     };
                     var init_1 = {
@@ -291,12 +286,19 @@ you can add as many as you like
                         {
                             var index = j*2-2;//渠道对应数据数组
                             if (sms[day][j] != undefined) {
+                                var number = sms[day][j].count;
                                 option1.series[index].data.push(sms[day][j].count);
                             } else {
                                 option1.series[index].data.push(0);
                             }
                             var index = j*2-1;//渠道对应数据数组
                             if (sms[day][j] != undefined) {
+                                if (number && sms[day][j].success) {
+                                    var rate = number_format((sms[day][j].success/number)*100,2);
+                                    var new_name = option1.series[index].name+rate+"%";
+                                    option1.series[index].name = new_name;
+                                    option1.legend.data[index] = new_name;
+                                }
                                 option1.series[index].data.push(sms[day][j].success);
                             } else {
                                 option1.series[index].data.push(0);
@@ -312,15 +314,10 @@ you can add as many as you like
                 myChart1.setOption(option1);
                 for (var i in channel) {
                     var name = channel[i];
-                    var name2 = channel[i]+"使用";
+                    var name2 = channel[i]+"/使用";
                     var init = {
                         name : name,
                         type: 'bar',
-                        markLine : {
-                            data : [
-                                {type : 'average', name : '平均值'}
-                            ]
-                        },
                         data: []
                     };
                     var init_2 = {
@@ -341,12 +338,19 @@ you can add as many as you like
                         {
                             var index = j*2-2;//渠道对应数据数组
                             if (captcha[day][j]) {
+                                var number1 = captcha[day][j].count;
                                 option2.series[index].data.push(captcha[day][j].count);
                             } else {
                                 option2.series[index].data.push(0);
                             }
                             var index = j*2-1;//渠道对应数据数组
                             if (captcha[day][j]) {
+                                if (number1 && sms[day][j].success) {
+                                    var rate = number_format((captcha[day][j].is_used/number1)*100,2);
+                                    var new_name = option2.series[index].name+rate+"%";
+                                    option2.series[index].name = new_name;
+                                    option2.legend.data[index] = new_name;
+                                }
                                 option2.series[index].data.push(captcha[day][j].is_used);
                             } else {
                                 option2.series[index].data.push(0);
