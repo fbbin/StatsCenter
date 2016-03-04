@@ -209,6 +209,7 @@ class Msg extends \App\LoginController
             $end = trim($_GET['end_time']) . " 23:59:59";
             $gets['where'][] = 'addtime >= "' . $start . '"';
             $gets['where'][] = 'addtime <= "' . $end . '"';
+            $gets['select'] = 'channel,addtime';
             $gets['order'] = 'id asc';
             $data = table("sms_log", "platform")->gets($gets);
             $sms_log = array();
@@ -221,19 +222,19 @@ class Msg extends \App\LoginController
                 } else {
                     $sms_log[$day][$d['channel']]['count']++;
                 }
-                if ($d['success'] == 0) {
-                    if (!isset($sms_log[$day][$d['channel']]['success'])) {
-                        $sms_log[$day][$d['channel']]['success'] = 1;
-                    } else {
-                        $sms_log[$day][$d['channel']]['success']++;
-                    }
-                } else {
-                    if (!isset($sms_log[$day][$d['channel']]['failed'])) {
-                        $sms_log[$day][$d['channel']]['failed'] = 1;
-                    } else {
-                        $sms_log[$day][$d['channel']]['failed']++;
-                    }
-                }
+//                if ($d['success'] == 0) {
+//                    if (!isset($sms_log[$day][$d['channel']]['success'])) {
+//                        $sms_log[$day][$d['channel']]['success'] = 1;
+//                    } else {
+//                        $sms_log[$day][$d['channel']]['success']++;
+//                    }
+//                } else {
+//                    if (!isset($sms_log[$day][$d['channel']]['failed'])) {
+//                        $sms_log[$day][$d['channel']]['failed'] = 1;
+//                    } else {
+//                        $sms_log[$day][$d['channel']]['failed']++;
+//                    }
+//                }
             }
             foreach ($sms_log as $d => $info)
             {
@@ -245,6 +246,7 @@ class Msg extends \App\LoginController
             $gets['where'][] = 'add_time >= "' . strtotime($start) . '"';
             $gets['where'][] = 'add_time <= "' . strtotime($end) . '"';
             $gets['order'] = 'id asc';
+            $gets['select'] = 'add_time,channel';
             $data = table("msg_captcha_log", "platform")->gets($gets);
             $captcha_log = array();
             $x_captcha = array();
@@ -256,19 +258,19 @@ class Msg extends \App\LoginController
                 } else {
                     $captcha_log[$day][$d['channel']]['count']++;
                 }
-                if ($d['success'] == 0) {
-                    if (!isset($captcha_log[$day][$d['channel']]['success'])) {
-                        $captcha_log[$day][$d['channel']]['success'] = 1;
-                    } else {
-                        $captcha_log[$day][$d['channel']]['success']++;
-                    }
-                } else {
-                    if (!isset($captcha_log[$day][$d['channel']]['failed'])) {
-                        $captcha_log[$day][$d['channel']]['failed'] = 1;
-                    } else {
-                        $captcha_log[$day][$d['channel']]['failed']++;
-                    }
-                }
+//                if ($d['success'] == 0) {
+//                    if (!isset($captcha_log[$day][$d['channel']]['success'])) {
+//                        $captcha_log[$day][$d['channel']]['success'] = 1;
+//                    } else {
+//                        $captcha_log[$day][$d['channel']]['success']++;
+//                    }
+//                } else {
+//                    if (!isset($captcha_log[$day][$d['channel']]['failed'])) {
+//                        $captcha_log[$day][$d['channel']]['failed'] = 1;
+//                    } else {
+//                        $captcha_log[$day][$d['channel']]['failed']++;
+//                    }
+//                }
             }
             foreach ($captcha_log as $d => $info)
             {
