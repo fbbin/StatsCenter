@@ -90,7 +90,7 @@
                                             </div>
                                             <div class='form-group'>
                                                 <button type="submit" class="form-control btn-success input-sm">查询
-                                                </button>
+                                                </button> 最多选择3天跨度
                                             </div>
                                         </form>
                                     </div>

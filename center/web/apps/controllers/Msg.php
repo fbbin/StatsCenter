@@ -205,6 +205,17 @@ class Msg extends \App\LoginController
     {
         if (!empty($_GET['start_time']) and !empty($_GET['end_time'])) {
             //\Swoole::$php->db("platform")->debug = 1;
+            $start_date = trim($_GET['start_time']);
+            $end_date = trim($_GET['end_time']);
+
+            $time = array();
+            while ($start_date <= $end_date) {
+                $time[] = $start_date;
+                $start_date = date("Y-m-d", strtotime("$start_date +1 day"));
+            }
+            if (count($time) > 3) {
+                \Swoole\JS::js_goto("最多选择3天时间跨度，请重新选择","/msg/msg_dis");
+            }
             $start = trim($_GET['start_time']) . " 00:00:00";
             $end = trim($_GET['end_time']) . " 23:59:59";
             $gets['where'][] = 'addtime >= "' . $start . '"';
@@ -278,14 +289,6 @@ class Msg extends \App\LoginController
                 $captcha_log[$d] = $info;
             }
 
-            $start_date = trim($_GET['start_time']);
-            $end_date = trim($_GET['end_time']);
-
-            $time = array();
-            while ($start_date <= $end_date) {
-                $time[] = $start_date;
-                $start_date = date("Y-m-d", strtotime("$start_date +1 day"));
-            }
             $this->assign('time', $time);
             $this->assign('sms', $sms_log);
             $this->assign('captcha', $captcha_log);
