@@ -257,6 +257,7 @@ you can add as many as you like
                     series: [
                     ]
                 };
+
                 //通道初始化
                 for (var i in channel) {
                     var name = channel[i];
@@ -279,26 +280,22 @@ you can add as many as you like
                     };
                     option1.series.push(init);
                     option1.series.push(init_1);
-                    option2.series.push(init);
-                    option2.series.push(init_2);
-
                     option1.legend.data.push(name);
                     option1.legend.data.push(name1);
-                    option2.legend.data.push(name);
-                    option2.legend.data.push(name2);
                 }
+
                 for(var i=0;i<option1.xAxis[0].data.length;i++){
                     var day = option1.xAxis[0].data[i];
                     if (sms[day] != undefined) {
                         for (var j in channel) //
                         {
-                            var index = j*2-1;//渠道对应数据数组
+                            var index = j*2-2;//渠道对应数据数组
                             if (sms[day][j] != undefined) {
                                 option1.series[index].data.push(sms[day][j].count);
                             } else {
                                 option1.series[index].data.push(0);
                             }
-                            var index = j*2-2;//渠道对应数据数组
+                            var index = j*2-1;//渠道对应数据数组
                             if (sms[day][j] != undefined) {
                                 option1.series[index].data.push(sms[day][j].success);
                             } else {
@@ -313,26 +310,51 @@ you can add as many as you like
                     }
                 }
                 myChart1.setOption(option1);
+                for (var i in channel) {
+                    var name = channel[i];
+                    var name1 = channel[i]+"成功";
+                    var name2 = channel[i]+"使用";
+                    var init = {
+                        name : name,
+                        type: 'bar',
+                        data: []
+                    };
+                    var init_1 = {
+                        name : name1,
+                        type: 'bar',
+                        data: []
+                    };
+                    var init_2 = {
+                        name : name2,
+                        type: 'bar',
+                        data: []
+                    };
+                    option2.series.push(init);
+                    option2.series.push(init_2);
+                    option2.legend.data.push(name);
+                    option2.legend.data.push(name2);
+                }
 
                 for(var i=0;i<option2.xAxis[0].data.length;i++){
                     var day = option2.xAxis[0].data[i];
-                    if (captcha[day] != undefined) {
+                    if (captcha[day]) {
                         for (var j in channel) //
                         {
-                            var index = j*2-1;//渠道对应数据数组
-                            if (captcha[day][j] != undefined) {
+                            var index = j*2-2;//渠道对应数据数组
+                            if (captcha[day][j]) {
                                 option2.series[index].data.push(captcha[day][j].count);
                             } else {
                                 option2.series[index].data.push(0);
                             }
-                            var index = j*2-2;//渠道对应数据数组
-                            if (captcha[day][j] != undefined) {
-                                option2.series[index].data.push(captcha[day][j].used);
+                            var index = j*2-1;//渠道对应数据数组
+                            if (captcha[day][j]) {
+                                option2.series[index].data.push(captcha[day][j].is_used);
                             } else {
                                 option2.series[index].data.push(0);
                             }
                         }
                     } else {
+
                         for (var j in option2.series)
                         {
                             option2.series[j].data.push(0);

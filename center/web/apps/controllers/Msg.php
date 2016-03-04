@@ -213,14 +213,14 @@ class Msg extends \App\LoginController
                 $time[] = $start_date;
                 $start_date = date("Y-m-d", strtotime("$start_date +1 day"));
             }
-            if (count($time) > 3) {
-                \Swoole\JS::js_goto("最多选择3天时间跨度，请重新选择","/msg/msg_dis");
-            }
+//            if (count($time) > 3) {
+//                \Swoole\JS::js_goto("最多选择3天时间跨度，请重新选择","/msg/msg_dis");
+//            }
             $start = trim($_GET['start_time']) . " 00:00:00";
             $end = trim($_GET['end_time']) . " 23:59:59";
             $gets['where'][] = 'addtime >= "' . $start . '"';
             $gets['where'][] = 'addtime <= "' . $end . '"';
-            $gets['select'] = 'channel,addtime';
+            $gets['select'] = 'channel,addtime,success';
             $gets['order'] = 'id asc';
             $data = table("sms_log", "platform")->gets($gets);
             $sms_log = array();
@@ -244,6 +244,12 @@ class Msg extends \App\LoginController
             foreach ($sms_log as $d => $info)
             {
                 ksort($info);
+                foreach ($info as $k=>$i)
+                {
+                    if (!isset($i['success'])) {
+                        $info[$k]['success'] = 0;
+                    }
+                }
                 $sms_log[$d] = $info;
             }
             //验证码数据
@@ -251,7 +257,7 @@ class Msg extends \App\LoginController
             $gets['where'][] = 'add_time >= "' . strtotime($start) . '"';
             $gets['where'][] = 'add_time <= "' . strtotime($end) . '"';
             $gets['order'] = 'id asc';
-            $gets['select'] = 'add_time,channel';
+            $gets['select'] = 'add_time,channel,is_used';
             $data = table("msg_captcha_log", "platform")->gets($gets);
             $captcha_log = array();
             foreach ($data as $k => $d) {
@@ -261,17 +267,24 @@ class Msg extends \App\LoginController
                 } else {
                     $captcha_log[$day][$d['channel']]['count']++;
                 }
+
                 if ($d['is_used'] == 1) {
-                    if (!isset($captcha_log[$day][$d['channel']]['used'])) {
-                        $captcha_log[$day][$d['channel']]['used'] = 1;
+                    if (!isset($captcha_log[$day][$d['channel']]['is_used'])) {
+                        $captcha_log[$day][$d['channel']]['is_used'] = 1;
                     } else {
-                        $captcha_log[$day][$d['channel']]['used']++;
+                        $captcha_log[$day][$d['channel']]['is_used']++;
                     }
                 }
             }
             foreach ($captcha_log as $d => $info)
             {
                 ksort($info);
+                foreach ($info as $k=>$i)
+                {
+                    if (!isset($i['is_used'])) {
+                        $info[$k]['is_used'] = 0;
+                    }
+                }
                 $captcha_log[$d] = $info;
             }
             if ($_GET['test'])
