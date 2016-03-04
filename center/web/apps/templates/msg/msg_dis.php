@@ -219,31 +219,6 @@ you can add as many as you like
                         }
                     ],
                     series: [
-                        {
-                            name : '亿美',
-                            type: 'bar',
-                            data: []
-                        },
-                        {
-                            name : '漫道',
-                            type: 'bar',
-                            data: []
-                        },
-                        {
-                            name : '梦网',
-                            type: 'bar',
-                            data: []
-                        },
-                        {
-                            name : '亿美广告',
-                            type: 'bar',
-                            data: []
-                        },
-                        {
-                            name : '云信',
-                            type: 'bar',
-                            data: []
-                        }
                     ]
                 };
                 var option2 = {
@@ -280,46 +255,43 @@ you can add as many as you like
                         }
                     ],
                     series: [
-                        {
-                            name : '亿美',
-                            type: 'bar',
-                            data: []
-                        },
-                        {
-                            name : '漫道',
-                            type: 'bar',
-                            data: []
-                        },
-                        {
-                            name : '梦网',
-                            type: 'bar',
-                            data: []
-                        },
-                        {
-                            name : '亿美广告',
-                            type: 'bar',
-                            data: []
-                        },
-                        {
-                            name : '云信',
-                            type: 'bar',
-                            data: []
-                        }
                     ]
                 };
                 //通道初始化
                 for (var i in channel) {
-                    option1.legend.data.push(channel[i]);
-                    option2.legend.data.push(channel[i]);
+                    var init = {
+                        name : channel[i],
+                        type: 'bar',
+                        data: []
+                    };
+                    option1.series.push(init);
+                    var init_1 = {
+                        name : channel[i]+"成功/使用",
+                        type: 'bar',
+                        data: []
+                    };
+                    option1.series.push(init_1);
+                    var name = channel[i];
+                    var name1 = channel[i]+"成功/使用";
+                    option1.legend.data.push(name);
+                    option2.legend.data.push(name);
+                    option1.legend.data.push(name1);
+                    option2.legend.data.push(name1);
                 }
                 for(var i=0;i<option1.xAxis[0].data.length;i++){
                     var day = option1.xAxis[0].data[i];
                     if (sms[day] != undefined) {
                         for (var j in channel) //
                         {
-                            var index = j-1;//渠道对应数据数组
+                            var index = j*2-1;//渠道对应数据数组
                             if (sms[day][j] != undefined) {
                                 option1.series[index].data.push(sms[day][j].count);
+                            } else {
+                                option1.series[index].data.push(0);
+                            }
+                            var index = j*2-2;//渠道对应数据数组
+                            if (sms[day][j] != undefined) {
+                                option1.series[index].data.push(sms[day][j].success);
                             } else {
                                 option1.series[index].data.push(0);
                             }
@@ -338,9 +310,15 @@ you can add as many as you like
                     if (captcha[day] != undefined) {
                         for (var j in channel) //
                         {
-                            var index = j-1;//渠道对应数据数组
+                            var index = j*2-1;//渠道对应数据数组
                             if (captcha[day][j] != undefined) {
                                 option2.series[index].data.push(captcha[day][j].count);
+                            } else {
+                                option2.series[index].data.push(0);
+                            }
+                            var index = j*2-2;//渠道对应数据数组
+                            if (captcha[day][j] != undefined) {
+                                option2.series[index].data.push(captcha[day][j].yes);
                             } else {
                                 option2.series[index].data.push(0);
                             }

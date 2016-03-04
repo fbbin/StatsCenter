@@ -233,19 +233,13 @@ class Msg extends \App\LoginController
                 } else {
                     $sms_log[$day][$d['channel']]['count']++;
                 }
-//                if ($d['success'] == 0) {
-//                    if (!isset($sms_log[$day][$d['channel']]['success'])) {
-//                        $sms_log[$day][$d['channel']]['success'] = 1;
-//                    } else {
-//                        $sms_log[$day][$d['channel']]['success']++;
-//                    }
-//                } else {
-//                    if (!isset($sms_log[$day][$d['channel']]['failed'])) {
-//                        $sms_log[$day][$d['channel']]['failed'] = 1;
-//                    } else {
-//                        $sms_log[$day][$d['channel']]['failed']++;
-//                    }
-//                }
+                if ($d['success'] == 0) {
+                    if (!isset($sms_log[$day][$d['channel']]['success'])) {
+                        $sms_log[$day][$d['channel']]['success'] = 1;
+                    } else {
+                        $sms_log[$day][$d['channel']]['success']++;
+                    }
+                }
             }
             foreach ($sms_log as $d => $info)
             {
@@ -269,26 +263,21 @@ class Msg extends \App\LoginController
                 } else {
                     $captcha_log[$day][$d['channel']]['count']++;
                 }
-//                if ($d['success'] == 0) {
-//                    if (!isset($captcha_log[$day][$d['channel']]['success'])) {
-//                        $captcha_log[$day][$d['channel']]['success'] = 1;
-//                    } else {
-//                        $captcha_log[$day][$d['channel']]['success']++;
-//                    }
-//                } else {
-//                    if (!isset($captcha_log[$day][$d['channel']]['failed'])) {
-//                        $captcha_log[$day][$d['channel']]['failed'] = 1;
-//                    } else {
-//                        $captcha_log[$day][$d['channel']]['failed']++;
-//                    }
-//                }
+                if ($d['is_used'] == 1) {
+                    if (!isset($captcha_log[$day][$d['channel']]['yes'])) {
+                        $captcha_log[$day][$d['channel']]['yes'] = 1;
+                    } else {
+                        $captcha_log[$day][$d['channel']]['yes']++;
+                    }
+                }
             }
             foreach ($captcha_log as $d => $info)
             {
                 ksort($info);
                 $captcha_log[$d] = $info;
             }
-
+            if ($_GET['test'])
+                debug($sms_log,$captcha_log);
             $this->assign('time', $time);
             $this->assign('sms', $sms_log);
             $this->assign('captcha', $captcha_log);
