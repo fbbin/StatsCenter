@@ -284,9 +284,6 @@ class Msg extends \App\LoginController
                 $time[] = $start_date;
                 $start_date = date("Y-m-d", strtotime("$start_date +1 day"));
             }
-            if ($_GET['test'])
-                debug($sms_log);
-
             $this->assign('time', $time);
             $this->assign('sms', $sms_log);
             $this->assign('captcha', $captcha_log);
