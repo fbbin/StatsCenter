@@ -262,10 +262,14 @@ you can add as many as you like
                 for (var i in channel) {
                     var name = channel[i];
                     var name1 = channel[i]+"成功";
-                    var name2 = channel[i]+"使用";
                     var init = {
                         name : name,
                         type: 'bar',
+                        markLine : {
+                            data : [
+                                {type : 'average', name : '平均值'}
+                            ]
+                        },
                         data: []
                     };
                     var init_1 = {
@@ -273,11 +277,7 @@ you can add as many as you like
                         type: 'bar',
                         data: []
                     };
-                    var init_2 = {
-                        name : name2,
-                        type: 'bar',
-                        data: []
-                    };
+
                     option1.series.push(init);
                     option1.series.push(init_1);
                     option1.legend.data.push(name);
@@ -312,16 +312,15 @@ you can add as many as you like
                 myChart1.setOption(option1);
                 for (var i in channel) {
                     var name = channel[i];
-                    var name1 = channel[i]+"成功";
                     var name2 = channel[i]+"使用";
                     var init = {
                         name : name,
                         type: 'bar',
-                        data: []
-                    };
-                    var init_1 = {
-                        name : name1,
-                        type: 'bar',
+                        markLine : {
+                            data : [
+                                {type : 'average', name : '平均值'}
+                            ]
+                        },
                         data: []
                     };
                     var init_2 = {
