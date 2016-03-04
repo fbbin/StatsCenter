@@ -264,19 +264,27 @@ you can add as many as you like
                         type: 'bar',
                         data: []
                     };
-                    option1.series.push(init);
+                    var name1 = channel[i]+"成功";
+                    var name2 = channel[i]+"使用";
                     var init_1 = {
-                        name : channel[i]+"成功/使用",
+                        name : name1,
                         type: 'bar',
                         data: []
                     };
+                    var init_2 = {
+                        name : name2,
+                        type: 'bar',
+                        data: []
+                    };
+                    option1.series.push(init);
                     option1.series.push(init_1);
-                    var name = channel[i];
-                    var name1 = channel[i]+"成功/使用";
+                    option2.series.push(init);
+                    option2.series.push(init_2);
+
                     option1.legend.data.push(name);
-                    option2.legend.data.push(name);
                     option1.legend.data.push(name1);
-                    option2.legend.data.push(name1);
+                    option2.legend.data.push(name);
+                    option2.legend.data.push(name2);
                 }
                 for(var i=0;i<option1.xAxis[0].data.length;i++){
                     var day = option1.xAxis[0].data[i];
