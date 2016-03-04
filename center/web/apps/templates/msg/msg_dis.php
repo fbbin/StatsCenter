@@ -314,12 +314,12 @@ you can add as many as you like
                 }
                 for(var i=0;i<option1.xAxis[0].data.length;i++){
                     var day = option1.xAxis[0].data[i];
-                    if (captcha[day] != undefined) {
+                    if (sms[day] != undefined) {
                         for (var j in channel) //
                         {
                             var index = j-1;//渠道对应数据数组
-                            if (captcha[day][j] != undefined) {
-                                option1.series[index].data.push(captcha[day][j].count);
+                            if (sms[day][j] != undefined) {
+                                option1.series[index].data.push(sms[day][j].count);
                             } else {
                                 option1.series[index].data.push(0);
                             }
@@ -335,12 +335,12 @@ you can add as many as you like
 
                 for(var i=0;i<option2.xAxis[0].data.length;i++){
                     var day = option2.xAxis[0].data[i];
-                    if (sms[day] != undefined) {
+                    if (captcha[day] != undefined) {
                         for (var j in channel) //
                         {
                             var index = j-1;//渠道对应数据数组
-                            if (sms[day][j] != undefined) {
-                                option2.series[index].data.push(sms[day][j].count);
+                            if (captcha[day][j] != undefined) {
+                                option2.series[index].data.push(captcha[day][j].count);
                             } else {
                                 option2.series[index].data.push(0);
                             }
