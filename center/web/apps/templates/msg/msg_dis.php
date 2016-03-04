@@ -327,7 +327,7 @@ you can add as many as you like
                             }
                             var index = j*2-2;//渠道对应数据数组
                             if (captcha[day][j] != undefined) {
-                                option2.series[index].data.push(captcha[day][j].yes);
+                                option2.series[index].data.push(captcha[day][j].used);
                             } else {
                                 option2.series[index].data.push(0);
                             }

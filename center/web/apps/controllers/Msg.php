@@ -254,20 +254,18 @@ class Msg extends \App\LoginController
             $gets['select'] = 'add_time,channel';
             $data = table("msg_captcha_log", "platform")->gets($gets);
             $captcha_log = array();
-            $x_captcha = array();
             foreach ($data as $k => $d) {
                 $day = date("Y-m-d",$d['add_time']);
                 if (!isset($captcha_log[$day][$d['channel']]['count'])) {
                     $captcha_log[$day][$d['channel']]['count'] = 1;
-                    $x_captcha[] = $day;
                 } else {
                     $captcha_log[$day][$d['channel']]['count']++;
                 }
                 if ($d['is_used'] == 1) {
-                    if (!isset($captcha_log[$day][$d['channel']]['yes'])) {
-                        $captcha_log[$day][$d['channel']]['yes'] = 1;
+                    if (!isset($captcha_log[$day][$d['channel']]['used'])) {
+                        $captcha_log[$day][$d['channel']]['used'] = 1;
                     } else {
-                        $captcha_log[$day][$d['channel']]['yes']++;
+                        $captcha_log[$day][$d['channel']]['used']++;
                     }
                 }
             }
