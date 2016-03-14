@@ -6,7 +6,7 @@ use App;
 
 class Msg extends \App\LoginController
 {
-    const CONFIG_DIR = "/data/config/platform/sms_channel.conf";
+    const CONFIG_DIR = "/data/config/platform/sms.conf";
     static $sms_config;
     static $channel;
     //通道单条信息费用
@@ -26,7 +26,7 @@ class Msg extends \App\LoginController
     {
         $config = file_get_contents(self::CONFIG_DIR);
         self::$sms_config = json_decode($config,1);
-        foreach (self::$sms_config as $id => $info)
+        foreach (self::$sms_config['all'] as $id => $info)
         {
             self::$channel[$id] = $info['name'];
             self::$charge[$id] = $info['price'];
