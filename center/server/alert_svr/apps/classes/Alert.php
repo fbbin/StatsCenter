@@ -52,7 +52,7 @@ class Alert
         swoole_set_process_name(self::PROCESS_NAME.": worker #$worker_id");
         if ($worker_id == 0)
         {
-            $serv->addtimer(self::CHECK_TIME*60*1000);
+            $serv->tick(self::CHECK_TIME*60*1000,array($this,"onTimer"));
             \Swoole::$php->log->trace("{$this->worker_id} add timer min ".self::CHECK_TIME);
         }
     }
@@ -68,8 +68,9 @@ class Alert
 
     }
 
-    function onTimer(\swoole_server $serv, $interval)
+    function onTimer($id)
     {
+        $serv = $this->serv;
         $interfaces = \Swoole::$php->redis->sMembers(self::PREFIX);
         if (!empty($interfaces))
         {
@@ -262,7 +263,7 @@ class Alert
         $serv->on('managerStart', array($this, 'onManagerStart'));
         $serv->on('workerStart', array($this, 'onWorkerStart'));
         $serv->on('receive', array($this, 'onPackage'));
-        $serv->on('timer', array($this, 'onTimer'));
+        //$serv->on('timer', array($this, 'onTimer'));
         $serv->on('task', array($this, 'onTask'));
         $serv->on('finish', array($this, 'onFinish'));
         $this->serv = $serv;

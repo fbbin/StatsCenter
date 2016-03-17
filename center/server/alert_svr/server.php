@@ -2,6 +2,7 @@
 require __DIR__.'/_init.php';
 require "/data/www/public/sdk/autoload.php";
 $env = get_cfg_var('env.name');
+error_reporting(0);
 if ($env == 'dev' or $env == 'test' or $env == 'local')
 {
     \Swoole::$php->config->setPath(__DIR__.'/apps/configs/dev/');

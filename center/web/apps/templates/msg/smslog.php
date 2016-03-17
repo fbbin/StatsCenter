@@ -75,7 +75,7 @@
                                         <tr>
                                             <th width="140">发送时间</th>
                                             <th width="100">手机号码</th>
-                                            <th width="60">通道ID</th>
+                                            <th width="100">通道</th>
                                             <th>短信内容</th>
                                         </tr>
                                         </thead>
@@ -85,7 +85,7 @@
                                         <tr height="32">
                                             <td><?= $d['addtime']?></td>
                                             <td><?= $d['mobile']?></td>
-                                            <td><?= $d['channel'] ?></td>
+                                            <td><?=$channel[$d['channel']]?>:<?=$d['channel']?></td>
                                             <td><?= $d['content'] ?></td>
                                         </tr>
                                         <?php } ?>
