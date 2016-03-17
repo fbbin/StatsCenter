@@ -164,6 +164,7 @@ you can add as many as you like
 
         StatsG.filter = <?php echo json_encode($_GET);?>;
         StatsG.getStatsData();
+        StatsG.refresh = StatsG.getStatsData;
 
         $("#datepicker").datepicker("option",
             $.datepicker.regional[ 'zh-CN' ]);
@@ -182,7 +183,7 @@ you can add as many as you like
         $("#interface_id").change(function(e) {
             StatsG.filter.interface_id = e.currentTarget.value.split(':')[0];
             StatsG.filter.interface_name = e.currentTarget.value.split(':')[1];
-            getStatsData();
+            StatsG.getStatsData();
         });
     });
 </script>
