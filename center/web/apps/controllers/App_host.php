@@ -33,7 +33,7 @@ class App_host extends \App\LoginController
             'order' => 'id desc',
             'where' => "ckey != ''",
         ];
-        $data = table('project', 'platform')->gets($params, $pager);
+        $data = table('web_project', 'platform')->gets($params, $pager);
 
         $redis = \Swoole::$php->redis('platform');
         $env_list = \Swoole::$php->config['setting']['env_list'];
@@ -65,7 +65,7 @@ class App_host extends \App\LoginController
         $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
         if (!is_null($id))
         {
-            $project = table('project', 'platform')->get($id);
+            $project = table('web_project', 'platform')->get($id);
         }
         if (empty($project))
         {
@@ -146,11 +146,11 @@ class App_host extends \App\LoginController
         {
             $env_list = \Swoole::$php->config['setting']['env_list'];
 
-            $project_key_list = array_map([table('project', 'platform')->db, 'quote'], $project_key_list);
+            $project_key_list = array_map([table('web_project', 'platform')->db, 'quote'], $project_key_list);
             $params = [
                 'where' => sprintf("ckey IN ('%s')", implode("', '", $project_key_list)),
             ];
-            $project_list = table('project', 'platform')->gets($params);
+            $project_list = table('web_project', 'platform')->gets($params);
             if (count($project_list) === count($project_key_list))
             {
                 $project_list = array_rebuild($project_list, 'ckey');
@@ -227,7 +227,7 @@ class App_host extends \App\LoginController
                 'order' => 'id desc',
                 'where' => "ckey != ''",
             ];
-            $project_list = table('project', 'platform')->gets($params);
+            $project_list = table('web_project', 'platform')->gets($params);
             $project_key_list = unserialize($redis->hGet(\App\RedisKey::APP_HOST_APP_KEY_HOSTS_MAP, $app_key));
             if (is_array($project_key_list))
             {
