@@ -14,7 +14,7 @@ $db['master'] = array(
 
 $db['platform'] = array(
     'type'    => Swoole\Database::TYPE_MYSQLi,
-    'host'    => "10.10.2.38",
+    'host'    => "127.0.0.1",
     'port'    => 3306,
     'dbms'    => 'mysql',
     'engine'  => 'MyISAM',

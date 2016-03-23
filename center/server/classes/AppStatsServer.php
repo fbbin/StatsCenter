@@ -163,7 +163,17 @@ class AppStatsServer extends Server
 
     function onTask($serv, $task_id, $from_id, $data)
     {
-        var_dump($data);
+        $tableName = 'stats_app_' . date('Ymd');
+        $table = table($tableName);
+        foreach ($data as $name1 => $host)
+        {
+            foreach ($host as $name2 => $cgi)
+            {
+                $cgi['host'] = $name1;
+                $cgi['api'] = $name2;
+                $table->put($cgi);
+            }
+        }
     }
 
     function run($_setting = array())

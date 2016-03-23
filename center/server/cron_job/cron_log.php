@@ -58,8 +58,8 @@ class Cron
  */
 function del_log()
 {
-    $last = date("Ymd", time() - 3600 * 24 * 30);
-    $sql = "show tables like 'log2_%'";
+    $last = date("Ymd", strtotime('-3 month'));
+    $sql = "show tables like 'logs2_%'";
     $res = Swoole::$php->db->query($sql)->fetchall();
     if (!empty($res))
     {
@@ -70,6 +70,7 @@ function del_log()
             if ($date < $last)
             {
                 dropTable($table_name);
+                echo "drop table $table_name success\n";
             }
         }
     }

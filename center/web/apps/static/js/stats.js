@@ -281,25 +281,22 @@ StatsG.parseStatsData = function(_data) {
     var fail_rate, avg_fail_time, avg_time, td_color;
     // 成功率
     fail_rate = round((_data['total_count'] - _data['fail_count']) / _data['total_count'] * 100, 2);
-    //调用次数
-    line += '<td>' + _data['total_count'] + '</td>';
+    //调用总次数
+    line += '<td>' + number_format(_data['total_count']) + '</td>';
     //成功次数
-
     if (_data['succ_count'] > 0) {
-        if (_data.time_key != undefined)
-        {
+        if (_data.time_key != undefined) {
             line += '<td data-order="' + _data['succ_count'] + '"><a href="javascript: StatsG.openSuccPage(' + _data.module_id + ',' + _data.interface_id + ',\'' + _data.time_key + '\')" ' +
-            'style="color: green ">' + _data['succ_count'] + '</td>';
+            'style="color: green ">' + number_format(_data['succ_count']) + '</td>';
         }
-        else
-        {
+        else {
             line += '<td data-order="' + _data['succ_count'] + '"><a href="javascript: StatsG.openSuccPage(' + _data.module_id + ',' + _data.interface_id + ')" ' +
-            'style="color: green ">' + _data['succ_count'] + '</td>';
+            'style="color: green ">' + number_format(_data['succ_count']) + '</td>';
         }
     } else {
         line += '<td data-order="0"> 0 </td>';
     }
-
+    //成功率颜色
     if (fail_rate >= StatsG.config.green_rate) {
         td_color = 'green';
     } else {
@@ -311,12 +308,12 @@ StatsG.parseStatsData = function(_data) {
         if (_data.time_key != undefined)
         {
             line += '<td data-order="' + _data['fail_count'] + '"><a href="javascript: StatsG.openFailPage('+_data.module_id+','+_data.interface_id+',\''+_data.time_key+'\')" ' +
-            'style="color: red; ">' + _data['fail_count'] + '</td>';
+            'style="color: red; ">' + number_format(_data['fail_count']) + '</td>';
         }
         else
         {
             line += '<td data-order="' + _data['fail_count'] + '"><a href="javascript: StatsG.openFailPage('+_data.module_id+','+_data.interface_id+')" ' +
-            'style="color: red; ">' + _data['fail_count'] + '</td>';
+            'style="color: red; ">' + number_format(_data['fail_count']) + '</td>';
         }
     } else {
         line += '<td data-order="0"> 0 </td>';

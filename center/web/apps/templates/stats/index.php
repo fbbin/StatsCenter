@@ -65,7 +65,7 @@
                      data-widget-editbutton="false" role="widget" style="">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-                        <h2>接口调用统计</h2>
+                        <h2>接口调用统计（仅保存1个月内数据）</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
                         <?php if (!empty($_GET['module_id'])){?>
                         <div class="widget-toolbar">

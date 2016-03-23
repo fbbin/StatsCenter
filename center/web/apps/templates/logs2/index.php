@@ -32,7 +32,7 @@
                      data-widget-editbutton="false" role="widget" style="">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-                        <h2>日志统计</h2>
+                        <h2>日志统计（仅保存3个月内的日志）</h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
 
                         <!--每页数量-->

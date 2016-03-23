@@ -5,6 +5,7 @@ class StatsData
 {
     static function fillZero4Time($s)
     {
+        $s = intval($s);
         if ($s < 10)
         {
             return '0' . $s;

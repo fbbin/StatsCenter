@@ -101,8 +101,12 @@ class LogServer2 extends StatsCenter\Server
 
         $create_index_sql = "ALTER TABLE `{$table}` ADD INDEX( `type`, `subtype`, `ip`);";
         $create_index_sql2 = "ALTER TABLE `{$table}` ADD INDEX( `uid`);";
-        \Swoole::$php->db->query($create_table_sql);
-        \Swoole::$php->db->query($create_index_sql);
-        \Swoole::$php->db->query($create_index_sql2);
+        $r = \Swoole::$php->db->query($create_table_sql);
+        //创建表成功后再建索引，避免重复创建索引
+        if ($r)
+        {
+            \Swoole::$php->db->query($create_index_sql);
+            \Swoole::$php->db->query($create_index_sql2);
+        }
     }
 }

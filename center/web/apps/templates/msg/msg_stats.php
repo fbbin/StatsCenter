@@ -63,17 +63,17 @@
                             <div id="dt_basic_wrapper" class="dataTables_wrapper form-inline" role="grid">
                                 <div class="dt-top-row">
                                     <div class="dataTables_filter" style="margin-left: 5px;">
-                                        <form id="form" class="form-inline" novalidate="novalidate" method="post">
+                                        <form id="form" class="form-inline" novalidate="novalidate" method="get">
 
                                             <div class="form-group">
                                                 <label class="label">
                                                     <input type="text" class="form-control datepicker"
                                                            data-dateformat="yy-mm-dd" id="start_time" name="start_time"
                                                            value="<?php
-                                                           if (empty($_POST['start_time'])){
+                                                           if (empty($_GET['start_time'])){
                                                                echo date("Y-m-d");
                                                            } else {
-                                                               echo $_POST['start_time'];
+                                                               echo $_GET['start_time'];
                                                            }
                                                            ?>"
                                                         />
@@ -118,9 +118,9 @@
                                         ?>
                                         <tr>
                                             <td><?= $d['name'] ?></td>
-                                            <td><?= $d['count'] ?></td>
-                                            <td><?= $d['success'] ?></td>
-                                            <td><?=$d['failed']?></td>
+                                            <td><?=(int)$d['count'] ?>条</td>
+                                            <td><?=(int)$d['success'] ?>条</td>
+                                            <td><?=(int)$d['failed']?>条</td>
                                             <td><?=$d['success_rate']?>%</td>
                                             <td><?=$d['failed_rate']?>%</td>
                                         </tr>
@@ -131,7 +131,10 @@
                             </table>
                         </div>
                         <div class="dt-row dt-bottom-row">
-                            <div class="row">
+                            <div class="pager">
+                                <span>汇总：发送<?=$all['count']?>条 成功<?=$all['success']?>条 失败<?=(int)$all['failed']?>条
+                                    成功率<?=$all['success_rate']?>% 失败率<?=$all['failed_rate']?>%
+                                </span>
                             </div>
                         </div>
                     </div>

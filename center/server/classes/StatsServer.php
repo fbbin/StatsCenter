@@ -15,6 +15,9 @@ class StatsServer extends Server
     static public $time_interval = 5; //5min
     static public $time_key_interval = 5;//
 
+    /**
+     * @var \swoole_server
+     */
     protected $serv;
     protected $worker_id;
     protected $pid_file;
@@ -201,7 +204,7 @@ class StatsServer extends Server
         if ($this->worker_id <= $this->setting['worker_num'] -1)
         {
             swoole_set_process_name(self::PROCESS_NAME.": worker #$worker_id");
-            $serv->addtimer($this->recyle_time);
+            $serv->tick($this->recyle_time, array($this, 'onTimer'));
             if (isset($this->setting['worker_dump_file']))
             {
                 $dump_file = $this->setting['worker_dump_file']."_".$worker_id;
@@ -216,7 +219,7 @@ class StatsServer extends Server
         else
         {
             swoole_set_process_name(self::PROCESS_NAME.": task #$worker_id");
-            $serv->addtimer($this->insert_time);
+            $serv->tick($this->insert_time, array($this, 'onTimer'));
             if (isset($this->setting['task_dump_file']))
             {
                 $dump_file = $this->setting['task_dump_file']."_".$worker_id;
@@ -940,8 +943,9 @@ class StatsServer extends Server
         }
     }
 
-    function onTimer(\swoole_server $serv, $interval)
+    function onTimer($id)
     {
+        $serv = $this->serv;
         /**
          * worker
          */
