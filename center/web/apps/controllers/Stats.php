@@ -123,10 +123,6 @@ class Stats extends \App\LoginController
      */
     function last_hour()
     {
-        if (empty($_GET['data_key']))
-        {
-            $_GET['date_key'] = date('Y-m-d');
-        }
         if (empty($_GET['hour_start']))
         {
             $_GET['hour_start'] = App\StatsData::fillZero4Time(date('H', time() - 3600));
