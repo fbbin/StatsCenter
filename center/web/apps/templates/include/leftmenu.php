@@ -47,7 +47,7 @@
             <li <?php if ($this->isActiveMenu('setting', 'project_list')){ ?>
                 class="active" <?php } ?>>
                 <a href="/setting/project_list/"><i class="fa fa-lg fa-fw fa-reorder"></i>
-                    <span class="menu-item-parent">WEB项目管理</span></a>
+                    <span class="menu-item-parent">项目管理</span></a>
             </li>
             <li <?php if ($this->isActiveMenu('setting', 'app_project_list')){ ?>
                 class="active" <?php } ?>>
