@@ -165,6 +165,7 @@ you can add as many as you like
         StatsG.filter = <?php echo json_encode($_GET);?>;
         StatsG.getStatsData();
         StatsG.refresh = StatsG.getStatsData;
+        StatsG.page_url = '/stats/last_hour/';
 
         $("#datepicker").datepicker("option",
             $.datepicker.regional[ 'zh-CN' ]);
@@ -172,7 +173,7 @@ you can add as many as you like
         $("#module_id").change(function(e) {
             var module_id = e.currentTarget.value.split(':')[0];
             window.localStorage.module_id = module_id;
-            location.href = "/stats/index/?module_id=" + module_id + '&date_key' + '=<?=$_GET['date_key']?>';
+            location.href = StatsG.page_url + "?module_id=" + module_id + '&date_key' + '=<?=$_GET['date_key']?>';
         });
 
         $("#data_key").change(function(){
