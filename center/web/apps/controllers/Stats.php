@@ -147,28 +147,22 @@ class Stats extends \App\LoginController
             $_GET['date_key'] = date('Y-m-d');
         }
 
-        $gets = array();
-        $gets['select'] = 'id,name,alias';
-
         if (empty($_GET['module_id']))
         {
-            $interfaces = table('interface')->gets($gets);
-            $_GET['module_id'] = 0;
+            $_GET['module_id'] = $modules[0]['id'];
+        }
+
+        $interface_ids = $this->redis->sMembers($_GET['module_id']);
+        if (!empty($interface_ids))
+        {
+            $_ip = array();
+            $_ip['in'] = array('id',implode(',',$interface_ids));
+            $interfaces = table('interface')->gets($_ip);
         }
         else
         {
-            $interface_ids = $this->redis->sMembers($_GET['module_id']);
-            if (!empty($interface_ids))
-            {
-                $_ip = array();
-                $_ip['in'] = array('id',implode(',',$interface_ids));
-                $interfaces = table('interface')->gets($_ip);
-            }
-            else
-            {
-                $gets['module_id'] = intval($_GET['module_id']);
-                $interfaces = table('interface')->gets($gets);
-            }
+            $gets['module_id'] = intval($_GET['module_id']);
+            $interfaces = table('interface')->gets($gets);
         }
 
         if (empty($_GET['interface_id']))
