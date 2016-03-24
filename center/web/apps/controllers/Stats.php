@@ -152,6 +152,9 @@ class Stats extends \App\LoginController
             $_GET['module_id'] = $modules[0]['id'];
         }
 
+        $gets = array();
+        $gets['select'] = 'id,name,alias';
+
         $interface_ids = $this->redis->sMembers($_GET['module_id']);
         if (!empty($interface_ids))
         {
