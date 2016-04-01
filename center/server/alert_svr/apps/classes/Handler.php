@@ -10,13 +10,27 @@ class Handler
 {
     public $msg;
     public $alert;
+    const CAPTCHA_SMS_INTERFACE_PATH = "/data/config/platform/captcha_sms_interface.conf";
+    const CAPTCHA_SMS_WEIGHT_PATH = "/data/config/platform/sms-config.conf";
+    static $captcha_sms_interface = array();
+    static $captcha_sms_weight = array();
 
     function __construct($alert)
     {
-//        $this->alerts['pop'] = new \App\Pop($this);
         $this->msg = new \App\Msg($this);
         $this->alert = $alert;
         $this->worker_id = $this->alert->worker_id;
+
+        //加载短信权重配置 短信验证码接口ID配置
+        $tmp_captcha_sms_interface = json_decode(file_get_contents(self::CAPTCHA_SMS_INTERFACE_PATH),1);
+        if ($tmp_captcha_sms_interface) {
+            self::$captcha_sms_interface = array_keys($tmp_captcha_sms_interface);
+        }
+
+        $tmp_captcha_sms_weight = json_decode(file_get_contents(self::CAPTCHA_SMS_WEIGHT_PATH),1);
+        if ($tmp_captcha_sms_weight) {
+            self::$captcha_sms_weight = $tmp_captcha_sms_weight;
+        }
     }
 
     /**
@@ -33,6 +47,11 @@ class Handler
             {
                 //成功率低于配置
                 $data['succ_percent'] = $succ_percent;
+            }
+            //短信验证码接口 成功率为0 修改短信配置
+            //检查接口id
+            if ($data['succ_percent'] == 0 and in_array($interface['interface_id'],self::$captcha_sms_interface)) {
+
             }
         }
 
