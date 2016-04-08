@@ -102,10 +102,10 @@
                                                 $colors = array('info', 'success', 'default', 'warning', 'danger');
                                                 foreach ($this->config['common']['node_categorys'] as $k => $v): ?>
                                                 <li>
-                                                    <span class="label label-<?=$colors[$k]?>"><?=$v?></span>
                                                     <?php
                                                     $list = $table->gets(array('project_id' => $_project_info['id'], 'layer' => $k));
                                                     ?>
+                                                    <span class="label label-<?=$colors[$k]?>"><?=$v?>（<?=count($list)?>台机器）</span>
                                                     <ul>
                                                         <li>
                                                             <?php foreach ($list as $v2): ?>
