@@ -151,11 +151,5 @@
         </ul>
     </li>
     <?php endif; ?>
-    <li>
-        <a href="http://tinyurl.chelun.com/page/login/?token=<?=$_SESSION['login_token']?>" target="_blank">
-            <i class="fa fa-lg fa-fw fa-link"></i>
-            <span class="menu-item-parent">短网址管理</span>
-        </a>
-    </li>
 </ul>
 </nav>

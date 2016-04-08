@@ -14,20 +14,15 @@ $end = date("Y-m-d H:i:s", strtotime($month_end));
 $gets['where'][] = 'addtime >= "'.$start.'"';
 $gets['where'][] = 'addtime < "'.$end.'"';
 //\Swoole::$php->db("platform")->debug = 1;
-$channel = array(
-    1 => '亿美',
-    2 => '漫道',
-    3 => '梦网',
-    4 => '亿美广告',
-    5 => '云信',
-);
-$channel_price = array(
-    1 => '0.040',
-    2 => '0.040',
-    3 => '0.040',
-    4 => '0.040',
-    5 => '0.043',
-);
+$path = "/data/config/platform/sms.conf";
+$json = file_get_contents($path);
+$channel_info = json_decode($json,1);
+$channel = $channel_price = array();
+foreach ($channel_info['all'] as $id => $c)
+{
+    $channel[$id] = $c['name'];
+    $channel_price[$id] = $c['price'];
+}
 $gets['order'] = 'id desc';
 $gets['group'] = 'channel';
 $gets['select'] = "channel,COUNT(id) as c";
