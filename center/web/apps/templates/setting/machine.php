@@ -95,15 +95,17 @@
                                 <div class="tree ">
                                     <ul>
                                         <li>
-                                            <span> <?= $_project_info['name'] ?></span>
+                                            <span id="span_project"> <?= $_project_info['name'] ?></span>
                                             <ul>
                                                 <?php
                                                 $table = table('machine', 'platform');
                                                 $colors = array('info', 'success', 'default', 'warning', 'danger');
+                                                $n_machine = 0;
                                                 foreach ($this->config['common']['node_categorys'] as $k => $v): ?>
                                                 <li>
                                                     <?php
                                                     $list = $table->gets(array('project_id' => $_project_info['id'], 'layer' => $k));
+                                                    $n_machine += count($list);
                                                     ?>
                                                     <span class="label label-<?=$colors[$k]?>"><?=$v?>（<?=count($list)?>台机器）</span>
                                                     <ul>
@@ -169,5 +171,8 @@
             </ul>
         </div>
         <?php include dirname(__DIR__) . '/include/javascript.php'; ?>
+    <script>
+        $('#span_project').html($('#span_project').html() + "（" + <?=$n_machine?>+"台机器）");
+    </script>
 </body>
 </html>
