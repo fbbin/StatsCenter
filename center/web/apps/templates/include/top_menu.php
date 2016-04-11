@@ -14,7 +14,7 @@
             {
                 echo "class='active'";
             } ?>>
-                <a href="/stats/index/?project=<?= $p['id'] ?>"><?= $p['name'] ?></a>
+                <a href="/user/switch_project/?project=<?= $p['id'] ?>"><?= $p['name'] ?></a>
             </li>
         <?php endforeach; ?>
         <!--            <li class="divider"></li>-->

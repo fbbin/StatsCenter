@@ -114,4 +114,10 @@ class User extends \App\LoginController
     {
         $this->display();
     }
+
+    function switch_project()
+    {
+        $refer = empty($_SERVER['HTTP_REFERER'])?'/stats/index/?project='.$this->projectId:$_SERVER['HTTP_REFERER'];
+        $this->http->redirect($refer);
+    }
 }
