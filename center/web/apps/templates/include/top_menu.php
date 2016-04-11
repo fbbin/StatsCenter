@@ -1,5 +1,5 @@
 <div id="logo-group">
-    <span><img style="vertical-align:top; padding: 8px" width="80"
+    <span><img style="vertical-align:top; padding: 8px" width="35"
                src="<?= Swoole::$php->config['common']['logo_url'] ?>"/></span>
     <span id="logo" style="margin-left: 0px; width: 120px;"><strong
             style="font-size: 18px;"><?= Swoole::$php->config['common']['site_name'] ?></strong></span>
