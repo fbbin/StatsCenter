@@ -105,7 +105,7 @@ class Logs2 extends App\LoginController
         }
 
         $gets['page'] = !empty($_GET['page']) ? $_GET['page'] : 1;
-        $logs = table($log_table)->gets($gets, $pager);
+        $logs = table($log_table, 'log_center')->gets($gets, $pager);
         $this->assign('pager', array('total' => $pager->total, 'pagesize' => $gets['pagesize'], 'render' => $pager->render()));
 
         $clients = $this->redis->sMembers('logs2:client:'.$module_id);

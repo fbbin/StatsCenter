@@ -22,6 +22,9 @@
             <li <?php if ($this->isActiveMenu('setting', 'module_list')){ ?>class="active"<?php } ?>>
                 <a href="/setting/module_list/"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">模块列表</span></a>
             </li>
+            <li <?php if ($this->isActiveMenu('setting', 'machine')){ ?>class="active"<?php } ?>>
+                <a href="/setting/machine/"><i class="fa fa-lg fa-fw fa-star"></i> <span class="menu-item-parent">分层视图</span></a>
+            </li>
         </ul>
     </li>
     <?php endif; ?>
