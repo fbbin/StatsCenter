@@ -66,36 +66,106 @@ class Alert
     function onTimer($id)
     {
         $serv = $this->serv;
-        $interfaces = \Swoole::$php->redis->sMembers(self::PREFIX);
-        if (!empty($interfaces)) {
-            $gets['select'] = 'id,mobile,weixinid,username';
-            $tmp = table('user', "platform")->gets($gets);
-            foreach ($tmp as $t) {
-                if (!empty($t['mobile']))
-                    $this->user[$t['id']] = $t['mobile'];
-                if (!empty($t['weixinid']))
-                    $this->weixin[$t['id']] = $t['username'];
-            }
+        //$interfaces = \Swoole::$php->redis->sMembers(self::PREFIX);
+        $gets['select'] = 'id,mobile,weixinid,username';
+        $tmp = table('user', "platform")->gets($gets);
+        foreach ($tmp as $t) {
+            if (!empty($t['mobile']))
+                $this->user[$t['id']] = $t['mobile'];
+            if (!empty($t['weixinid']))
+                $this->weixin[$t['id']] = $t['username'];
+        }
 
-            foreach ($interfaces as $id) {
-                $interface = table("interface")->get($id)->get();
-                $interface['interface_id'] = $interface['id'];
-                $interface['interface_name'] = $interface['name'];
-                //手动关闭接口报警的用户
-                if (!empty($interface) and $interface['enable_alert'] == 2) {
-                    continue;
+        $gets = array();
+        $gets['select'] = '*';
+        $tmp = table("module")->gets($gets);
+        $modules = array();
+        foreach ($tmp as $t) {
+            $modules[$t['id']] = $t;
+        }
+
+        $gets = array();
+        $gets['select'] = '*';
+        $gets['limit'] = '3';
+        $gets['order'] = 'id desc';
+        $interfaces = table("interface")->gets($gets);
+        foreach ($interfaces as $interface)
+        {
+            //手动关闭接口报警的用户
+            if (!empty($interface) and $interface['enable_alert'] == 2) {
+                continue;
+            }
+            $interface['interface_id'] = $interface['id'];
+            $interface['interface_name'] = $interface['name'];
+
+            $module_id = $interface['module_id'];
+            if (isset($modules[$module_id])) {
+                $module = $modules[$module_id];
+                $interface['module_name'] = $module['name'];
+            }
+            if (!empty($interface) and $interface['enable_alert'] == 1 and (!empty($interface['succ_hold']) or !empty($interface['wave_hold']))
+                and (!empty($interface['owner_uid']) or !empty($interface['backup_uids']))
+            ) {
+                $alert_ids = array();
+                if (!empty($interface['backup_uids'])) {
+                    $tmp = explode(',',$interface['backup_uids']);
+                    foreach ($tmp as $t)
+                    {
+                        if (!empty($t)) {
+                            $alert_ids[]  = $t;
+                        }
+                    }
                 }
-                if (!empty($interface) and $interface['enable_alert'] == 1 and (!empty($interface['succ_hold']) or !empty($interface['wave_hold']))
-                    and (!empty($interface['owner_uid']) or !empty($interface['backup_uids']))
+                if (!empty($interface['owner_uid'])) {
+                    $alert_ids[] = $interface['owner_uid'];
+                }
+                $interface['alert_uids'] = $alert_ids;
+                $mobile = array();
+                $weixin = array();
+                $alert = array();
+                foreach ($interface['alert_uids'] as $uid) {
+                    if (!empty($this->user[$uid])) {
+                        $mobile[$uid] = $this->user[$uid];
+                        $alert[$uid]['mobile'] = $this->user[$uid];
+                    }
+                    if (!empty($this->weixin[$uid])) {
+                        $weixin[$uid] = $this->weixin[$uid];
+                        $alert[$uid]['weixinid'] = $this->weixin[$uid];
+                    }
+
+                }
+                if (!empty($weixin))
+                    $interface['alert_weixins'] = implode('|', $weixin);
+                $interface['alert_mobiles'] = implode(',', $mobile);
+                $interface['alerts'] = json_encode($alert);
+
+                $serv->task($interface);
+            } elseif (isset($module)) {
+                if (!empty($module) and $module['enable_alert'] == 1 and (!empty($module['succ_hold']) or !empty($module['wave_hold']))
+                    and (!empty($module['owner_uid']) or !empty($module['backup_uids']))
                 ) {
-                    $alert_ids = '';
-                    if (!empty($interface['backup_uids'])) {
-                        $alert_ids = $interface['backup_uids'];
+                    $interface['alert_uids'] = $module['alert_uids'];
+                    $interface['alert_mobiles'] = $module['alert_mobiles'];
+                    $interface['alert_weixins'] = $module['alert_weixins'];
+                    $interface['alerts'] = $module['alerts'];
+                    $interface['succ_hold'] = $module['succ_hold'];
+                    $interface['wave_hold'] = $module['wave_hold'];
+                    $interface['alert_int'] = $module['alert_int'];
+
+                    $alert_ids = array();
+                    if (!empty($module['backup_uids'])) {
+                        $tmp = explode(',',$module['backup_uids']);
+                        foreach ($tmp as $t)
+                        {
+                            if (!empty($t)) {
+                                $alert_ids[]  = $t;
+                            }
+                        }
                     }
-                    if (!empty($interface['owner_uid'])) {
-                        $alert_ids .= $interface['owner_uid'];
+                    if (!empty($module['owner_uid'])) {
+                        $alert_ids[] = $module['owner_uid'];
                     }
-                    $interface['alert_uids'] = explode(',', $alert_ids);
+                    $interface['alert_uids'] = $alert_ids;
                     $mobile = array();
                     $weixin = array();
                     $alert = array();
@@ -114,30 +184,9 @@ class Alert
                         $interface['alert_weixins'] = implode('|', $weixin);
                     $interface['alert_mobiles'] = implode(',', $mobile);
                     $interface['alerts'] = json_encode($alert);
-                    $data = \Swoole::$php->redis->hGetAll(self::PREFIX . "::" . $interface['id']);
-                    $interface = array_merge($interface, $data);
                     $serv->task($interface);
                 } else {
-                    $module_id = $interface['module_id'];
-                    $module = \Swoole::$php->redis->hGetAll(self::PREFIX . "::MODULE::" . $module_id);
-                    if (!empty($module) and $module['enable_alert'] == 1 and (!empty($module['succ_hold']) or !empty($module['wave_hold']))
-                        and !empty($module['alert_uids'])
-                    ) {
-                        $interface['module_id'] = $module['module_id'];
-                        $interface['module_name'] = $module['module_name'];
-                        $interface['alert_uids'] = $module['alert_uids'];
-                        $interface['alert_mobiles'] = $module['alert_mobiles'];
-                        $interface['alert_weixins'] = $module['alert_weixins'];
-                        $interface['alerts'] = $module['alerts'];
-                        $interface['succ_hold'] = $module['succ_hold'];
-                        $interface['wave_hold'] = $module['wave_hold'];
-                        $interface['alert_int'] = $module['alert_int'];
-                        $data = \Swoole::$php->redis->hGetAll(self::PREFIX . "::" . $interface['id']);
-                        $interface = array_merge($interface, $data);
-                        $serv->task($interface);
-                    } else {
-                        \Swoole::$php->log->trace("{$this->worker_id} module {$module['module_id']} interface {$id} condition not meet,do not report" . json_encode($interface));
-                    }
+                    \Swoole::$php->log->trace("{$this->worker_id} module {$module['module_id']} interface {$id} condition not meet,do not report" . json_encode($interface,JSON_UNESCAPED_UNICODE));
                 }
             }
         }
