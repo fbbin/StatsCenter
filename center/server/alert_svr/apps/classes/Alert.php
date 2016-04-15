@@ -137,7 +137,8 @@ class Alert
                     $interface['alert_weixins'] = implode('|', $weixin);
                 $interface['alert_mobiles'] = implode(',', $mobile);
                 $interface['alerts'] = json_encode($alert);
-
+                $data = \Swoole::$php->redis->hGetAll(self::PREFIX . "::" . $interface['id']);
+                $interface = array_merge($interface, $data);
                 $serv->task($interface);
             } elseif (isset($module)) {
                 if (!empty($module) and $module['enable_alert'] == 1 and (!empty($module['succ_hold']) or !empty($module['wave_hold']))
@@ -183,6 +184,8 @@ class Alert
                         $interface['alert_weixins'] = implode('|', $weixin);
                     $interface['alert_mobiles'] = implode(',', $mobile);
                     $interface['alerts'] = json_encode($alert);
+                    $data = \Swoole::$php->redis->hGetAll(self::PREFIX . "::" . $interface['id']);
+                    $interface = array_merge($interface, $data);
                     $serv->task($interface);
                 } else {
                     \Swoole::$php->log->trace("{$this->worker_id} module {$module['module_id']} interface {$id} condition not meet,do not report" . json_encode($interface,JSON_UNESCAPED_UNICODE));
