@@ -1558,4 +1558,40 @@ class Setting extends App\LoginController
 
         return $db_data;
     }
+
+    function machine()
+    {
+        if (!empty($_POST['ip']))
+        {
+            if (!Swoole\Validate::ip($_POST['ip']))
+            {
+                \Swoole\JS::js_back("错误的IP地址格式");
+                return;
+            }
+            $layer = intval($_POST['layer']);
+            if ($layer < 0)
+            {
+                \Swoole\JS::js_back("请选择分层");
+                return;
+            }
+            $table = table('machine', 'platform');
+            $insert['ip'] = trim($_POST['ip']);
+            $insert['project_id'] = $this->projectId;
+            $insert['layer'] = $_POST['layer'];
+            if ($table->count($insert) > 0)
+            {
+                \Swoole\JS::js_back("IP地址已存在.");
+                return;
+            }
+            $insert['add_uid'] = $this->uid;
+            $insert['intro'] = $_POST['intro'];
+            $table->put($insert);
+            $this->http->redirect("/setting/machine/");
+            return;
+        }
+        else
+        {
+            $this->display();
+        }
+    }
 }

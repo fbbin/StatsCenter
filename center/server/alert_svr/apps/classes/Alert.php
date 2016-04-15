@@ -86,7 +86,6 @@ class Alert
 
         $gets = array();
         $gets['select'] = '*';
-        $gets['limit'] = '3';
         $gets['order'] = 'id desc';
         $interfaces = table("interface")->gets($gets);
         foreach ($interfaces as $interface)
