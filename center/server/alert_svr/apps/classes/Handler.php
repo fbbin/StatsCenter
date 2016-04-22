@@ -110,7 +110,7 @@ class Handler
     {
         if (empty($msg['last_alert_time']))
         {
-            \Swoole::$php->log->trace("task worker {$this->worker_id}  first time to msg");
+            \Swoole::$php->log->trace("task worker {$this->worker_id}  first time to msg {$msg['interface_id']}");
             return true;
         }
         else
