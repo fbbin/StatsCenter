@@ -118,13 +118,13 @@ class Handler
             $interval = $msg['alert_int'] * 60;//pop时间间隔 单位分钟
             if (time() - intval($msg['last_alert_time']) >= $interval) //间隔大于设置的间隔
             {
-                \Swoole::$php->log->trace("task worker {$this->worker_id}  time to msg; value:".
+                \Swoole::$php->log->trace("task worker {$this->worker_id}  {$msg['interface_id']} time to msg; value:".
                     time()."-".intval($msg['last_alert_time'])."=".(time()-intval($msg['last_alert_time'])).", setting :".$interval);
                 return true;
             }
             else
             {
-                \Swoole::$php->log->trace("task worker {$this->worker_id}  time is not ready to msg ;value:".
+                \Swoole::$php->log->trace("task worker {$this->worker_id}  {$msg['interface_id']} time is not ready to msg ;value:".
                     time()."-".intval($msg['last_alert_time'])."=".(time()-intval($msg['last_alert_time'])).", setting :".$interval);
                 return false;
             }

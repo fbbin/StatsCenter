@@ -186,7 +186,7 @@ class Alert
                     $interface['alerts'] = json_encode($alert);
                     $data = \Swoole::$php->redis->hGetAll(self::PREFIX . "::" . $interface['id']);
                     $interface = array_merge($interface, $data);
-                    \Swoole::$php->log->trace("got interface data:".json_encode($interface)."redis data:".json_encode($data). "key:".self::PREFIX . "::" . $interface['id']);
+                    //\Swoole::$php->log->trace("got interface data:".json_encode($interface)."redis data:".json_encode($data). "key:".self::PREFIX . "::" . $interface['id']);
                     $serv->task($interface);
                 } else {
                     \Swoole::$php->log->trace("{$this->worker_id} module {$module['module_id']} interface {$interface['id']} condition not meet,do not report" . json_encode($interface,JSON_UNESCAPED_UNICODE));
