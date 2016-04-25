@@ -955,22 +955,24 @@ class Setting extends App\LoginController
             //默认密码
             $inserts['password'] = Swoole\Auth::makePasswordHash($inserts['username'], self::DEFAULT_PASSWORD);
 
+            $newUser = [
+                'username' => $inserts['username'],
+                'fullname' => $inserts['realname'],
+                'phone' => $inserts['mobile'],
+
+            ];
+
             $gitAccount = empty($_POST['git_account']) ? 0 : 1;
             if ($gitAccount)
             {
-                $inserts['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
+                $newUser['git_password'] = $inserts['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
             }
             else
             {
                 $inserts['git_password'] = '';
             }
 
-            $newUser = [
-                'username' => $inserts['username'],
-                'fullname' => $inserts['realname'],
-                'phone' => $inserts['mobile'],
-                'git' => $gitAccount,
-            ];
+            $newUser['git'] = $gitAccount;
 
             //同步到内网平台
             if (!$this->syncIntranet('', $newUser))
