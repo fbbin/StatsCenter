@@ -71,6 +71,13 @@
                                 </ul>
                             </div>
                         </div>
+                        <div class="widget-toolbar">
+                            <div class="btn-group">
+                                <a href="/logs2/clear_type/?module=<?=$_GET['module']?>" class="btn btn-xs btn-warning">
+                                    清理Type/SubType
+                                </a>
+                            </div>
+                        </div>
                     </header>
                     <div role="content">
 
