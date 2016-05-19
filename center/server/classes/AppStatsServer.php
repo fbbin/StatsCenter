@@ -140,7 +140,8 @@ class AppStatsServer extends Server
 
                 if ($stats)
                 {
-                    $this->sum($stats);
+                    $this->saveToDb($stats);
+                    //$this->sum($stats);
                 }
                 else
                 {
@@ -168,6 +169,19 @@ class AppStatsServer extends Server
 //            //清空数据
 //            $this->data = [];
 //        });
+    }
+
+    function saveToDb($list)
+    {
+        $table = 'stats_' . date('Ymd');
+        foreach ($list as $li)
+        {
+            if (!table($table)->put($li) and \Swoole::$php->db->errno() == 1146)
+            {
+                $this->createTable($table);
+                table($table)->put($li);
+            }
+        }
     }
 
     function onTask($serv, $task_id, $from_id, $data)
