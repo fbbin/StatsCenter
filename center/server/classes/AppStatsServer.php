@@ -14,6 +14,8 @@ class AppStatsServer extends Server
         $this->log($json);
         $list = json_decode($json, true);
 
+        $this->serv->task($list);
+
         foreach ($list as $li)
         {
             $r = rand(0, 99);
@@ -159,12 +161,12 @@ class AppStatsServer extends Server
         {
             return;
         }
-        $serv->tick(60000, function () use ($serv) {
-            //投递任务
-            $serv->task($this->data);
-            //清空数据
-            $this->data = [];
-        });
+//        $serv->tick(60000, function () use ($serv) {
+//            //投递任务
+//            $serv->task($this->data);
+//            //清空数据
+//            $this->data = [];
+//        });
     }
 
     function onTask($serv, $task_id, $from_id, $data)
