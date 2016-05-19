@@ -15,6 +15,7 @@ class AppStatsServer extends Server
         $list = json_decode($json, true);
 
         $this->serv->task($list);
+        return;
 
         foreach ($list as $li)
         {
