@@ -11,7 +11,7 @@ class AppStatsServer extends Server
 
     function sum($json)
     {
-        $this->log($json);
+        //$this->log($json);
         $list = json_decode($json, true);
 
         foreach ($list as $li)
@@ -171,15 +171,25 @@ class AppStatsServer extends Server
 //        });
     }
 
-    function saveToDb($list)
+    function saveToDb($json)
     {
+        $list = json_decode($json, true);
         $table = 'stats_' . date('Ymd');
         foreach ($list as $li)
         {
-            if (!table($table)->put($li) and \Swoole::$php->db->errno() == 1146)
+            $put = array();
+            foreach($li['client_info'] as $k => $v)
+            {
+                $put['client_'.$k] = $v;
+            }
+            foreach($li['http'] as $k => $v)
+            {
+                $put['http_'.$k] = $v;
+            }
+            if (!table($table)->put($put) and \Swoole::$php->db->errno() == 1146)
             {
                 $this->createTable($table);
-                table($table)->put($li);
+                table($table)->put($put);
             }
         }
     }

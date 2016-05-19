@@ -1,6 +1,7 @@
 #! /usr/bin/php
 <?php
 require __DIR__ . '/_init.php';
+define('SWOOLE_SEVER', true);
 
 $setting['worker_num'] = 4;
 //$setting['daemonize'] = 1;
