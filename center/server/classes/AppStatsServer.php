@@ -51,25 +51,31 @@ class AppStatsServer extends Server
             }
 
             //客户端网络类型
-            $client_network_type = $li['client_info']['network_type'];
-            if (isset($count[$client_network_type]))
+            if (!empty($li['client_info']['network_sub_type']))
             {
-                $count[$client_network_type]++;
-            }
-            else
-            {
-                $count[$client_network_type] = 1;
+                $client_network_type = $li['client_info']['network_type'];
+                if (isset($count[$client_network_type]))
+                {
+                    $count[$client_network_type]++;
+                }
+                else
+                {
+                    $count[$client_network_type] = 1;
+                }
             }
 
             //客户端网络类型
-            $client_network_name = $li['client_info']['network_sub_type'];
-            if (isset($count[$client_network_name]))
+            if (!empty($li['client_info']['network_sub_type']))
             {
-                $count[$client_network_name]++;
-            }
-            else
-            {
-                $count[$client_network_name] = 1;
+                $client_network_name = $li['client_info']['network_sub_type'];
+                if (isset($count[$client_network_name]))
+                {
+                    $count[$client_network_name]++;
+                }
+                else
+                {
+                    $count[$client_network_name] = 1;
+                }
             }
 
             if ($li['http']['json_parse'] == 0)
