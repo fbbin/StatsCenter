@@ -14,9 +14,6 @@ class AppStatsServer extends Server
         $this->log($json);
         $list = json_decode($json, true);
 
-        $this->serv->task($list);
-        return;
-
         foreach ($list as $li)
         {
             $r = rand(0, 99);
@@ -112,6 +109,9 @@ class AppStatsServer extends Server
             $count['request_time'] = $li['http']['request_time'];
             $count['header_time'] = $li['http']['header_time'];
         }
+
+        $this->serv->task($this->data);
+        $this->data = [];
     }
 
     protected static function parserUrl($url)
