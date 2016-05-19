@@ -10,6 +10,7 @@ $db['master'] = array(
     'name' => "mostat",
     'charset' => "utf8",
     'setname' => true,
+    'persistent' => true,
 );
 
 $db['platform'] = array(
@@ -23,6 +24,7 @@ $db['platform'] = array(
     'name' => "platform",
     'charset' => "utf8",
     'setname' => true,
+    'persistent' => true,
 );
 
 $db['log_center'] = array(
@@ -36,6 +38,7 @@ $db['log_center'] = array(
     'name' => "log_center",
     'charset' => "utf8",
     'setname' => true,
+    'persistent' => true,
 );
 
 /*$db['master'] = array(
