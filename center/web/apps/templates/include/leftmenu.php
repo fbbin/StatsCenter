@@ -87,6 +87,10 @@
                     <a href="/msg/report/"><i class="fa fa-lg fa-fw fa-envelope-o"></i> <span
                             class="menu-item-parent">短信费用报表</span></a>
                 </li>
+                <li <?php if ($this->isActiveMenu('msg', 'captcha_query')){ ?>class="active" <?php } ?>>
+                    <a href="/msg/captcha_query/"><i class="fa fa-lg fa-fw  fa-comments-o"></i> <span
+                            class="menu-item-parent">验证码查询</span></a>
+                </li>
             </ul>
         </li>
     <?php endif;?>

@@ -376,4 +376,22 @@ class Msg extends \App\LoginController
         }
         return $time;
     }
+
+    public function captcha_query()
+    {
+        $app = $this->projectInfo['ckey'];
+        if (!empty($_POST))
+        {
+            $mobile = trim($_POST['mobile']);
+            if (empty($mobile)) {
+                \Swoole\JS::js_back("手机号码不能为空");
+                return;
+            }
+            $key = "captcha_code_{$app}_{$mobile}";
+            $data = \Swoole::$php->redis('platform')->get($key);
+            debug($data);
+        } else {
+            $this->display();
+        }
+    }
 }
