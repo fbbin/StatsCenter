@@ -43,6 +43,7 @@ class Msg extends \App\LoginController
             $gets['where'][] = 'addtime <= "' . $end . '"';
             //\Swoole::$php->db("platform")->debug = 1;
 
+            $gets['select'] = 'channel,success';
             $gets['order'] = 'id desc';
             $data = table("sms_log", "platform")->gets($gets);
             $calc = array();
