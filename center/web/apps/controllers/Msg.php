@@ -38,6 +38,10 @@ class Msg extends \App\LoginController
         if (!empty($_GET['start_time'])) {
             $start = trim($_GET['start_time']) . " 00:00:00";
             $end = trim($_GET['start_time']) . " 23:59:59";
+            $now = date("Y-m-d H:i:s");
+            if ($end >= $now) {
+                $end = $now;
+            }
 
             $gets['where'][] = 'addtime >= "' . $start . '"';
             $gets['where'][] = 'addtime <= "' . $end . '"';
@@ -121,6 +125,7 @@ class Msg extends \App\LoginController
 
             //\Swoole::$php->db("platform")->debug = 1;
 
+            $gets['select'] = 'channel,success';
             $gets['order'] = 'id desc';
             $data = table("msg_captcha_log", "platform")->gets($gets);
             //debug($data);
