@@ -125,7 +125,7 @@ class Msg extends \App\LoginController
 
             //\Swoole::$php->db("platform")->debug = 1;
 
-            $gets['select'] = 'channel,success';
+            $gets['select'] = 'channel,is_used';
             $gets['order'] = 'id desc';
             $data = table("msg_captcha_log", "platform")->gets($gets);
             //debug($data);
