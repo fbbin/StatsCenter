@@ -2,7 +2,7 @@
 define('DEBUG', 'on');
 define('WEBPATH', __DIR__);
 
-require __DIR__.'/../../framework/libs/lib_config.php';
+require '/data/www/public/framework/libs/lib_config.php';
 
 if (get_cfg_var('env.name') == 'local' or get_cfg_var('env.name') == 'dev')
 {
@@ -19,7 +19,7 @@ $t = json_decode($res,1);
 $token = $t['access_token'];
 $msg_url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={$token}";
 $msg = array(
-    'touser' => 'shiguangqi|chendongxiong',
+    'touser' => 'shiguangqi',
     'toparty' => '',
     'totag' => '',
     'msgtype' => 'text',
