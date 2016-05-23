@@ -14,7 +14,7 @@ $redis['cluster'] = array(
 );
 
 $redis['platform'] = array(
-    'host' => '192.168.1.73',
+    'host' => '192.168.1.234',
     'port' => 19006,
 );
 
