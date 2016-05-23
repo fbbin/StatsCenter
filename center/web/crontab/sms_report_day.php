@@ -59,7 +59,7 @@ $string = get_html($all);
 $url = "http://192.168.1.70:8080/mail/send";
 $data = array(
     'addr' => "shiguangqi@chelun.com",
-    'cc' => 'hantianfeng@chelun.com',
+    'cc' => 'hantianfeng@chelun.com,zhaoziqing@chelun.com,zhangzhigang@chelun.com',
     'subject' => "{$all['time']} 短信报表",
     'content' => "$string",
 );
