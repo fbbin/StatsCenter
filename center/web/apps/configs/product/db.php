@@ -1,5 +1,5 @@
 <?php
-$db['master'] = array(
+/*$db['master'] = array(
 	'type' => Swoole\Database::TYPE_CLMysql,
 	'host' => "192.168.1.105",
 	'port' => 9703,
@@ -39,9 +39,9 @@ $db['log_center'] = array(
 	'charset' => "utf8",
 	'setname' => true,
 	'persistent' => true,
-);
+);*/
 
-/*$db['master'] = array(
+$db['master'] = array(
 	'type' => Swoole\Database::TYPE_MYSQLi,
 	'host' => "192.168.1.102",
 	'port' => 3306,
@@ -78,6 +78,6 @@ $db['log_center'] = array(
 	'name' => "log_center",
 	'charset' => "utf8",
 	'setname' => true,
-);*/
+);
 
 return $db;
