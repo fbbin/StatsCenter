@@ -389,7 +389,11 @@ class Msg extends \App\LoginController
             }
             $key = "captcha_code_{$app}_{$mobile}";
             $data = \Swoole::$php->redis('platform')->get($key);
-            debug($data);
+            if ($data) {
+                $data = unserialize($data);
+                debug($data);
+            }
+            exit("{$app}-{$mobile}:验证码为空");
         } else {
             $this->display();
         }
