@@ -13,6 +13,7 @@ define('FRAMEWORK_PATH', PUBLIC_PATH.'/framework');
 define('ENV_NAME', $env);
 
 require FRAMEWORK_PATH . '/libs/lib_config.php';
+require PUBLIC_PATH . "/sdk/autoload.php";
 require __DIR__ . '/apps/include/functions.php';
 require __DIR__ . '/apps/include/constants.php';
 
