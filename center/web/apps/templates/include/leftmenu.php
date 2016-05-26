@@ -95,7 +95,7 @@
         </li>
     <?php endif;?>
 
-    <?php if ($this->userinfo['usertype'] == 0 || $this->userinfo['usertype'] == 1) : ?>
+    <?php if ($this->isAllow('stats')) : ?>
     <li <?php if ($this->isActiveMenu('logs2', 'index')){ ?>class="active"<?php } ?>>
         <a href="/logs2/index/" id="logs2_index_link"><i class="fa fa-lg fa-fw fa-list-alt"></i> <span class="menu-item-parent">日志系统</span></a>
     </li>
