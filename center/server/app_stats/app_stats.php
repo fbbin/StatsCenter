@@ -6,8 +6,9 @@ $time = time();
 define('DEBUG', 'on');
 define('WEBPATH', __DIR__);
 
-require dirname(__DIR__) . '/config.php';
-Swoole::$php->config->setPath(__DIR__.'/configs/');
+require __DIR__ . '/_init.php';
+#require dirname(__DIR__) . '/config.php';
+#Swoole::$php->config->setPath(__DIR__.'/configs/');
 
 $start_time = microtime(true);
 
