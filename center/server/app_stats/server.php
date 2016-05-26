@@ -1,4 +1,4 @@
-#! /usr/bin/php
+#! /usr/local/php/bin/php
 <?php
 require __DIR__ . '/_init.php';
 define('SWOOLE_SEVER', true);
