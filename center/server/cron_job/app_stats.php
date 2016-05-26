@@ -3,10 +3,12 @@ $time = time();
 /*
  * stats统计脚本
  */
-ini_set("memory_limit", "1024M");
-define('SWOOLE_SERVER', true);
-require_once dirname(__DIR__) . '/config.php';
-require dirname(__DIR__) . '/apps/include/mail.php';
+define('DEBUG', 'on');
+define('WEBPATH', __DIR__);
+
+require dirname(__DIR__) . '/config.php';
+Swoole::$php->config->setPath(__DIR__.'/configs/');
+
 $start_time = microtime(true);
 
 $dbTemp = table('st_memtemp');
