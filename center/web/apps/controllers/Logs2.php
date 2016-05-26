@@ -32,6 +32,21 @@ class Logs2 extends App\LoginController
         $this->display();
     }
 
+    function clear_type()
+    {
+        if (!empty($_GET['module']))
+        {
+            $module_id = intval($_GET['module']);
+            $this->redis->del('logs2:type:' . $module_id);
+            $this->redis->del('logs2:subtype:' . $module_id);
+            $this->http->redirect('/logs2/index/?module='.$module_id);
+        }
+        else
+        {
+            $this->http->redirect('/logs2/index/');
+        }
+    }
+
     function data($module_id)
     {
         //\Swoole\Error::dbd();
@@ -105,7 +120,7 @@ class Logs2 extends App\LoginController
         }
 
         $gets['page'] = !empty($_GET['page']) ? $_GET['page'] : 1;
-        $logs = table($log_table)->gets($gets, $pager);
+        $logs = table($log_table, 'log_center')->gets($gets, $pager);
         $this->assign('pager', array('total' => $pager->total, 'pagesize' => $gets['pagesize'], 'render' => $pager->render()));
 
         $clients = $this->redis->sMembers('logs2:client:'.$module_id);

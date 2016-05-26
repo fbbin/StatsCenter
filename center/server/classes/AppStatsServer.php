@@ -11,7 +11,7 @@ class AppStatsServer extends Server
 
     function sum($json)
     {
-        $this->log($json);
+        //$this->log($json);
         $list = json_decode($json, true);
 
         foreach ($list as $li)
@@ -51,25 +51,31 @@ class AppStatsServer extends Server
             }
 
             //客户端网络类型
-            $client_network_type = $li['client_info']['network_type'];
-            if (isset($count[$client_network_type]))
+            if (!empty($li['client_info']['network_sub_type']))
             {
-                $count[$client_network_type]++;
-            }
-            else
-            {
-                $count[$client_network_type] = 1;
+                $client_network_type = $li['client_info']['network_type'];
+                if (isset($count[$client_network_type]))
+                {
+                    $count[$client_network_type]++;
+                }
+                else
+                {
+                    $count[$client_network_type] = 1;
+                }
             }
 
             //客户端网络类型
-            $client_network_name = $li['client_info']['network_sub_type'];
-            if (isset($count[$client_network_name]))
+            if (!empty($li['client_info']['network_sub_type']))
             {
-                $count[$client_network_name]++;
-            }
-            else
-            {
-                $count[$client_network_name] = 1;
+                $client_network_name = $li['client_info']['network_sub_type'];
+                if (isset($count[$client_network_name]))
+                {
+                    $count[$client_network_name]++;
+                }
+                else
+                {
+                    $count[$client_network_name] = 1;
+                }
             }
 
             if ($li['http']['json_parse'] == 0)
@@ -103,6 +109,9 @@ class AppStatsServer extends Server
             $count['request_time'] = $li['http']['request_time'];
             $count['header_time'] = $li['http']['header_time'];
         }
+
+        $this->serv->task($this->data);
+        $this->data = [];
     }
 
     protected static function parserUrl($url)
@@ -131,7 +140,8 @@ class AppStatsServer extends Server
 
                 if ($stats)
                 {
-                    $this->sum($stats);
+                    $this->saveToDb($stats);
+                    //$this->sum($stats);
                 }
                 else
                 {
@@ -153,17 +163,40 @@ class AppStatsServer extends Server
         {
             return;
         }
-        $serv->tick(60000, function () use ($serv) {
-            //投递任务
-            $serv->task($this->data);
-            //清空数据
-            $this->data = [];
-        });
+//        $serv->tick(60000, function () use ($serv) {
+//            //投递任务
+//            $serv->task($this->data);
+//            //清空数据
+//            $this->data = [];
+//        });
+    }
+
+    function saveToDb($json)
+    {
+        $list = json_decode($json, true);
+        $table = 'stats_' . date('Ymd');
+        foreach ($list as $li)
+        {
+            $put = array();
+            foreach($li['client_info'] as $k => $v)
+            {
+                $put['client_'.$k] = $v;
+            }
+            foreach($li['http'] as $k => $v)
+            {
+                $put['http_'.$k] = $v;
+            }
+            if (!table($table)->put($put) and \Swoole::$php->db->errno() == 1146)
+            {
+                $this->createTable($table);
+                table($table)->put($put);
+            }
+        }
     }
 
     function onTask($serv, $task_id, $from_id, $data)
     {
-        $tableName = 'stats_app_' . date('Ymd');
+        $tableName = 'stats_' . date('Ymd');
         $table = table($tableName);
         foreach ($data as $name1 => $host)
         {
@@ -171,8 +204,39 @@ class AppStatsServer extends Server
             {
                 $cgi['host'] = $name1;
                 $cgi['api'] = $name2;
-                $table->put($cgi);
+                if (!table($table)->put($cgi) and \Swoole::$php->db->errno() == 1146)
+                {
+                    $this->createTable($table);
+                    table($table)->put($cgi);
+                }
             }
+        }
+    }
+
+    protected function createTable($table)
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS `{$table}` (
+            `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+          `client_network_type` varchar(40) NOT NULL,
+          `client_network_name` varchar(40) NOT NULL,
+          `http_url` text NOT NULL,
+          `http_method` varchar(10) NOT NULL,
+          `http_body_length` int(11) NOT NULL,
+          `http_post_length` int(11) NOT NULL,
+          `http_data_code` int(11) NOT NULL,
+          `http_header_time` float NOT NULL,
+          `http_total_titme` float NOT NULL,
+          `http_json_parse` tinyint(1) NOT NULL,
+          `http_request_time` float NOT NULL,
+          `addtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+        $r = \Swoole::$php->db->query($sql);
+        //创建表成功后再建索引，避免重复创建索引
+        if ($r)
+        {
+//            \Swoole::$php->db->query($create_index_sql);
+//            \Swoole::$php->db->query($create_index_sql2);
         }
     }
 

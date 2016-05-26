@@ -4,13 +4,13 @@ define('SWOOLE_SERVER', true);
 require_once dirname(__DIR__).'/config.php';
 require dirname(__DIR__).'/apps/include/mail.php';
 $start_time = microtime(true);
-$now = date("Y-m");
+$now = date("Y-m-d");
 //$now = date("Y-m",strtotime("-4 month"));
-$month_start = date("Y-m",strtotime("$now -1 month"));
-$month_end = date("Y-m",strtotime("$now"));
-echo ("[".date("Y-m-d H:i:s")."] sms_report start to report {$month_start} \n");
-$start = date("Y-m-d H:i:s", strtotime($month_start));
-$end = date("Y-m-d H:i:s", strtotime($month_end));
+$day_start = date("Y-m-d",strtotime("$now -1 day"));
+$day_end = date("Y-m-d",strtotime("$now"));
+echo ("[".date("Y-m-d H:i:s")."] sms_report_day start to report {$day_start} \n");
+$start = date("Y-m-d H:i:s", strtotime($day_start));
+$end = date("Y-m-d H:i:s", strtotime($day_end));
 $gets['where'][] = 'addtime >= "'.$start.'"';
 $gets['where'][] = 'addtime < "'.$end.'"';
 //\Swoole::$php->db("platform")->debug = 1;
@@ -45,11 +45,6 @@ foreach ($data as $d)
 
 foreach ($all as $k => $a)
 {
-    if ($k == 5) {
-        $price = number_format(0.043,3);
-    } else {
-        $price = number_format(0.040,3);
-    }
     $price = $channel_price[$k];
     if ($k != 'all') {
         $all[$k]['price'] = $price;
@@ -58,27 +53,23 @@ foreach ($all as $k => $a)
     }
 }
 $all['all']['total'] = number_format($all['all']['total'],3);
-$all['time'] = "{$month_start}月份";
-echo ("[".date("Y-m-d H:i:s")."] sms_report get data ".print_r($all,1)."\n");
+$all['time'] = "{$day_start}";
+echo ("[".date("Y-m-d H:i:s")."] sms_report_day get data ".print_r($all,1)."\n");
 $string = get_html($all);
-$config_dir = "/data/config/platform/sms_recv.conf";
-$users = file_get_contents($config_dir);
-$users = json_decode($users,1);
-$curl = new \Swoole\Client\CURL();
 $url = "http://192.168.1.70:8080/mail/send";
-$addr = implode(',',$users['recipients']);
-$cc = implode(',',$users['cc_list']);
 $data = array(
-    'addr' => $addr,
-    'cc' => $cc,
+    'addr' => "shiguangqi@chelun.com",
+    'cc' => 'hantianfeng@chelun.com,zhaoziqing@chelun.com,zhangzhigang@chelun.com',
     'subject' => "{$all['time']} 短信报表",
     'content' => "$string",
 );
-
+$curl = new \Swoole\Client\CURL();
 $res = $curl->post($url,$data);
 $end_time = microtime(1);
 $take_time = $end_time-$start_time;
-echo ("[".date("Y-m-d H:i:s")."] sms_report report end with res:".var_export($res,1)." \n");
+$to['addr'] = $data['addr'];
+$to['cc'] = $data['cc'];
+echo ("[".date("Y-m-d H:i:s")."] sms_report_day report ".json_encode($to)." end with res:".var_export($res,1)." \n");
 echo ("[".date("Y-m-d H:i:s")."] 耗时: {$take_time} s\n");
 
 function get_html($all)

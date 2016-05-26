@@ -38,51 +38,44 @@ class Msg extends \App\LoginController
         if (!empty($_GET['start_time'])) {
             $start = trim($_GET['start_time']) . " 00:00:00";
             $end = trim($_GET['start_time']) . " 23:59:59";
+            $now = date("Y-m-d H:i:s");
+            if ($end >= $now) {
+                $end = $now;
+            }
 
             $gets['where'][] = 'addtime >= "' . $start . '"';
             $gets['where'][] = 'addtime <= "' . $end . '"';
             //\Swoole::$php->db("platform")->debug = 1;
 
-            $gets['order'] = 'id desc';
+            $gets['select'] = 'channel,count(id) as count';
+            $gets['group'] = 'channel';
             $data = table("sms_log", "platform")->gets($gets);
             $calc = array();
-            $all = array();
+            $all = array(
+                'count' => 0,
+                'success' => 0,
+                'failed' => 0,
+            );
             foreach ($data as $k => $d) {
-                if (!isset($all['count'])) {
-                    $all['count'] = 1;
-                } else {
-                    $all['count']++;
-                }
-                if (!isset($calc[$d['channel']]['count'])) {
-                    $calc[$d['channel']]['count'] = 1;
-                } else {
-                    $calc[$d['channel']]['count']++;
-                }
-
-                if ($d['success'] == 0) {
-                    if (!isset($all['success'])) {
-                        $all['success'] = 1;
-                    } else {
-                        $all['success']++;
-                    }
-                    if (!isset($calc[$d['channel']]['success'])) {
-                        $calc[$d['channel']]['success'] = 1;
-                    } else {
-                        $calc[$d['channel']]['success']++;
-                    }
-                } else {
-                    if (!isset($all['failed'])) {
-                        $all['failed'] = 1;
-                    } else {
-                        $all['failed']++;
-                    }
-                    if (!isset($calc[$d['channel']]['failed'])) {
-                        $calc[$d['channel']]['failed'] = 1;
-                    } else {
-                        $calc[$d['channel']]['failed']++;
-                    }
-                }
+                $calc[$d['channel']]['count'] = $d['count'];
+                $all['count'] += $d['count'];
             }
+
+            $gets = array();
+            $gets['where'][] = 'addtime >= "' . $start . '"';
+            $gets['where'][] = 'addtime <= "' . $end . '"';
+            //\Swoole::$php->db("platform")->debug = 1;
+
+            $gets['select'] = 'channel,sum(success) as failed';
+            $gets['group'] = 'channel';
+            $data = table("sms_log", "platform")->gets($gets);
+
+            foreach ($data as $k => $d) {
+                $calc[$d['channel']]['failed'] = $d['failed'];
+                $all['failed'] += $d['failed'];
+                $calc[$d['channel']]['success'] =  $calc[$d['channel']]['count'] - $d['failed'];
+            }
+            $all['success'] = $all['count'] - $all['failed'];
             foreach ($calc as $k => $v) {
                 $calc[$k]['name'] = self::$channel[$k];
                 $calc[$k]['success_rate'] = number_format(($v['success'] / $v['count']) * 100, 2);
@@ -118,50 +111,30 @@ class Msg extends \App\LoginController
                 $type = $_GET['type'];
             }
 
-            //\Swoole::$php->db("platform")->debug = 1;
-
-            $gets['order'] = 'id desc';
+            $gets['select'] = 'channel,count(id) as count';
+            $gets['group'] = 'channel';
             $data = table("msg_captcha_log", "platform")->gets($gets);
-            //debug($data);
             $calc = array();
-            $all = array();
+            $all = array(
+                'count' => 0,
+                'used' => 0,
+                'no' => 0,
+            );
             foreach ($data as $k => $d) {
-                if (!isset($all['count'])) {
-                    $all['count'] = 1;
-                } else {
-                    $all['count']++;
-                }
-
-                if (!isset($calc[$d['channel']]['count'])) {
-                    $calc[$d['channel']]['count'] = 1;
-                } else {
-                    $calc[$d['channel']]['count']++;
-                }
-
-                if ($d['is_used'] == 0) {
-                    if (!isset($all['success'])) {
-                        $all['no'] = 1;
-                    } else {
-                        $all['no']++;
-                    }
-                    if (!isset($calc[$d['channel']]['no'])) {
-                        $calc[$d['channel']]['no'] = 1;
-                    } else {
-                        $calc[$d['channel']]['no']++;
-                    }
-                } else {
-                    if (!isset($all['used'])) {
-                        $all['used'] = 1;
-                    } else {
-                        $all['used']++;
-                    }
-                    if (!isset($calc[$d['channel']]['used'])) {
-                        $calc[$d['channel']]['used'] = 1;
-                    } else {
-                        $calc[$d['channel']]['used']++;
-                    }
-                }
+                $calc[$d['channel']]['count'] = $d['count'];
+                $all['count'] += $d['count'];
             }
+
+            $gets['select'] = 'channel,sum(is_used) as used';
+            $gets['group'] = 'channel';
+            $data = table("msg_captcha_log", "platform")->gets($gets);
+
+            foreach ($data as $k => $d) {
+                $calc[$d['channel']]['used'] = $d['used'];
+                $calc[$d['channel']]['no'] =  $calc[$d['channel']]['count'] - $d['used'];
+                $all['used'] += $d['used'];
+            }
+            $all['no'] = $all['count'] - $all['used'];
 
             foreach ($calc as $k => $v) {
                 $calc[$k]['type'] = self::$msg_type[$type];
@@ -402,5 +375,27 @@ class Msg extends \App\LoginController
 
         }
         return $time;
+    }
+
+    public function captcha_query()
+    {
+        $app = $this->projectInfo['ckey'];
+        if (!empty($_POST))
+        {
+            $mobile = trim($_POST['mobile']);
+            if (empty($mobile)) {
+                \Swoole\JS::js_back("手机号码不能为空");
+                return;
+            }
+            $key = "captcha_code_{$app}_{$mobile}";
+            $data = \Swoole::$php->redis('platform')->get($key);
+            if ($data) {
+                $data = unserialize($data);
+                debug($data);
+            }
+            exit("{$app}-{$mobile}:验证码为空");
+        } else {
+            $this->display();
+        }
     }
 }

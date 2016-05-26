@@ -7,7 +7,7 @@ if ($env == 'dev' or $env == 'test' or $env == 'local')
 {
     \Swoole::$php->config->setPath(__DIR__.'/apps/configs/dev/');
     $setting['worker_num'] = 1;
-    $setting['daemonize'] = 0;
+    $setting['daemonize'] = 1;
 }
 else
 {

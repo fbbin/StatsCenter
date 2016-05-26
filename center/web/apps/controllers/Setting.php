@@ -955,22 +955,24 @@ class Setting extends App\LoginController
             //默认密码
             $inserts['password'] = Swoole\Auth::makePasswordHash($inserts['username'], self::DEFAULT_PASSWORD);
 
+            $newUser = [
+                'username' => $inserts['username'],
+                'fullname' => $inserts['realname'],
+                'phone' => $inserts['mobile'],
+
+            ];
+
             $gitAccount = empty($_POST['git_account']) ? 0 : 1;
             if ($gitAccount)
             {
-                $inserts['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
+                $newUser['git_password'] = $inserts['git_password'] = $this->getGitPassword(self::DEFAULT_PASSWORD);
             }
             else
             {
                 $inserts['git_password'] = '';
             }
 
-            $newUser = [
-                'username' => $inserts['username'],
-                'fullname' => $inserts['realname'],
-                'phone' => $inserts['mobile'],
-                'git' => $gitAccount,
-            ];
+            $newUser['git'] = $gitAccount;
 
             //同步到内网平台
             if (!$this->syncIntranet('', $newUser))
@@ -1557,5 +1559,41 @@ class Setting extends App\LoginController
         }
 
         return $db_data;
+    }
+
+    function machine()
+    {
+        if (!empty($_POST['ip']))
+        {
+            if (!Swoole\Validate::ip($_POST['ip']))
+            {
+                \Swoole\JS::js_back("错误的IP地址格式");
+                return;
+            }
+            $layer = intval($_POST['layer']);
+            if ($layer < 0)
+            {
+                \Swoole\JS::js_back("请选择分层");
+                return;
+            }
+            $table = table('machine', 'platform');
+            $insert['ip'] = trim($_POST['ip']);
+            $insert['project_id'] = $this->projectId;
+            $insert['layer'] = $_POST['layer'];
+            if ($table->count($insert) > 0)
+            {
+                \Swoole\JS::js_back("IP地址已存在.");
+                return;
+            }
+            $insert['add_uid'] = $this->uid;
+            $insert['intro'] = $_POST['intro'];
+            $table->put($insert);
+            $this->http->redirect("/setting/machine/");
+            return;
+        }
+        else
+        {
+            $this->display();
+        }
     }
 }
