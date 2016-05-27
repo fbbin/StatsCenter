@@ -3,8 +3,8 @@ $time = time();
 /*
  * stats统计脚本
  */
-define('DEBUG', 'on');
-define('WEBPATH', __DIR__);
+#define('DEBUG', 'on');
+#define('WEBPATH', __DIR__);
 
 require __DIR__ . '/_init.php';
 #require dirname(__DIR__) . '/config.php';
@@ -55,7 +55,7 @@ foreach ($rs as $k => $v) {
 	$key = $v['http_host'] . '/' . $v['http_uri'];
 	if (!isset($uri[$key])) {
 		$uri[$key] = 1;
-		$db->query("insert into `st_uri` (`uri`) VALUES (" . $db->quote($key) . ")");
+		$db->query("insert into `st_uri` (`uri`) VALUES ('" . $db->quote($key) . "')");
 	}
 	if (isset($puts[$key])) {
 		$puts[$key]['time_sum'] += $v['time_sum'];
