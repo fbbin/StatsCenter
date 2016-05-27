@@ -61,8 +61,8 @@ foreach ($rs as $k => $v) {
 		$puts[$key]['time_sum'] += $v['time_sum'];
 		$puts[$key]['count_all'] += $v['t_count'];
 		if ($v['http_code'] != 200 || $v['http_json_parse'] != 1 || $v['http_data_code'] != 1) {
-			$puts[$key]['time_faild_sum'] += $v['time_sum'];
-			$puts[$key]['count_faild'] += $v['t_count'];
+			$puts[$key]['time_failed_sum'] += $v['time_sum'];
+			$puts[$key]['count_failed'] += $v['t_count'];
 			$puts[$key]['time_max'] = max($puts[$key]['time_max'], $v['time_max']);
 			$puts[$key]['time_min'] = min($puts[$key]['time_min'], $v['time_min']);
 			$failed[$key][] = array(
