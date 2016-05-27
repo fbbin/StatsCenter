@@ -9,6 +9,15 @@ $time = time();
 require __DIR__ . '/_init.php';
 #require dirname(__DIR__) . '/config.php';
 #Swoole::$php->config->setPath(__DIR__.'/configs/');
+function array_rebuild($array, $key, $value = '') {
+	$r = array();
+
+	foreach ($array as $k => $v) {
+		$r[$v[$key]] = $value ? $v[$value] : $v;
+	}
+
+	return $r;
+}
 
 $start_time = microtime(true);
 
@@ -76,7 +85,7 @@ foreach ($rs as $k => $v) {
 		$puts[$key] = array(
 			'ctime' => $time,
 			'host_id' => $v['http_host'],
-			'uri' => $v['http_uri'],
+			'uri_id' => $v['http_uri'],
 			'app_id' => $v['http_app'],
 			'time_sum' => $v['time_sum'],
 			'time_max' => $v['time_max'],
@@ -86,8 +95,8 @@ foreach ($rs as $k => $v) {
 			'time_failed_sum' => 0
 		);
 		if ($v['http_code'] != 200 || $v['http_json_parse'] != 1 || $v['http_data_code'] != 1) {
-			$puts[$key]['time_faild_sum'] += $v['time_sum'];
-			$puts[$key]['count_faild'] += $v['t_count'];
+			$puts[$key]['time_failed_sum'] += $v['time_sum'];
+			$puts[$key]['count_failed'] += $v['t_count'];
 		}
 	}
 }
@@ -117,10 +126,10 @@ foreach ($puts as $put) {
 		}
 	}*/
 	$key = $put['host_id'] . '/' . $put['uri_id'];
-	$put['host_id'] = $map[$v['host_id']];
-	$put['uri_id'] = $map[$v['uri_id']];
+	$put['host_id'] = $map[$put['host_id']];
+	$put['uri_id'] = $map[$put['uri_id']];
 	$data_id = $dbData->put($put);
-	if ($failed[$key]) {
+	if (isset($failed[$key])) {
 		foreach ($failed[$key] as $v) {
 			$v['data_id'] = $data_id;
 			$dbFailed->put($v);
