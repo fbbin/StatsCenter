@@ -362,7 +362,7 @@ class Setting extends App\LoginController
         $gets['order'] = 'id desc';
         if (!empty($_POST['module_id']))
         {
-            $gets['module_id'] = intval($_GET['module_id']);
+            $gets['module_id'] = intval($_POST['module_id']);
             $_GET['module_id'] = $gets['module_id'];
         }
         $data = table('interface')->gets($gets,$pager);
