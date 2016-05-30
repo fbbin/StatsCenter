@@ -85,7 +85,7 @@ class Appstats extends \App\LoginController {
 		}
 		$map = array();
 		if ($ids) {
-			$rs = $table->db->query("select * from `st_string` where `id` in (" . implode(array_keys($ids)) . ")")->fetchall();
+			$rs = $table->db->query("select * from `st_string` where `id` in (" . implode(',', array_keys($ids)) . ")")->fetchall();
 			foreach ($rs as $v) {
 				$map[$v['id']] = $v['name'];
 			}
