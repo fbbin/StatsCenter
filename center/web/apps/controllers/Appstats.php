@@ -33,6 +33,10 @@ class Appstats extends \App\LoginController {
 		$uri_id = isset($_GET['uri']) ? intval($_GET['uri']) : 0;
 		$this->getInterfaceInfo();
 		$table = table('st_data', 'app_stats');
+
+
+		$host = array_rebuild($table->db->query("select * from `st_host`")->fetchall(), 'id', 'name');
+
 		#$table->select = "`host_id`,`uri_id`,sum(time_sum) as time_sum,sum(if(`type`<>218,time_sum,0)) as fail_time_sum,sum(t_count) as t_count,sum(if(`type`<>218,t_count,0)) as faild_t_count";
 		$gets = [
 			#'module_id' => $_GET['module_id'],
@@ -45,60 +49,24 @@ class Appstats extends \App\LoginController {
 			$gets['uri_id'] = $uri_id;
 		}
 
-		/*if (!empty($_GET['orderby'])) {
-			$gets['order'] = $_GET['orderby'];
-			if (empty($_GET['desc'])) {
-				$gets['order'] .= ' asc';
-			} else {
-				$gets['order'] .= ' desc';
-			}
-		}*/
-
-		/*if (isset($_GET['interface_name']))
-		{
-			$_GET['interface_name'] = trim($_GET['interface_name']);
-			Swoole\Filter::safe($_GET['interface_name']);
-			if (!empty($_GET['interface_name']))
-			{
-				$gets['like'] = ['interface_name', '%' . $this->db->quote($_GET['interface_name']) . '%'];
-			}
-		}*/
-
-		if (!empty($_GET['interface_id'])) {
-			$gets['interface_id'] = intval($_GET['interface_id']);
-		}
-		/**
-		 * @var Swoole\Pager
-		 */
 		$pager = null;
 		$data = $table->gets($gets, $pager);
 
-		$ids = array($host_id => 1);
+		$uri_ids = array();
 		foreach ($data as $k => $v) {
-			$ids[$v['host_id']] = 1;
-			$ids[$v['uri_id']] = 1;
+			#$uri_ids[$v['uri_id']] = 1;
 			$data[$k]['succ_rate'] = $v['count_failed'] ? round(100 - $v['count_failed'] * 100 / $v['count_all'], 2) : 100;
 			$data[$k]['time_avg'] = $v['count_all'] ? round($v['time_sum'] / $v['count_all'], 5) : 0;
 			$data[$k]['time_failed_avg'] = $v['count_failed'] ? round($v['time_failed_sum'] / $v['count_failed'], 5) : 0;
 			#$ids[$v['type']] = 1;
 			#$ids[$v['app_id']] = 1;
 		}
-		$map = array();
-		if ($ids) {
-			$rs = $table->db->query("select * from `st_string` where `id` in (" . implode(',', array_keys($ids)) . ")")->fetchall();
-			foreach ($rs as $v) {
-				$map[$v['id']] = $v['name'];
-			}
-		}
-		$uri = array();
-		if (isset($map[$host_id])) {
-			$uri = $table->db->query("select * from `st_uri` where `host`='" . $table->db->quote($map[$host_id]) . "'")->fetchall();
-		}
+		$uri = array_rebuild($table->db->query("select * from `st_uri` where `host`='" . $table->db->quote($host_id) . "'")->fetchall(), 'id', 'uri');
 
 		$this->assign('total', $pager->total);
 		$this->assign('pager', $pager->render());
 		$this->assign('data', $data);
-		$this->assign('map', $map);
+		$this->assign('host', $host);
 		$this->assign('uri', $uri);
 		$this->assign('uri_id', $uri_id);
 		$this->display();

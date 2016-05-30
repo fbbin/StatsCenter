@@ -31,7 +31,13 @@ $select = 'count(*) as t_count,sum(http_time) as time_sum,max(http_time) as time
 $rs = $db->query('select * from `st_uri`')->fetchall();
 $uri = array();
 foreach ($rs as $k => $v) {
-	$uri[$v['host'] . '/' . $v['uri']] = 1;
+	$uri[$v['host'] . '/' . $v['uri']] = $v['id'];
+}
+
+$rs = $db->query('select * from `st_host`')->fetchall();
+$host = array();
+foreach ($rs as $k => $v) {
+	$host[$v['name']] = $v['id'];
 }
 
 $rs = $db->query("select $groupby,$select from `st_memtemp` where `id` <= '$max_id' GROUP BY $groupby")->fetchall();
@@ -50,21 +56,23 @@ $fields = array(
 );*/
 
 //字符转换id
-$names = array();
-
 $puts = array();
 $failed = array();
 
 foreach ($rs as $k => $v) {
-	$names["'" . $v['http_host'] . "'"] = 1;
-	$names["'" . $v['http_uri'] . "'"] = 1;
-	$names["'" . $v['http_app'] . "'"] = 1;
+	if (!isset($host[$v['http_host']])) {
+		$db->query("insert into `st_host` (`name`) VALUES ('" . $db->quote($v['http_host']) . "')");
+		$host[$v['http_host']] = $db->lastInsertId();
+	}
+	#$names["'" . $v['http_host'] . "'"] = 1;
+	#$names["'" . $v['http_uri'] . "'"] = 1;
+	#$names["'" . $v['http_app'] . "'"] = 1;
 	$rs[$k]['type'] = $v['http_code'] . '_' . ($v['http_json_parse'] == 1 ? 1 : 0) . '_' . ($v['http_data_code'] == 1 ? 1 : 0);
-	$names["'" . $rs[$k]['type'] . "'"] = 1;
+	#$names["'" . $rs[$k]['type'] . "'"] = 1;
 	$key = $v['http_host'] . '/' . $v['http_uri'];
 	if (!isset($uri[$key])) {
-		$uri[$key] = 1;
-		$db->query("insert into `st_uri` (`uri`,`host`) VALUES ('" . $db->quote($v['http_uri']) . "','" . $db->quote($v['http_host']) . "')");
+		$db->query("insert into `st_uri` (`uri`,`host`) VALUES ('" . $db->quote($v['http_uri']) . "','" . $db->quote($host[$v['http_host']]) . "')");
+		$uri[$key] = $db->lastInsertId();
 	}
 	if (isset($puts[$key])) {
 		$puts[$key]['time_sum'] += $v['time_sum'];
@@ -84,8 +92,8 @@ foreach ($rs as $k => $v) {
 	} else {
 		$puts[$key] = array(
 			'ctime' => $time,
-			'host_id' => $v['http_host'],
-			'uri_id' => $v['http_uri'],
+			'host_id' => $host[$v['http_host']],
+			'uri_id' => $uri[$v['http_uri']],
 			'app_id' => $v['http_app'],
 			'time_sum' => $v['time_sum'],
 			'time_max' => $v['time_max'],
@@ -108,7 +116,7 @@ foreach ($rs as $k => $v) {
 }
 
 $map = array();
-if ($names) {
+/*if ($names) {
 	$map = array_rebuild($db->query("select * from `st_string` where `name` in (" . (implode(',', array_keys($names))) . ")")->fetchall(), 'name', 'id');
 	foreach ($names as $k => $v) {
 		$name = trim($k, "'");
@@ -117,7 +125,7 @@ if ($names) {
 			$map[$name] = $db->lastInsertId();
 		}
 	}
-}
+}*/
 
 $dbFailed = table('st_failed');
 foreach ($puts as $put) {
@@ -131,9 +139,9 @@ foreach ($puts as $put) {
 			$put[$f] = $v[$f];
 		}
 	}*/
-	$key = $put['host_id'] . '/' . $put['uri_id'];
-	$put['host_id'] = $map[$put['host_id']];
-	$put['uri_id'] = $map[$put['uri_id']];
+	/*$key = $put['host_id'] . '/' . $put['uri_id'];
+	$put['host_id'] = $host[$put['host_id']];
+	$put['uri_id'] = $uri[$key];*/
 	$data_id = $dbData->put($put);
 	if (isset($failed[$key])) {
 		foreach ($failed[$key] as $v) {

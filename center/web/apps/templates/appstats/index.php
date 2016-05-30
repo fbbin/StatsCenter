@@ -100,12 +100,12 @@
                                             </form>
                                         </div>
                                         <div class="form-group" style="width: 500px;">
-                                            <select id="interface_id" class="select2">
+                                            <select id="uri_id" class="select2">
                                                 <option value="">所有接口</option>
-                                                <?php foreach ($uri as $m): ?>
-                                                    <option value="<?= $m['id'] ?>"
-                                                        <?php if ($m['id'] == $uri_id) echo 'selected="selected"'; ?> >
-                                                        <?= $m['uri'] ?></option>
+                                                <?php foreach ($uri as $id=>$m): ?>
+                                                    <option value="<?= $id ?>"
+                                                        <?php if ($id == $uri_id) echo 'selected="selected"'; ?> >
+                                                        <?= $m ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -147,8 +147,8 @@
 	                                $bg_color = $td['succ_rate'] > 90 ? "#DFFFDF" : "#FFDFDF";
 	                                ?>
 	                                <tr style="background-color: <?=$bg_color?>;">
-		                                <td><?= $map[$td['host_id']] ?></td>
-		                                <td><?= $map[$td['uri_id']] ?></td>
+		                                <td><?= $host[$td['host_id']] ?></td>
+		                                <td><?= $uri[$td['uri_id']] ?></td>
 		                                <td><?= date('H:i',$td['ctime']-300),'~ ',date('H:i',$td['ctime']) ?></td>
 		                                <td><?= number_format($td['count_all']) ?></td>
 		                                <td><a href="#" style="color: green"><?= number_format($td['count_all']-$td['count_failed']) ?></a></td>
@@ -308,10 +308,8 @@ you can add as many as you like
             StatsG.filter.date_key = window.localStorage.date_key;
             StatsG.go();
         });
-        $("#interface_id").change(function (e) {
-            StatsG.filter.interface_id = e.currentTarget.value.split(':')[0];
-            delete StatsG.filter.page;
-            StatsG.go();
+        $("#uri_id").change(function (e) {
+            window.location.href='';
         });
         $('#btn_last_hour').click(function (e){
             location.href = '/stats/last_hour/?module_id=' + StatsG.filter.module_id;
