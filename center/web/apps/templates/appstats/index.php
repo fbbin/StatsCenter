@@ -146,6 +146,7 @@
                                 <tr>
                                     <th style="width: 300px;">域名</th>
                                     <th style="width: 80px;">接口</th>
+	                                <th style="width: 80px;">时间</th>
                                     <th style="width: 70px;" class="order" data-value="total_count">调用次数</th>
                                     <th style="width: 70px;" class="order" data-value="succ_count">成功次数</th>
                                     <th style="width: 70px;" class="order" data-value="fail_count">失败次数</th>
@@ -165,6 +166,7 @@
 	                                <tr style="background-color: <?=$bg_color?>;">
 		                                <td><?= $map[$td['host_id']] ?></td>
 		                                <td><?= $map[$td['uri_id']] ?></td>
+		                                <td><?= date('H:i',$td['ctime']-300),'~ ',date('H:i',$td['ctime']) ?></td>
 		                                <td><?= number_format($td['count_all']) ?></td>
 		                                <td><a href="#" style="color: green"><?= number_format($td['count_all']-$td['count_failed']) ?></a></td>
 		                                <?php if($td['count_failed'] > 0): ?>
