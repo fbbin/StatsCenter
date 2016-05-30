@@ -360,9 +360,10 @@ class Setting extends App\LoginController
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
         $gets['order'] = 'id desc';
-        if (!empty($_GET['module_id']))
+        if (!empty($_POST['module_id']))
         {
-            $gets['module_id'] = intval($_GET['module_id']);
+            $gets['module_id'] = intval($_POST['module_id']);
+            $_GET['module_id'] = $gets['module_id'];
         }
         $data = table('interface')->gets($gets,$pager);
         foreach ($data as $k => $v)
@@ -815,6 +816,8 @@ class Setting extends App\LoginController
         $data['username'] = trim($_POST['username']);
         //微信号
         $data['weixinid'] = trim($_POST['weixinid']);
+        //钉钉ID
+        $data['dingdingid'] = trim($_POST['dingdingid']);
         //手机号
         $data['mobile'] = trim($_POST['mobile']);
         // NOTE: 写死0，貌似目前没用到
@@ -841,6 +844,7 @@ class Setting extends App\LoginController
             $user['realname'] = '';
             $user['username'] = '';
             $user['weixinid'] = '';
+            $user['dingdingid'] = '';
             $user['usertype'] = '2';
             $this->assign('gitAccount', false);
         }
@@ -861,6 +865,7 @@ class Setting extends App\LoginController
         $form['realname'] = Swoole\Form::input('realname', $user['realname']);
         $form['username'] = Swoole\Form::input('username', $user['username']);
         $form['weixinid'] = Swoole\Form::input('weixinid', $user['weixinid']);
+        $form['dingdingid'] = Swoole\Form::input('dingdingid', $user['dingdingid']);
         $form['usertype'] = Swoole\Form::select('usertype', $this->config['usertype'], $user['usertype'], null, array('class' => 'select2'));
         $form['id'] = Swoole\Form::hidden('id', $user['id']);
         return $form;
