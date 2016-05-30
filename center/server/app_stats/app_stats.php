@@ -97,6 +97,12 @@ foreach ($rs as $k => $v) {
 		if ($v['http_code'] != 200 || $v['http_json_parse'] != 1 || $v['http_data_code'] != 1) {
 			$puts[$key]['time_failed_sum'] += $v['time_sum'];
 			$puts[$key]['count_failed'] += $v['t_count'];
+			$failed[$key][] = array(
+				'http_code' => $v['http_code'],
+				'json_code' => $v['http_json_parse'],
+				'data_code' => $v['http_data_code'],
+				't_count' => $v['t_count']
+			);
 		}
 	}
 }
@@ -137,5 +143,5 @@ foreach ($puts as $put) {
 	}
 }
 
-$db->query("delete from `st_memtemp` where `id` <= '$max_id'");
+#$db->query("delete from `st_memtemp` where `id` <= '$max_id'");
 echo "End .sptime:" . (microtime(true) - $start_time), "\n";
