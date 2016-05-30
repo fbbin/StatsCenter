@@ -143,5 +143,5 @@ foreach ($puts as $put) {
 	}
 }
 
-#$db->query("delete from `st_memtemp` where `id` <= '$max_id'");
+$db->query("delete from `st_memtemp` where `id` <= '$max_id'");
 echo "End .sptime:" . (microtime(true) - $start_time), "\n";
