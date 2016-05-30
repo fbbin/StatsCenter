@@ -815,6 +815,8 @@ class Setting extends App\LoginController
         $data['username'] = trim($_POST['username']);
         //微信号
         $data['weixinid'] = trim($_POST['weixinid']);
+        //钉钉ID
+        $data['dingdingid'] = trim($_POST['dingdingid']);
         //手机号
         $data['mobile'] = trim($_POST['mobile']);
         // NOTE: 写死0，貌似目前没用到
@@ -841,6 +843,7 @@ class Setting extends App\LoginController
             $user['realname'] = '';
             $user['username'] = '';
             $user['weixinid'] = '';
+            $user['dingdingid'] = '';
             $user['usertype'] = '2';
             $this->assign('gitAccount', false);
         }
@@ -861,6 +864,7 @@ class Setting extends App\LoginController
         $form['realname'] = Swoole\Form::input('realname', $user['realname']);
         $form['username'] = Swoole\Form::input('username', $user['username']);
         $form['weixinid'] = Swoole\Form::input('weixinid', $user['weixinid']);
+        $form['dingdingid'] = Swoole\Form::input('dingdingid', $user['dingdingid']);
         $form['usertype'] = Swoole\Form::select('usertype', $this->config['usertype'], $user['usertype'], null, array('class' => 'select2'));
         $form['id'] = Swoole\Form::hidden('id', $user['id']);
         return $form;
