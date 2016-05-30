@@ -73,7 +73,7 @@ class Appstats extends \App\LoginController {
 		$pager = null;
 		$data = $table->gets($gets, $pager);
 
-		$ids = array();
+		$ids = array($host_id => 1);
 		foreach ($data as $k => $v) {
 			$ids[$v['host_id']] = 1;
 			$ids[$v['uri_id']] = 1;
@@ -100,6 +100,7 @@ class Appstats extends \App\LoginController {
 		$this->assign('data', $data);
 		$this->assign('map', $map);
 		$this->assign('uri', $uri);
+		$this->assign('uri_id', $uri_id);
 		$this->display();
 	}
 

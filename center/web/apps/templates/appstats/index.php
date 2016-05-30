@@ -107,7 +107,7 @@
                                                             <input type="text" name="interface_name" id="interface_name"
                                                                    value="<?= $this->value($_GET, 'interface_name') ?>"
                                                                    placeholder="接口名称">
-                                                    </div> 
+                                                    </div>
                                                 </div>
                                                 <div class='form-group'>
                                                     <button type="submit" id='submit' class='btn btn-default'
@@ -121,7 +121,7 @@
                                                 <option value="">所有接口</option>
                                                 <?php foreach ($uri as $m): ?>
                                                     <option value="<?= $m['id'] ?>"
-                                                        <?php if ($m['id'] == $_GET['uri_id']) echo 'selected="selected"'; ?> >
+                                                        <?php if ($m['id'] == $uri_id) echo 'selected="selected"'; ?> >
                                                         <?= $m['name'] ?></option>
                                                 <?php endforeach; ?>
                                             </select>
@@ -166,7 +166,7 @@
 		                                <td><?= $map[$td['host_id']] ?></td>
 		                                <td><?= $map[$td['uri_id']] ?></td>
 		                                <td><?= number_format($td['count_all']) ?></td>
-		                                <td><a href="#" style="color: green"><?= number_format($td['count_all']) ?></a></td>
+		                                <td><a href="#" style="color: green"><?= number_format($td['count_all']-$td['count_failed']) ?></a></td>
 		                                <?php if($td['count_failed'] > 0): ?>
 		                                <td><a href="#" style="color: red"><?= number_format($td['count_failed']) ?></a></td>
 		                                <?php else: ?>
