@@ -360,9 +360,10 @@ class Setting extends App\LoginController
         $gets['page'] = !empty($_GET['page'])?$_GET['page']:1;
         $gets['pagesize'] = 20;
         $gets['order'] = 'id desc';
-        if (!empty($_GET['module_id']))
+        if (!empty($_POST['module_id']))
         {
             $gets['module_id'] = intval($_GET['module_id']);
+            $_GET['module_id'] = $gets['module_id'];
         }
         $data = table('interface')->gets($gets,$pager);
         foreach ($data as $k => $v)

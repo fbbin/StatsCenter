@@ -83,6 +83,14 @@
                                                                placeholder="接口名称">
                                                 </div>
                                             </div>
+                                            <div class="form-group" style="width: 200px;">
+                                                <div class="form-group">
+                                                    <label class="input" style="height: 34px;">
+                                                        <input type="text" name="module_id" id="module_id"
+                                                               value="<?= $this->value($_GET, 'module_id') ?>"
+                                                               placeholder="模块ID">
+                                                </div>
+                                            </div>
                                             <div class='form-group' style="padding-left: 100px">
                                                 <button class='btn btn-success' style='padding:6px 12px'>提交查询</button>
                                             </div>
