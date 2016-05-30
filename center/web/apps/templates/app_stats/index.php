@@ -107,7 +107,7 @@
                                                             <input type="text" name="interface_name" id="interface_name"
                                                                    value="<?= $this->value($_GET, 'interface_name') ?>"
                                                                    placeholder="接口名称">
-                                                    </div>
+                                                    </div> 
                                                 </div>
                                                 <div class='form-group'>
                                                     <button type="submit" id='submit' class='btn btn-default'
