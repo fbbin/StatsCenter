@@ -144,9 +144,9 @@
                             <table class="table table-bordered table-hover dataTables_wrapper">
                                 <thead>
                                 <tr>
-                                    <th style="width: 300px;">域名</th>
-                                    <th style="width: 80px;">接口</th>
-	                                <th style="width: 80px;">时间</th>
+                                    <th style="width: 150px;">域名</th>
+                                    <th>接口</th>
+	                                <th style="width: 120px;">时间</th>
                                     <th style="width: 70px;" class="order" data-value="total_count">调用次数</th>
                                     <th style="width: 70px;" class="order" data-value="succ_count">成功次数</th>
                                     <th style="width: 70px;" class="order" data-value="fail_count">失败次数</th>
