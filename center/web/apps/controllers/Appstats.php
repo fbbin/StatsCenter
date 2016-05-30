@@ -17,30 +17,42 @@ class Appstats extends \App\LoginController {
 		'30%'
 	);
 
+	static $hosts = array(
+		1 => 'chelun.eclicks.cn',
+		167 => 'chelun-pre.eclicks.cn',
+		328 => 'chaweizhang.eclicks.cn',
+		345 => 'common.auto98.com'
+	);
+
 	function home() {
 		$this->display();
 	}
 
 	function index() {
+		$host_id = isset($_GET['h']) ? intval($_GET['h']) : 1;
+		$uri_id = isset($_GET['uri']) ? intval($_GET['uri']) : 0;
 		$this->getInterfaceInfo();
 		$table = table('st_data', 'app_stats');
-		$table->select = "`host_id`,`uri_id`,sum(time_sum) as time_sum,sum(if(`type`<>218,time_sum,0)) as fail_time_sum,sum(t_count) as t_count,sum(if(`type`<>218,t_count,0)) as faild_t_count";
+		#$table->select = "`host_id`,`uri_id`,sum(time_sum) as time_sum,sum(if(`type`<>218,time_sum,0)) as fail_time_sum,sum(t_count) as t_count,sum(if(`type`<>218,t_count,0)) as faild_t_count";
 		$gets = [
 			#'module_id' => $_GET['module_id'],
-			#'order' => 'id',
-			'group' => "`host_id`,`uri_id`,`ctime`",
+			'order' => 'ctime desc',
+			'host_id' => $host_id,
 			'pagesize' => 20,
 			'page' => empty($_GET['page']) ? 1 : intval($_GET['page']),
 		];
+		if ($uri_id) {
+			$gets['uri_id'] = $uri_id;
+		}
 
-		if (!empty($_GET['orderby'])) {
+		/*if (!empty($_GET['orderby'])) {
 			$gets['order'] = $_GET['orderby'];
 			if (empty($_GET['desc'])) {
 				$gets['order'] .= ' asc';
 			} else {
 				$gets['order'] .= ' desc';
 			}
-		}
+		}*/
 
 		/*if (isset($_GET['interface_name']))
 		{
@@ -60,12 +72,16 @@ class Appstats extends \App\LoginController {
 		 */
 		$pager = null;
 		$data = $table->gets($gets, $pager);
+
 		$ids = array();
-		foreach ($data as $v) {
+		foreach ($data as $k => $v) {
 			$ids[$v['host_id']] = 1;
 			$ids[$v['uri_id']] = 1;
-			$ids[$v['type']] = 1;
-			$ids[$v['app_id']] = 1;
+			$data[$k]['succ_rate'] = $v['count_failed'] ? round(100 - $v['count_failed'] * 100 / $v['count_all'], 2) : 100;
+			$data[$k]['time_avg'] = $v['count_all'] ? round($v['time_sum'] / $v['count_all'], 5) : 0;
+			$data[$k]['time_failed_avg'] = $v['count_failed'] ? round($v['time_failed_sum'] / $v['count_failed'], 5) : 0;
+			#$ids[$v['type']] = 1;
+			#$ids[$v['app_id']] = 1;
 		}
 		$map = array();
 		if ($ids) {
@@ -74,10 +90,16 @@ class Appstats extends \App\LoginController {
 				$map[$v['id']] = $v['name'];
 			}
 		}
+		$uri = array();
+		if (isset($map[$host_id])) {
+			$uri = $table->db->query("select * from `st_uri` where `host`='" . $table->db->quote($map[$host_id]) . "'")->fetchall();
+		}
+
 		$this->assign('total', $pager->total);
 		$this->assign('pager', $pager->render());
 		$this->assign('data', $data);
 		$this->assign('map', $map);
+		$this->assign('uri', $uri);
 		$this->display();
 	}
 

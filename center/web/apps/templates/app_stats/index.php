@@ -116,23 +116,13 @@
                                                 </div>
                                             </form>
                                         </div>
-                                        <div class="form-group inline-group" style="width: 300px;">
-                                            <select class="select2" id="module_id">
-                                                <option value="">所有模块</option>
-                                                <?php foreach ($modules as $m): ?>
-                                                    <option value="<?= $m['id'] ?>: <?= $m['name'] ?>"
-                                                        <?php if ($m['id'] == $_GET['module_id']) echo 'selected="selected"'; ?> ><?= $m['id'] ?>
-                                                        : <?= $m['name'] ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
                                         <div class="form-group" style="width: 500px;">
                                             <select id="interface_id" class="select2">
                                                 <option value="">所有接口</option>
-                                                <?php foreach ($interfaces as $m): ?>
-                                                    <option value="<?= $m['id'] ?>: <?= (empty($m['alias']) ? $m['name'] : $m['alias']) ?>"
-                                                        <?php if ($m['id'] == $_GET['interface_id']) echo 'selected="selected"'; ?> >
-                                                        <?= $m['id'] ?>: <?= (empty($m['alias']) ? $m['name'] : $m['alias']) ?></option>
+                                                <?php foreach ($uri as $m): ?>
+                                                    <option value="<?= $m['id'] ?>"
+                                                        <?php if ($m['id'] == $_GET['uri_id']) echo 'selected="selected"'; ?> >
+                                                        <?= $m['name'] ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -175,36 +165,20 @@
 	                                <tr style="background-color: <?=$bg_color?>;">
 		                                <td><?= $map[$td['host_id']] ?></td>
 		                                <td><?= $map[$td['uri_id']] ?></td>
-		                                <td><?= number_format($td['t_count']) ?></td>
-		                                <?php if (isset($td['time_key']) and !empty($td['time_key'])) {?>
-			                                <td><a href="javascript: StatsG.openSuccPage(<?=$td['module_id']?>,<?=$td['interface_id']?>,<?=$td['time_key']?>)" style="color: green">
-					                                <?= number_format($td['succ_count']) ?></a></td>
-			                                <td><a href="javascript: StatsG.openFailPage(<?=$td['module_id']?>,<?=$td['interface_id']?>,<?=$td['time_key']?>)"
-			                                       style="color: <?=$td['fail_count'] > 0? "red" :'black'?>"><?= number_format($td['fail_count']) ?></a></td>
-		                                <?php } else { ?>
-			                                <td><a href="javascript: StatsG.openSuccPage(<?=$td['module_id']?>,<?=$td['interface_id']?>)" style="color: green">
-					                                <?= number_format($td['succ_count']) ?></a></td>
-			                                <td><a href="javascript: StatsG.openFailPage(<?=$td['module_id']?>,<?=$td['interface_id']?>)"
-			                                       style="color: <?=$td['fail_count'] > 0? "red" :'black'?>"><?= number_format($td['fail_count']) ?></a></td>
-		                                <?php } ?>
-
+		                                <td><?= number_format($td['count_all']) ?></td>
+		                                <td><a href="#" style="color: green"><?= number_format($td['count_all']) ?></a></td>
+		                                <?php if($td['count_failed'] > 0): ?>
+		                                <td><a href="#" style="color: red"><?= number_format($td['count_failed']) ?></a></td>
+		                                <?php else: ?>
+	                                    <td><a href="#" style="color: black"><?= number_format($td['count_failed']) ?></a></td>
+	                                    <?php endif ?>
 		                                <td style="color: green"><?= $td['succ_rate'] ?>%</td>
 		                                <td><?= $td['time_max'] ?>ms</td>
 		                                <td><?= $td['time_min'] ?>ms</td>
-		                                <td>ms</td>
-		                                <td><?= $td['avg_fail_time'] ?>ms</td>
+		                                <td><?= $td['time_avg'] ?>ms</td>
+		                                <td><?= $td['time_failed_avg'] ?>ms</td>
 		                                <td>
-			                                <?php if (!$this->isActiveMenu('stats', 'detail')):?><a href="/stats/detail/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>"">查看明细</a>
-            &nbsp;&nbsp;|&nbsp;&nbsp; <?php endif; ?>
-			                                <?php if (isset($td['time_key']) and !empty($td['time_key'])) {?>
-				                                <a href="/stats/history/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">历史数据对比</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-				                                <a href="/stats/client/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>&time_key=<?= $td['time_key']?>">主调明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-				                                <a href="/stats/server/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>&time_key=<?= $td['time_key']?>">被调明细</a>
-			                                <?php } else { ?>
-				                                <a href="/stats/history/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">历史数据对比</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-				                                <a href="/stats/client/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">主调明细</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-				                                <a href="/stats/server/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">被调明细</a>
-			                                <?php } ?>
+				                                <a href="/stats/history/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">历史数据对比</a>
 		                                </td>
 	                                </tr>
                                 <?php endforeach; ?>
