@@ -96,8 +96,10 @@ class Appstats extends \App\LoginController {
 		$ret_code = [];
 		foreach ($data as $d) {
 			$ret_code[] = $d['http_code'] == '200'
-				? ["http_code:" . $d['http_code'] . " , json_code:" . $d['json_code'] . " , data_code: " . $d['data_code'] => $d['t_count']]
-				: ["http_code:" . $d['http_code'] => $d['t_count']];
+				? ($d['json_code'] == 1
+					? ["数据错误(" . $d['data_code'] . ")" => $d['t_count']]
+					: ["JSON解析失败(" . $d['json_code'] . ")" => $d['t_count']])
+				: ["服务器错误(" . $d['http_code'] . "):" => $d['t_count']];
 		}
 
 		$this->assign('ret_code', $ret_code);
