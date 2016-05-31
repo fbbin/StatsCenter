@@ -152,7 +152,7 @@
 									?>
 									<tr style="background-color: <?= $bg_color ?>;">
 										<td><?= $host[$td['host_id']] ?></td>
-										<td><?= $uri[$td['uri_id']] ?></td>
+										<td><a href="<?php echo getQueryString('uri'),'uri=',$td['uri_id'] ?>"><?= $uri[$td['uri_id']] ?></a></td>
 										<td><?= date('H:i', $td['ctime'] - 300), '~ ', date('H:i', $td['ctime']) ?></td>
 										<td><?= number_format($td['count_all']) ?></td>
 										<td><span style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></span>
@@ -164,7 +164,7 @@
 											<td><span style="color: black"><?= number_format($td['count_failed']) ?></span>
 											</td>
 										<?php endif ?>
-										<td style="color: <?php echo ($td['succ_rate'] > 90) ? "green" : "red" ?>"><?= $td['succ_rate'] ?>
+										<td style="color: <?php echo ($td['succ_rate'] ==100) ? "green" : "red" ?>"><?= $td['succ_rate'] ?>
 											%
 										</td>
 										<td><?= $td['time_max'] ?>ms</td>
