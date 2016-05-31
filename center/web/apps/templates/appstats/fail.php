@@ -166,7 +166,7 @@
 					var show, o;
 					for (o in ret_code_result) {
 						var code = o > Math.pow(2, 31) ? o - Math.pow(2, 32) : o;
-						show = '错误码：' + code + ' (' + ret_code_result[o] + '次)';
+						show = code + ' (' + ret_code_result[o] + '次)';
 						option1.legend.data.push(show);
 						option1.series[0].data.push({value: ret_code_result[o], name: show})
 					}
