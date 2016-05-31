@@ -158,7 +158,7 @@
 										<td><span style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></span>
 										</td>
 										<?php if ($td['count_failed'] > 0): ?>
-											<td><a href="/appstats/fail?id=<?php echo $td['id'] ?>"
+											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
 											       style="color: red"><?= number_format($td['count_failed']) ?></a></td>
 										<?php else: ?>
 											<td><span style="color: black"><?= number_format($td['count_failed']) ?></span>

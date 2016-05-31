@@ -19,9 +19,7 @@ class Appstats extends \App\LoginController {
 
 	static $hosts = array(
 		1 => 'chelun.eclicks.cn',
-		167 => 'chelun-pre.eclicks.cn',
-		328 => 'chaweizhang.eclicks.cn',
-		345 => 'common.auto98.com'
+		2 => 'chelun-pre.eclicks.cn'
 	);
 
 	function home() {
@@ -87,6 +85,7 @@ class Appstats extends \App\LoginController {
 	}
 
 	function fail() {
+		error_reporting(E_ALL & ~E_NOTICE);
 		$data_id = empty($_GET['id']) ? 0 : intval($_GET['id']);
 
 		$gets['order'] = "id";
