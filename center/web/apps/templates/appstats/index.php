@@ -134,14 +134,14 @@
 									<th>域名</th>
 									<th>接口</th>
 									<th>时间</th>
-									<th class="order" data-value="total_count">调用次数</th>
-									<th class="order" data-value="succ_count">成功次数</th>
-									<th class="order" data-value="fail_count">失败次数</th>
+									<th class="order" data-value="count_all">调用次数</th>
+									<th>成功次数</th>
+									<th class="order" data-value="count_fail">失败次数</th>
 									<th>成功率</th>
 									<th>耗时最大值</th>
 									<th>耗时最小值</th>
-									<th class="order" data-value="avg_time">平均耗时</th>
-									<th class="order" data-value="avg_fail_time">失败平均耗时</th>
+									<th>平均耗时</th>
+									<th>失败平均耗时</th>
 									<th>操作</th>
 								</tr>
 								</thead>
@@ -277,6 +277,9 @@ you can add as many as you like
 	$(function () {
 		$('.order').click(function (e) {
 			var o = $(e.currentTarget);
+			var $desc = (o.attr('data-value') == "<?php echo $_GET['order'] ?>") ? "<?php echo $_GET['desc']?0:1 ?>" : "1";
+			window.location.href="<?php echo getQueryString(["order",'desc']) ?>order="+o.attr('data-value')+"&desc="+$desc;
+			/*var o = $(e.currentTarget);
 			var orderby = o.attr('data-value');
 			if (orderby != TableOrder.orderby) {
 				StatsG.filter.orderby = orderby;
@@ -285,13 +288,13 @@ you can add as many as you like
 				StatsG.filter.desc = 1 - TableOrder.desc;
 			}
 			delete StatsG.filter.page;
-			StatsG.go();
+			StatsG.go();*/
 		});
 
 		$('.order').each(function (_o, e) {
 			var o = $(e);
-			if (o.attr('data-value') == TableOrder.orderby) {
-				if (TableOrder.desc) {
+			if (o.attr('data-value') == '<?php echo $_GET['order'] ?>') {
+				if ('<?php echo $_GET['desc']?1:'' ?>') {
 					o.addClass('order_desc');
 				} else {
 					o.addClass('order_asc');

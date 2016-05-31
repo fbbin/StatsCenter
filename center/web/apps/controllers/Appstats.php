@@ -33,8 +33,15 @@ class Appstats extends \App\LoginController {
 		$uri_id = !empty($_GET['uri']) ? intval($_GET['uri']) : 0;
 		$date = strtotime(!empty($_GET['date_key']) ? $_GET['date_key'] : date("Y-m-d"));
 		$search = isset($_GET['search']) ? $_GET['search'] : '';
+		$order = isset($_GET['order']) ? $_GET['order'] : '';
 		$this->getInterfaceInfo();
 		$table = table('st_data', 'app_stats');
+
+		$orders = [
+			'count_all' => 'count_all',
+			'count_fail' => 'count_failed'
+		];
+
 
 		$host = array_rebuild($table->db->query("select * from `st_host`")->fetchall(), 'id', 'name');
 		$uri = array_rebuild($table->db->query("select * from `st_uri` where `host`='" . $table->db->quote($host_id) . "'")->fetchall(), 'id', 'uri');
@@ -46,6 +53,9 @@ class Appstats extends \App\LoginController {
 			'pagesize' => 20,
 			'page' => empty($_GET['page']) ? 1 : intval($_GET['page']),
 		];
+		if (isset($orders[$order])) {
+			$gets['order'] = $orders[$order] . (empty($_GET['desc']) ? "" : " desc");
+		}
 		$gets['where'][] = "`host_id`='$host_id'";
 		$gets['where'][] = "`ctime`>'$date' and `ctime`<='" . ($date + 86400) . "'";
 		if ($uri_id) {
