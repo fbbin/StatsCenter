@@ -34,11 +34,12 @@ class Appstats extends \App\LoginController {
 		$host_id = !empty($_GET['h']) ? intval($_GET['h']) : 1;
 		$uri_id = !empty($_GET['uri']) ? intval($_GET['uri']) : 0;
 		$date = strtotime(!empty($_GET['date_key']) ? $_GET['date_key'] : date("Y-m-d"));
+		$search = isset($_GET['search']) ? $_GET['search'] : '';
 		$this->getInterfaceInfo();
 		$table = table('st_data', 'app_stats');
 
-
 		$host = array_rebuild($table->db->query("select * from `st_host`")->fetchall(), 'id', 'name');
+		$uri = array_rebuild($table->db->query("select * from `st_uri` where `host`='" . $table->db->quote($host_id) . "'")->fetchall(), 'id', 'uri');
 
 		#$table->select = "`host_id`,`uri_id`,sum(time_sum) as time_sum,sum(if(`type`<>218,time_sum,0)) as fail_time_sum,sum(t_count) as t_count,sum(if(`type`<>218,t_count,0)) as faild_t_count";
 		$gets = [
@@ -48,10 +49,19 @@ class Appstats extends \App\LoginController {
 			'page' => empty($_GET['page']) ? 1 : intval($_GET['page']),
 		];
 		$gets['where'][] = "`host_id`='$host_id'";
+		$gets['where'][] = "`ctime`>'$date' and `ctime`<='" . ($date + 86400) . "'";
 		if ($uri_id) {
-			$gets['where'][] = "`uri_id`=`'$uri_id'";
+			$gets['where'][] = "`uri_id`='$uri_id'";
 		}
-		$gets['where'][] = "`ctime`>'$date' and `ctime`<'" . ($date + 86400) . "'";
+		if ($search) {
+			$ids = [];
+			foreach ($uri as $k => $v) {
+				if (strpos($v, $search) !== false) {
+					$ids[] = $k;
+				}
+			}
+			$gets['where'][] = $ids ? "uri_id in (" . implode(',', $ids) . ")" : "1>2";
+		}
 
 		$pager = null;
 		#$table->db->debug = 1;
@@ -66,7 +76,6 @@ class Appstats extends \App\LoginController {
 			#$ids[$v['type']] = 1;
 			#$ids[$v['app_id']] = 1;
 		}
-		$uri = array_rebuild($table->db->query("select * from `st_uri` where `host`='" . $table->db->quote($host_id) . "'")->fetchall(), 'id', 'uri');
 
 		$this->assign('total', $pager->total);
 		$this->assign('pager', $pager->render());
@@ -77,60 +86,23 @@ class Appstats extends \App\LoginController {
 		$this->display();
 	}
 
-	function detail() {
-		$this->assign('width', self::$width);
-		$this->getInterfaceInfo();
+	function fail() {
+		$data_id = empty($_GET['id']) ? 0 : intval($_GET['id']);
 
-		$moduleId = intval($_GET['module_id']);
-		$moduleInfo = table('module')->get($moduleId)->get();
-		if (empty($moduleInfo)) {
-			$this->http->status(404);
-			return "不存在的模块";
-		}
+		$gets['order'] = "id";
+		$gets['where'] = ["`data_id`='" . $data_id . "'"];
 
-		$interfaceId = intval($_GET['interface_id']);
-		$interfaceInfo = table('interface')->get($interfaceId)->get();
-
-		if (empty($interfaceInfo)) {
-			$this->http->status(404);
-			return "不存在的接口";
-		}
-
-		$table = table('stats_' . str_replace('-', '', $_GET['date_key']));
-		$pager = null;
-
-		$gets = [
-			'module_id' => $_GET['module_id'],
-			'interface_id' => intval($_GET['interface_id']),
-			'order' => 'id asc',
+		$data = table('st_failed', 'app_stats')->gets($gets);
+		$ret_code = [
+			['200' => 5],
+			['204' => 3],
+			['202' => 5]
 		];
-
-		$this->filterHour($gets);
-
-		$data = $table->gets($gets, $pager);
-		foreach ($data as &$d) {
-			if ($d['total_count'] == 0) {
-				$d['succ_rate'] = '100';
-				$d['succ_count'] = 0;
-			} else {
-				$d['succ_count'] = $d['total_count'] - $d['fail_count'];
-				$d['succ_rate'] = round(($d['succ_count'] / $d['total_count']) * 100, 2);
-				$d['time_str'] = App\StatsData::getTimerStr($d['time_key']) . ' ~ ' . App\StatsData::getTimerStr($d['time_key'] + 1);
-			}
-			$d['interface_name'] = $interfaceInfo['name'];
+		foreach ($data as $d) {
+			$ret_code[] = [$d['']];
 		}
-		$this->assign('data', $data);
-		$this->display('stats/detail_interface.php');
-	}
 
-	/**
-	 * 最近一小时的统计数据，只能使用JS
-	 */
-	function last_hour() {
-		if (empty($_GET['hour_start'])) {
-			$_GET['hour_start'] = App\StatsData::fillZero4Time(date('H', time() - 3600));
-		}
-		$this->getInterfaceInfo();
+		$this->assign('ret_code', $ret_code);
 		$this->display();
 	}
 
@@ -175,218 +147,4 @@ class Appstats extends \App\LoginController {
 		$this->assign('modules', $modules);
 	}
 
-	function getInterface() {
-		$module_id = (int)$_GET['module_id'];
-		$gets['select'] = 'id, name';
-		$gets['module_id'] = $module_id;
-		$modules = table('interface')->getMap($gets, 'name');
-		$return = array();
-		if (!empty($modules)) {
-			$return['status'] = 200;
-			$return['data'] = $modules;
-		} else {
-			$return['status'] = 400;
-		}
-		return json_encode($return, JSON_NUMERIC_CHECK);
-	}
-
-	function detail_data() {
-		if (empty($_GET['interface_id']) or empty($_GET['module_id']) or empty($_GET['type'])) {
-			return "需要interface_id/module_id参数";
-		}
-		$param = $_GET;
-		unset($param['type']);
-		$param['select'] = 'ip, interface_id, time_key, total_count, fail_count, total_time, total_fail_time, max_time, min_time';
-
-		$date_key = empty($param['date_key']) ? date('Y-m-d') : $param['date_key'];
-		$table = $this->getTableName($date_key, $_GET['type'] == 'server' ? 1 : 2);
-		$data = table($table)->gets($param);
-
-		return json_encode($data);
-	}
-
-	protected function filterHour(&$param) {
-		if (!empty($_GET['hour_start'])) {
-			$param['where'][] = 'time_key >= ' . (intval($_GET['hour_start']) * 12);
-		}
-		if (!empty($_GET['hour_end'])) {
-			$param['where'][] = 'time_key < ' . (intval($_GET['hour_end']) * 12);
-		}
-	}
-
-	function client() {
-		$_GET['type'] = 'client';
-		$this->assign('force_reload', true);
-		$this->getInterfaceInfo();
-		$this->display('stats/detail_ip.php');
-	}
-
-	function server() {
-		$_GET['type'] = 'server';
-		$this->assign('force_reload', true);
-		$this->getInterfaceInfo();
-		$this->display('stats/detail_ip.php');
-	}
-
-	function getTableName($date_key, $type = 3) {
-		$table_prefix = 'stats';
-		switch ($type) {
-			case 1:
-				$table_prefix .= '_server';
-				break;
-			case 2:
-				$table_prefix .= '_client';
-				break;
-			default:
-				break;
-		}
-		return $table_prefix . '_' . str_replace('-', '', $date_key);
-	}
-
-	function fail() {
-		$gets['interface_id'] = $_GET['interface_id'];
-		$gets['module_id'] = $_GET['module_id'];
-		$table = $this->getTableName($_GET['date_key']);
-
-		if (!empty($_GET['time_key']) or $_GET['time_key'] == '0') {
-			$gets['time_key'] = $_GET['time_key'];
-		}
-		$gets['select'] = 'time_key, ret_code, fail_server';
-		$data = table($table)->gets($gets);
-		$ret_code = $fail_server = array();
-		foreach ($data as $d) {
-			//$d['time_key']
-			$ret_code[] = json_decode($d['ret_code'], true);
-			$fail_server[] = json_decode($d['fail_server'], true);
-		}
-		$this->assign('ret_code', $ret_code);
-		$this->assign('fail_server', $fail_server);
-		$this->display();
-	}
-
-	function succ() {
-		$gets['interface_id'] = $_GET['interface_id'];
-		$gets['module_id'] = $_GET['module_id'];
-		$table = $this->getTableName($_GET['date_key']);
-		if (!empty($_GET['time_key']) or $_GET['time_key'] == '0') {
-			$gets['time_key'] = $_GET['time_key'];
-		}
-		$gets['select'] = 'time_key, succ_ret_code, succ_server';
-		$data = table($table)->gets($gets);
-		$ret_code = $fail_server = array();
-		foreach ($data as $d) {
-			//$d['time_key']
-			$ret_code[] = json_decode($d['succ_ret_code'], true);
-			$succ_server[] = json_decode($d['succ_server'], true);
-		}
-		$this->assign('succ_ret_code', $ret_code);
-		$this->assign('succ_server', $succ_server);
-		$this->display();
-	}
-
-	function history_data() {
-		if (empty($_GET['module_id']) or empty($_GET['interface_id'])) {
-			return $this->message(5001, "require module_id and interface_id");
-		}
-		$param = $_GET;
-
-		$param['date_start'] = !empty($_GET['date_start']) ? $_GET['date_start'] : date('Y-m-d');
-		$param['date_end'] = !empty($_GET['date_end']) ? $_GET['date_end'] : date('Y-m-d', time() - 86400);
-		$param['date_key'] = $_GET['date_start'];
-
-		$d1 = $this->data($param, false, false);
-
-		$param['date_key'] = $_GET['date_end'];
-		$d2 = $this->data($param, false, false);
-
-		return json_encode(array(
-			'data1' => $d1,
-			'data2' => $d2
-		));
-	}
-
-	function data($param = array(), $ret_json = true, $get_interface = true) {
-		//Swoole\Error::dbd();
-		if (count($param) < 1) {
-			$param = $_GET;
-		}
-		$ifs = array();
-		if ($get_interface) {
-			if (!empty($_GET['module_id'])) {
-				$gets['module_id'] = intval($_GET['module_id']);
-				$sql = "select id,name,alias from interface";
-				$ifs = $this->db->query($sql)->fetchall();
-			} else {
-				$ifs = table('interface')->all()->fetchall();
-			}
-		}
-
-		if (!empty($_GET['interface_id'])) {
-			$gets['interface_id'] = intval($_GET['interface_id']);
-			$ret['interface'] = $ifs;
-		} else {
-			$ids = array();
-			foreach ($ifs as $if) {
-				$ids[] = $if['id'];
-			}
-			//$gets['in'] = array('interface_id', join(',', $ids));
-			$ret['interface'] = $ifs;
-		}
-
-		$gets['select'] = 'interface_id, module_id, time_key, total_count, fail_count, total_time, total_fail_time, max_time, min_time';
-
-		if (!empty($param['hour_start'])) {
-			$gets['where'][] = 'time_key >= ' . (intval($param['hour_start']) * 12);
-			$hour_start = $param['hour_start'] . ':00';
-			unset($param['hour_start']);
-		} else {
-			$hour_start = '00:00';
-		}
-
-		$date_key = empty($param['date_key']) ? date('Y-m-d') : $param['date_key'];
-		$table = $this->getTableName($date_key);
-
-		if (!empty($param['hour_end'])) {
-			$gets['where'][] = 'time_key < ' . intval($param['hour_end'] + 1) * 12;
-			$hour_end = $param['hour_end'] . ':59';
-			unset($param['hour_end']);
-		} else {
-			$hour_end = '23:59';
-		}
-
-		$data = table($table)->gets($gets);
-		if (!empty($data)) {
-			$ret['status'] = 200;
-		} else {
-			$ret['status'] = 400;
-		}
-
-		$ret['stats'] = $data;
-		$ret['date'] = $date_key;
-		$ret['time_str'] = $hour_start . ' ~ ' . $hour_end;
-
-		$this->http->header('Content-Type', 'application/json');
-		return $ret_json ? json_encode($ret, JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE) : $ret;
-	}
-
-	function modules() {
-		//$this->db->debug = true;
-		if (is_numeric($_GET['q'])) {
-			$gets['id'] = $_GET['q'];
-		} else {
-			$gets['like'] = array(
-				'name',
-				$_GET['q'] . '%'
-			);
-		}
-		$gets['select'] = 'id,name';
-		$modules = table('module')->gets($gets);
-		return json_encode($modules);
-	}
-
-	function history() {
-		$this->assign('width', self::$width);
-		$this->getInterfaceInfo();
-		$this->display('stats/history.php');
-	}
 }

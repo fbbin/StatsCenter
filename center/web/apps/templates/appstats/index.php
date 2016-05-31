@@ -92,8 +92,8 @@
 												<div class="form-group">
 													<div class="form-group">
 														<label class="input">
-															<input type="text" name="interface_name" id="interface_name"
-															       value="<?= $this->value($_GET, 'interface_name') ?>"
+															<input type="text" name="search" id="search"
+															       value="<?= $this->value($_GET, 'search') ?>"
 															       placeholder="接口名称">
 													</div>
 												</div>
@@ -119,7 +119,7 @@
 										<div class="form-group">
 											<label class="label">
 												<input type="text" class="form-control datepicker"
-												       data-dateformat="yy-mm-dd" id="data_key"
+												       data-dateformat="yy-mm-dd" id="date_key"
 												       value="<?= $_GET['date_key'] ?>"
 													/>
 											</label>
@@ -155,15 +155,13 @@
 										<td><?= $uri[$td['uri_id']] ?></td>
 										<td><?= date('H:i', $td['ctime'] - 300), '~ ', date('H:i', $td['ctime']) ?></td>
 										<td><?= number_format($td['count_all']) ?></td>
-										<td><a href="#"
-										       style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></a>
+										<td><span style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></span>
 										</td>
 										<?php if ($td['count_failed'] > 0): ?>
-											<td><a href="#"
+											<td><a href="/appstats/fail?id=<?php echo $td['id'] ?>"
 											       style="color: red"><?= number_format($td['count_failed']) ?></a></td>
 										<?php else: ?>
-											<td><a href="#"
-											       style="color: black"><?= number_format($td['count_failed']) ?></a>
+											<td><span style="color: black"><?= number_format($td['count_failed']) ?></span>
 											</td>
 										<?php endif ?>
 										<td style="color: <?php echo ($td['succ_rate'] > 90) ? "green" : "red" ?>"><?= $td['succ_rate'] ?>
@@ -172,7 +170,7 @@
 										<td><?= $td['time_max'] ?>ms</td>
 										<td><?= $td['time_min'] ?>ms</td>
 										<td><?= $td['time_avg'] ?>ms</td>
-										<td><?= $td['time_failed_avg'] ?>ms</td>
+										<td><?= $td['count_failed']?$td['time_failed_avg'].'ms':"-"; ?></td>
 										<td>
 											<a href="/stats/history/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">历史数据对比</a>
 										</td>
@@ -268,10 +266,11 @@ you can add as many as you like
 	};
 
 	function filterInterfaceName() {
-		delete StatsG.filter.page;
-		delete StatsG.filter.interface_id;
-		StatsG.filter.interface_name = $('#interface_name').val();
-		StatsG.go();
+		/*delete StatsG.filter.page;
+		 delete StatsG.filter.interface_id;
+		 StatsG.filter.interface_name = $('#interface_name').val();
+		 StatsG.go();*/
+		window.location.href = '<?php echo getQueryString('search') ?>search=' + $('#search').val();
 		return false;
 	}
 
@@ -306,24 +305,15 @@ you can add as many as you like
 		StatsG.filter = <?php echo json_encode($_GET);?>;
 		$("#datepicker").datepicker("option", $.datepicker.regional['zh-CN']);
 
-		$("#module_id").change(function (e) {
-			var module_id = e.currentTarget.value.split(':')[0];
-			window.localStorage.module_id = module_id;
-			delete StatsG.filter.page;
-			StatsG.filter.module_id = window.localStorage.module_id;
-			StatsG.go();
-		});
-		$("#data_key").change(function () {
+		$("#date_key").change(function () {
 			/*window.localStorage.date_key = $(this).val();
 			 delete StatsG.filter.page;
 			 StatsG.filter.date_key = window.localStorage.date_key;
 			 StatsG.go();*/
+			window.location.href = '<?php echo getQueryString('date_key') ?>date_key=' + $("#date_key").val();
 		});
 		$("#uri_id").change(function (e) {
-			window.location.href = '?h=<?php echo urlencode($_GET['h']) ?>&date_key=<?php echo urlencode($_GET['date_key']) ?>&uri=' + $("#uri_id").val();
-		});
-		$('#btn_last_hour').click(function (e) {
-			location.href = '/stats/last_hour/?module_id=' + StatsG.filter.module_id;
+			window.location.href = '<?php echo getQueryString('date_key') ?>uri=' + $("#uri_id").val();
 		});
 	});
 </script>

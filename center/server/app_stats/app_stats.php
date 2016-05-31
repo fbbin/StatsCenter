@@ -128,7 +128,7 @@ $map = array();
 }*/
 
 $dbFailed = table('st_failed');
-foreach ($puts as $put) {
+foreach ($puts as $key => $put) {
 	#$put = array('ctime' => $time);
 	/*foreach ($fields as $f) {
 		$put['host_id'] = $map[$v['http_host']];
