@@ -39,7 +39,9 @@ class Appstats extends \App\LoginController {
 
 		$orders = [
 			'count_all' => 'count_all',
-			'count_fail' => 'count_failed'
+			'count_fail' => 'count_failed',
+			'time_max' => 'time_max',
+			'time_min' => 'time_min'
 		];
 
 

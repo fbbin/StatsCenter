@@ -138,8 +138,8 @@
 									<th>成功次数</th>
 									<th class="order" data-value="count_fail">失败次数</th>
 									<th>成功率</th>
-									<th>耗时最大值</th>
-									<th>耗时最小值</th>
+									<th class="order" data-value="time_max">耗时最大值</th>
+									<th class="order" data-value="time_min">耗时最小值</th>
 									<th>平均耗时</th>
 									<th>失败平均耗时</th>
 									<th>操作</th>
