@@ -28,16 +28,17 @@ $max_id = current($db->query("select max(`id`) from `st_memtemp`")->fetch());
 $groupby = '`http_host`,`http_uri`,`http_app`,`http_code`,`http_json_parse`,`http_data_code`';
 $select = 'count(*) as t_count,sum(http_time) as time_sum,max(http_time) as time_max,min(http_time) as time_min';
 
-$rs = $db->query('select * from `st_uri`')->fetchall();
-$uri = array();
-foreach ($rs as $k => $v) {
-	$uri[$v['host'] . '/' . $v['uri']] = $v['id'];
-}
 
 $rs = $db->query('select * from `st_host`')->fetchall();
 $host = array();
 foreach ($rs as $k => $v) {
 	$host[$v['name']] = $v['id'];
+}
+
+$rs = $db->query('select * from `st_uri`')->fetchall();
+$uri = array();
+foreach ($rs as $k => $v) {
+	$uri[$v['host'] . '/' . $v['uri']] = $v['id'];
 }
 
 $rs = $db->query("select $groupby,$select from `st_memtemp` where `id` <= '$max_id' GROUP BY $groupby")->fetchall();
@@ -69,7 +70,7 @@ foreach ($rs as $k => $v) {
 	#$names["'" . $v['http_app'] . "'"] = 1;
 	$rs[$k]['type'] = $v['http_code'] . '_' . ($v['http_json_parse'] == 1 ? 1 : 0) . '_' . ($v['http_data_code'] == 1 ? 1 : 0);
 	#$names["'" . $rs[$k]['type'] . "'"] = 1;
-	$key = $v['http_host'] . '/' . $v['http_uri'];
+	$key = $host[$v['http_host']] . '/' . $v['http_uri'];
 	if (!isset($uri[$key])) {
 		$db->query("insert into `st_uri` (`uri`,`host`) VALUES ('" . $db->quote($v['http_uri']) . "','" . $db->quote($host[$v['http_host']]) . "')");
 		$uri[$key] = $db->lastInsertId();
