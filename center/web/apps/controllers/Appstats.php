@@ -36,8 +36,13 @@ class Appstats extends \App\LoginController {
 		$order = isset($_GET['order']) ? $_GET['order'] : '';
 		$this->getInterfaceInfo();
 		$table = table('st_data', 'app_stats');
+		if (!isset($_GET['order'])) {
+			$_GET['order'] = 'time';
+			$_GET['desc'] = 1;
+		}
 
 		$orders = [
+			'time' => 'ctime',
 			'count_all' => 'count_all',
 			'count_fail' => 'count_failed',
 			'time_max' => 'time_max',
@@ -158,4 +163,29 @@ class Appstats extends \App\LoginController {
 		$this->assign('modules', $modules);
 	}
 
+	function history_data() {
+		if (empty($_GET['module_id']) or empty($_GET['interface_id'])) {
+			return $this->message(5001, "require module_id and interface_id");
+		}
+		$param = $_GET;
+
+		$param['date_start'] = !empty($_GET['date_start']) ? $_GET['date_start'] : date('Y-m-d');
+		$param['date_end'] = !empty($_GET['date_end']) ? $_GET['date_end'] : date('Y-m-d', time() - 86400);
+		$param['date_key'] = $_GET['date_start'];
+
+		$d1 = $this->data($param, false, false);
+
+		$param['date_key'] = $_GET['date_end'];
+		$d2 = $this->data($param, false, false);
+
+		return json_encode(array(
+			'data1' => $d1,
+			'data2' => $d2
+		));
+	}
+
+	function history() {
+		$this->assign('width', self::$width);
+		$this->display();
+	}
 }

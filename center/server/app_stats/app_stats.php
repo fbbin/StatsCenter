@@ -1,14 +1,9 @@
 <?php
-$time = time();
-/*
- * stats统计脚本
- */
-#define('DEBUG', 'on');
-#define('WEBPATH', __DIR__);
-
+$time = time() - 300;
 require __DIR__ . '/_init.php';
-#require dirname(__DIR__) . '/config.php';
-#Swoole::$php->config->setPath(__DIR__.'/configs/');
+
+Swoole\Loader::addNameSpace('Ddl', __DIR__ . '/../../web/ddl');
+
 function array_rebuild($array, $key, $value = '') {
 	$r = array();
 
@@ -19,42 +14,30 @@ function array_rebuild($array, $key, $value = '') {
 	return $r;
 }
 
+$mMemtemp = \Ddl\St_memtemp::getInstance();
+$mData = \Ddl\St_data::getInstance();
+$mDataDay = \Ddl\St_data_day::getInstance();
+$mHost = \Ddl\St_host::getInstance();
+$mUri = \Ddl\St_uri::getInstance();
+$mFailed = \Ddl\St_failed::getInstance();
+$mFailedDay = \Ddl\St_failed_day::getInstance();
+
 $start_time = microtime(true);
-
-$dbData = table('st_data');
-$db = $dbData->db;
-$max_id = current($db->query("select max(`id`) from `st_memtemp`")->fetch());
-
-$groupby = '`http_host`,`http_uri`,`http_app`,`http_code`,`http_json_parse`,`http_data_code`';
-$select = 'count(*) as t_count,sum(http_time) as time_sum,max(http_time) as time_max,min(http_time) as time_min';
-
-
-$rs = $db->query('select * from `st_host`')->fetchall();
-$host = array();
-foreach ($rs as $k => $v) {
-	$host[$v['name']] = $v['id'];
+$max_id = current($mMemtemp->select('max(`id`)', 0)->get()->fetch());
+if (!$max_id) {
+	echo "no data\n";
+	exit;
 }
 
-$rs = $db->query('select * from `st_uri`')->fetchall();
+$host = array_rebuild($mHost->get()->fetchall(), \Ddl\St_host::F_name, \Ddl\St_host::F_id);
+
+$rs = $mUri->get()->fetchall();
 $uri = array();
 foreach ($rs as $k => $v) {
 	$uri[$v['host'] . '/' . $v['uri']] = $v['id'];
 }
 
-$rs = $db->query("select $groupby,$select from `st_memtemp` where `id` <= '$max_id' GROUP BY $groupby")->fetchall();
-
-$fields = array(
-	'time_sum',
-	'time_max',
-	'time_min',
-	't_count',
-);
-/*	'host_id',
-	'uri_id',
-	'app_id',
-	'type',
-	'ctime'
-);*/
+$rs = $mMemtemp->getByMaxId($max_id)->fetchall();
 
 //字符转换id
 $puts = array();
@@ -62,19 +45,17 @@ $failed = array();
 
 foreach ($rs as $k => $v) {
 	if (!isset($host[$v['http_host']])) {
-		$db->query("insert into `st_host` (`name`) VALUES ('" . $db->quote($v['http_host']) . "')");
-		$host[$v['http_host']] = $db->lastInsertId();
+		$host[$v[\Ddl\St_memtemp::F_http_host]] = $mHost->insert([\Ddl\St_host::F_name => $v[\Ddl\St_memtemp::F_http_host]]);
 	}
-	#$names["'" . $v['http_host'] . "'"] = 1;
-	#$names["'" . $v['http_uri'] . "'"] = 1;
-	#$names["'" . $v['http_app'] . "'"] = 1;
 	$rs[$k]['type'] = $v['http_code'] . '_' . ($v['http_json_parse'] == 1 ? 1 : 0) . '_' . ($v['http_data_code'] == 1 ? 1 : 0);
-	#$names["'" . $rs[$k]['type'] . "'"] = 1;
 	$key = $host[$v['http_host']] . '/' . $v['http_uri'];
 	if (!isset($uri[$key])) {
-		$db->query("insert into `st_uri` (`uri`,`host`) VALUES ('" . $db->quote($v['http_uri']) . "','" . $db->quote($host[$v['http_host']]) . "')");
-		$uri[$key] = $db->lastInsertId();
+		$uri[$key] = $mUri->insert([
+			\Ddl\St_uri::F_host => $host[$v[\Ddl\St_memtemp::F_http_host]],
+			\Ddl\St_uri::F_uri => $v[\Ddl\St_memtemp::F_http_uri]
+		]);
 	}
+
 	if (isset($puts[$key])) {
 		$puts[$key]['time_sum'] += $v['time_sum'];
 		$puts[$key]['count_all'] += $v['t_count'];
@@ -116,40 +97,52 @@ foreach ($rs as $k => $v) {
 }
 
 $map = array();
-/*if ($names) {
-	$map = array_rebuild($db->query("select * from `st_string` where `name` in (" . (implode(',', array_keys($names))) . ")")->fetchall(), 'name', 'id');
-	foreach ($names as $k => $v) {
-		$name = trim($k, "'");
-		if (!isset($map[$name])) {
-			$db->query("insert into `st_string` (`name`) VALUES (" . $k . ")");
-			$map[$name] = $db->lastInsertId();
-		}
-	}
-}*/
-
-$dbFailed = table('st_failed');
+$today = strtotime(date("Y-m-d", $time));
 foreach ($puts as $key => $put) {
-	#$put = array('ctime' => $time);
-	/*foreach ($fields as $f) {
-		$put['host_id'] = $map[$v['http_host']];
-		$put['uri_id'] = $map[$v['http_uri']];
-		$put['app_id'] = $map[$v['http_app']];
-		$put['type'] = $map[$v['type']];
-		if (isset($v[$f])) {
-			$put[$f] = $v[$f];
-		}
-	}*/
-	/*$key = $put['host_id'] . '/' . $put['uri_id'];
-	$put['host_id'] = $host[$put['host_id']];
-	$put['uri_id'] = $uri[$key];*/
-	$data_id = $dbData->put($put);
+	//写全天
+	$rs = $mDataDay->getByUri($put['host_id'], $put['uri_id'], $today);
+	if ($rs) {
+		$data = [
+			\Ddl\St_data_day::F_count_all . ' = ' . \Ddl\St_data_day::F_count_all . ' + ' => $put[\Ddl\St_data::F_count_all],
+			\Ddl\St_data_day::F_count_failed . ' = ' . \Ddl\St_data_day::F_count_failed . ' + ' => $put[\Ddl\St_data::F_count_failed],
+			\Ddl\St_data_day::F_time_failed_sum . ' = ' . \Ddl\St_data_day::F_time_failed_sum . ' + ' => $put[\Ddl\St_data::F_time_failed_sum],
+			\Ddl\St_data_day::F_time_max => max($put[\Ddl\St_data::F_time_max], $rs[\Ddl\St_data_day::F_time_max]),
+			\Ddl\St_data_day::F_time_min => max($put[\Ddl\St_data::F_time_min], $rs[\Ddl\St_data_day::F_time_min]),
+			\Ddl\St_data_day::F_time_sum . ' = ' . \Ddl\St_data_day::F_time_sum . ' + ' => $put[\Ddl\St_data::F_time_sum],
+		];
+		$mDataDay->update($rs[\Ddl\St_data_day::F_id], $data);
+		$data_day_id = $rs[\Ddl\St_data_day::F_id];
+	} else {
+		$data = $put;
+		$data[\Ddl\St_data_day::F_ctime] = $today;
+		$data_day_id = $mDataDay->insert($data);
+	}
+	//写分时
+	$data_id = $mData->insert($put);
+	//错误列表
+	$rs = $mFailedDay->getbyDataId($data_day_id)->fetchall();
+	$fs = [];
+	foreach ($rs as $k => $v) {
+		$fs[$v[\Ddl\St_failed_day::F_http_code] . '_' . $v[\Ddl\St_failed_day::F_json_code] . '_' . $v[\Ddl\St_failed_day::F_data_code]] = $v;
+	}
 	if (isset($failed[$key])) {
 		foreach ($failed[$key] as $v) {
+			//全天
+			if (isset($fs[$v[\Ddl\St_failed::F_http_code] . '_' . $v[\Ddl\St_failed::F_json_code] . '_' . $v[\Ddl\St_failed::F_data_code]])) {
+				$mFailedDay->update($fs[$v[\Ddl\St_failed::F_http_code] . '_' . $v[\Ddl\St_failed::F_json_code] . '_' . $v[\Ddl\St_failed::F_data_code]][\Ddl\St_failed_day::F_id], [
+					\Ddl\St_failed_day::F_t_count . ' = ' . \Ddl\St_failed_day::F_t_count . ' + ' => $v[\Ddl\St_failed::F_t_count]
+				]);
+			} else {
+				$data = $v;
+				$data['data_id'] = $data_day_id;
+				$mFailedDay->insert($data);
+			}
+			//分时
 			$v['data_id'] = $data_id;
-			$dbFailed->put($v);
+			$mFailed->insert($v);
 		}
 	}
 }
 
-$db->query("delete from `st_memtemp` where `id` <= '$max_id'");
+$mMemtemp->delByMaxId($max_id);
 echo "End .sptime:" . (microtime(true) - $start_time), "\n";

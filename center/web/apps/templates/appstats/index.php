@@ -133,7 +133,7 @@
 								<tr>
 									<th>域名</th>
 									<th>接口</th>
-									<th>时间</th>
+									<th class="order" data-value="time">时间</th>
 									<th class="order" data-value="count_all">调用次数</th>
 									<th>成功次数</th>
 									<th class="order" data-value="count_fail">失败次数</th>
@@ -172,7 +172,7 @@
 										<td><?= $td['time_avg'] ?>ms</td>
 										<td><?= $td['count_failed']?$td['time_failed_avg'].'ms':"-"; ?></td>
 										<td>
-											<a href="/stats/history/?module_id=<?= $td['module_id'] ?>&interface_id=<?= $td['interface_id'] ?>&date_key=<?= $_GET['date_key'] ?>">历史数据对比</a>
+											<a href="/appstats/history/?h=<?php echo $_GET['h'] ?>&uri=<?php echo $td['uri_id'] ?>">历史数据对比</a>
 										</td>
 									</tr>
 								<?php endforeach; ?>
