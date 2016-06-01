@@ -40,7 +40,13 @@ class St_memtemp extends DdlModel {
 			'count(*) as t_count',
 			'sum(http_time) as time_sum',
 			'max(http_time) as time_max',
-			'min(http_time) as time_min'
+			'min(http_time) as time_min',
+			'http_host',
+			'http_uri',
+			'http_app',
+			'http_code',
+			'http_json_parse',
+			'http_data_code'
 		], 0)->getWhere([self::F_id . ' <=' => $max_id]);
 	}
 
