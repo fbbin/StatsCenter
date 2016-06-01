@@ -337,7 +337,13 @@ class DdlModel {
 	 * @return $this
 	 */
 	protected function orderBy($f, $desc = '', $escape = true) {
-		$this->ar_order_by[$escape ? "`$f`" : $f] = strtolower(trim($desc)) == 'desc' ? 'desc' : 'asc';
+		if (is_array($f)) {
+			foreach ($f as $k => $v) {
+				$this->ar_order_by[$escape ? "`$k`" : $k] = strtolower(trim($v)) == 'desc' ? 'desc' : 'asc';
+			}
+		} else {
+			$this->ar_order_by[$escape ? "`$f`" : $f] = strtolower(trim($desc)) == 'desc' ? 'desc' : 'asc';
+		}
 		return $this;
 	}
 

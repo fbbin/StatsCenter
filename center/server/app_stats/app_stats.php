@@ -100,7 +100,7 @@ $map = array();
 $today = strtotime(date("Y-m-d", $time));
 foreach ($puts as $key => $put) {
 	//写全天
-	$rs = $mDataDay->getByUri($put['host_id'], $put['uri_id'], $today)->fetchall();
+	$rs = $mDataDay->getByUri($put['host_id'], $put['uri_id'], $today)->fetch();
 	if ($rs) {
 		$data = [
 			\Ddl\St_data_day::F_count_all . ' = ' . \Ddl\St_data_day::F_count_all . ' + ' => $put[\Ddl\St_data::F_count_all],

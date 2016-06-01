@@ -26,4 +26,25 @@ class St_data extends DdlModel {
 		return parent::getInstance('St_data', $db);
 	}
 
+	function getPageByDate(&$pager, $page, $pagesize, $host_id, $date, $order, $desc, $seach_ids = null) {
+		$where = [
+			self::F_host_id => $host_id,
+			self::F_ctime . ' >=' . $date,
+			self::F_ctime . ' <' => $date + 86400
+		];
+		if ($seach_ids !== null) {
+			$where[] = where_in(self::F_id, $seach_ids);
+		}
+		$orders = [
+			'time' => ['ctime' => $_GET['desc']],
+			'count_all' => ['count_all' => $_GET['desc']],
+			'count_fail' => ['count_failed' => $_GET['desc']],
+			'time_max' => ['time_max' => $_GET['desc']],
+			'time_min' => ['time_min' => $_GET['desc']]
+		];
+		if (isset($orders[$order])) {
+			$this->orderBy($orders[$order], $desc);
+		}
+		return $this->orderBy($order)->getPageWhere($where, $pager, $page, $pagesize);
+	}
 }

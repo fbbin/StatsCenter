@@ -131,7 +131,6 @@
 							<table class="table table-bordered table-hover dataTables_wrapper">
 								<thead>
 								<tr>
-									<th>域名</th>
 									<th>接口</th>
 									<th class="order" data-value="time">时间</th>
 									<th class="order" data-value="count_all">调用次数</th>
@@ -151,7 +150,6 @@
 									$bg_color = $td['succ_rate'] > 90 ? "#DFFFDF" : "#FFDFDF";
 									?>
 									<tr style="background-color: <?= $bg_color ?>;">
-										<td><?= $host[$td['host_id']] ?></td>
 										<td><a href="<?php echo getQueryString('uri'),'uri=',$td['uri_id'] ?>"><?= $uri[$td['uri_id']] ?></a></td>
 										<td><?= date('H:i', $td['ctime'] - 300), '~ ', date('H:i', $td['ctime']) ?></td>
 										<td><?= number_format($td['count_all']) ?></td>
@@ -167,9 +165,9 @@
 										<td style="color: <?php echo ($td['succ_rate'] ==100) ? "green" : "red" ?>"><?= $td['succ_rate'] ?>
 											%
 										</td>
-										<td><?= $td['time_max'] ?>ms</td>
-										<td><?= $td['time_min'] ?>ms</td>
-										<td><?= $td['time_avg'] ?>ms</td>
+										<td><?= $td['time_max'] ?>s</td>
+										<td><?= $td['time_min'] ?>s</td>
+										<td><?= $td['time_avg'] ?>s</td>
 										<td><?= $td['count_failed']?$td['time_failed_avg'].'ms':"-"; ?></td>
 										<td>
 											<a href="/appstats/history/?h=<?php echo $_GET['h'] ?>&uri=<?php echo $td['uri_id'] ?>">历史数据对比</a>

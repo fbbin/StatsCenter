@@ -25,4 +25,11 @@ class St_uri extends DdlModel {
 		return parent::getInstance('St_uri', $db);
 	}
 
+	function getByHostId($host_id) {
+		return $this->getWhere([self::F_host => $host_id]);
+	}
+
+	function getPageByDate() {
+
+	}
 }

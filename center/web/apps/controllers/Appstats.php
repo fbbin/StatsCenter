@@ -1,6 +1,9 @@
 <?php
 namespace App\Controller;
+Swoole\Loader::addNameSpace('Ddl', __DIR__ . '/../../ddl');
 
+use Ddl\St_data;
+use Ddl\St_uri;
 use Swoole;
 use App;
 
@@ -34,26 +37,24 @@ class Appstats extends \App\LoginController {
 		$date = strtotime(!empty($_GET['date_key']) ? $_GET['date_key'] : date("Y-m-d"));
 		$search = isset($_GET['search']) ? $_GET['search'] : '';
 		$order = isset($_GET['order']) ? $_GET['order'] : '';
+		$page = empty($_GET['page']) ? 1 : max(1, intval($_GET['page']));
+		$pagesize = 20;
 		$this->getInterfaceInfo();
-		$table = table('st_data', 'app_stats');
+
+		#$table = table('st_data', 'app_stats');
+		$mData = St_data::getInstance('app_stats');
+		$mUri = St_uri::getInstance('app_stats');
+
 		if (!isset($_GET['order'])) {
 			$_GET['order'] = 'time';
 			$_GET['desc'] = 1;
 		}
+		$_GET['desc'] = empty($_GET['desc']) ? "asc" : "desc";
 
-		$orders = [
-			'time' => 'ctime',
-			'count_all' => 'count_all',
-			'count_fail' => 'count_failed',
-			'time_max' => 'time_max',
-			'time_min' => 'time_min'
-		];
+		#$host = array_rebuild($table->db->query("select * from `st_host`")->fetchall(), 'id', 'name');
+		#$uri = array_rebuild($table->db->query("select * from `st_uri` where `host`='" . $table->db->quote($host_id) . "'")->fetchall(), 'id', 'uri');
+		$uri = array_rebuild($mUri->getByHostId($host_id)->fetchall(), St_uri::F_id, St_uri::F_uri);
 
-
-		$host = array_rebuild($table->db->query("select * from `st_host`")->fetchall(), 'id', 'name');
-		$uri = array_rebuild($table->db->query("select * from `st_uri` where `host`='" . $table->db->quote($host_id) . "'")->fetchall(), 'id', 'uri');
-
-		#$table->select = "`host_id`,`uri_id`,sum(time_sum) as time_sum,sum(if(`type`<>218,time_sum,0)) as fail_time_sum,sum(t_count) as t_count,sum(if(`type`<>218,t_count,0)) as faild_t_count";
 		$gets = [
 			#'module_id' => $_GET['module_id'],
 			'order' => 'ctime desc',
@@ -68,26 +69,28 @@ class Appstats extends \App\LoginController {
 		if ($uri_id) {
 			$gets['where'][] = "`uri_id`='$uri_id'";
 		}
+		$search_ids = null;
 		if ($search) {
-			$ids = [];
+			$search_ids = [];
 			foreach ($uri as $k => $v) {
 				if (strpos($v, $search) !== false) {
-					$ids[] = $k;
+					$search_ids[] = $k;
 				}
 			}
-			$gets['where'][] = $ids ? "uri_id in (" . implode(',', $ids) . ")" : "1>2";
+			$gets['where'][] = $search_ids ? "uri_id in (" . implode(',', $search_ids) . ")" : "1>2";
 		}
 
 		$pager = null;
 		#$table->db->debug = 1;
-		$data = $table->gets($gets, $pager);
+		#$data = $table->gets($gets, $pager);
+		$data = $mData->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $search_ids);
 
 		$uri_ids = array();
 		foreach ($data as $k => $v) {
 			#$uri_ids[$v['uri_id']] = 1;
 			$data[$k]['succ_rate'] = $v['count_failed'] ? round(100 - $v['count_failed'] * 100 / $v['count_all'], 2) : 100;
-			$data[$k]['time_avg'] = $v['count_all'] ? round($v['time_sum'] / $v['count_all'], 5) : 0;
-			$data[$k]['time_failed_avg'] = $v['count_failed'] ? round($v['time_failed_sum'] / $v['count_failed'], 5) : 0;
+			$data[$k]['time_avg'] = $v['count_all'] ? round($v['time_sum'] / $v['count_all'], 2) : 0;
+			$data[$k]['time_failed_avg'] = $v['count_failed'] ? round($v['time_failed_sum'] / $v['count_failed'], 2) : 0;
 			#$ids[$v['type']] = 1;
 			#$ids[$v['app_id']] = 1;
 		}
