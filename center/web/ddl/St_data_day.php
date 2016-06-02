@@ -34,8 +34,7 @@ class St_data_day extends DdlModel {
 	function getPageByDate(&$pager, $page, $pagesize, $host_id, $date, $order, $desc, $uri_ids = []) {
 		$where = [
 			self::F_host_id => $host_id,
-			self::F_ctime . ' > ' => $date,
-			self::F_ctime . ' <= ' => $date + 86400,
+			self::F_ctime => $date,
 		];
 		if ($uri_ids) {
 			$where[] = where_in(self::F_uri_id, $uri_ids);

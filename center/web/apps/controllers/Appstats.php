@@ -68,6 +68,14 @@ class Appstats extends \App\LoginController {
 		}
 
 		$data = $mDataDay->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $uri_id)->fetchall();
+		foreach ($data as $k => $v) {
+			#$uri_ids[$v['uri_id']] = 1;
+			$data[$k]['succ_rate'] = $v['count_failed'] ? round(100 - $v['count_failed'] * 100 / $v['count_all'], 2) : 100;
+			$data[$k]['time_avg'] = $v['count_all'] ? round($v['time_sum'] / $v['count_all'], 2) : 0;
+			$data[$k]['time_failed_avg'] = $v['count_failed'] ? round($v['time_failed_sum'] / $v['count_failed'], 2) : 0;
+			#$ids[$v['type']] = 1;
+			#$ids[$v['app_id']] = 1;
+		}
 		$pager = new Swoole\Pager([
 			'total' => $pager['total'],
 			'perpage' => $pager['pagesize'],
