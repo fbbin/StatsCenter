@@ -172,9 +172,6 @@
 												%
 											</td>
 										<?php endif ?>
-										<td style="color: <?php echo ($td['succ_rate'] == 100) ? "green" : "red" ?>"><?= $td['succ_rate'] ?>
-											%
-										</td>
 										<td><?= $td['time_max'] ?>s</td>
 										<td><?= $td['time_min'] ?>s</td>
 										<td><?= $td['time_avg'] ?>s</td>

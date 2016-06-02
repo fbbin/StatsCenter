@@ -213,7 +213,7 @@ class Appstats extends \App\LoginController {
 		}
 
 		$this->assign('ret_code', $ret_code);
-		$this->display();
+		$this->display('appstats/fail.php');
 	}
 
 	/**
