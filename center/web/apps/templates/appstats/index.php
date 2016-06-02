@@ -153,7 +153,7 @@
 										<td>
 											<a href="<?php echo getQueryString('uri'), 'uri=', $td['uri_id'] ?>"><?= $uri[$td['uri_id']] ?></a>
 										</td>
-										<td><?= date('H:i', $td['ctime'] - 300), '~ ', date('H:i', $td['ctime']) ?></td>
+										<td>00:00 ~ 23:59</td>
 										<td><?= number_format($td['count_all']) ?></td>
 										<td><span
 												style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></span>
@@ -275,7 +275,7 @@ you can add as many as you like
 		 delete StatsG.filter.interface_id;
 		 StatsG.filter.interface_name = $('#interface_name').val();
 		 StatsG.go();*/
-		window.location.href = '<?php echo getQueryString('search') ?>search=' + $('#search').val();
+		window.location.href = '<?php echo getQueryString(['search','page']) ?>page=1&search=' + $('#search').val();
 		return false;
 	}
 

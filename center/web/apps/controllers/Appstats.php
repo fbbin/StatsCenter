@@ -53,7 +53,7 @@ class Appstats extends \App\LoginController {
 			$_GET['order'] = 'time';
 			$_GET['desc'] = 1;
 		}
-		$_GET['desc'] = empty($_GET['desc']) ? "asc" : "desc";
+		$_GET['desc'] = empty($_GET['desc']) ? "" : 1;
 
 		$uri = array_rebuild($mUri->getByHostId($host_id)->fetchall(), St_uri::F_id, St_uri::F_uri);
 		if ($uri_id) {
@@ -112,9 +112,8 @@ class Appstats extends \App\LoginController {
 
 		if (!isset($_GET['order'])) {
 			$_GET['order'] = 'time';
-			$_GET['desc'] = 1;
 		}
-		$_GET['desc'] = empty($_GET['desc']) ? "asc" : "desc";
+		$_GET['desc'] = empty($_GET['desc']) ? "" : 1;
 
 		#$host = array_rebuild($table->db->query("select * from `st_host`")->fetchall(), 'id', 'name');
 		#$uri = array_rebuild($table->db->query("select * from `st_uri` where `host`='" . $table->db->quote($host_id) . "'")->fetchall(), 'id', 'uri');

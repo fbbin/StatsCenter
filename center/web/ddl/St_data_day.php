@@ -39,6 +39,7 @@ class St_data_day extends DdlModel {
 		if ($uri_ids) {
 			$where[] = where_in(self::F_uri_id, $uri_ids);
 		}
+		$desc = $desc ? " desc" : "";
 		$orders = [
 			'time' => ['ctime' => $desc],
 			'count_all' => ['count_all' => $desc],
