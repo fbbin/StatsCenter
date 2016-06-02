@@ -28,7 +28,7 @@ class DdlModel {
 	 */
 	private static $_ddl = [];
 
-	static function getInstance($table_name, $db = 'master') {
+	static protected function createInstance($table_name, $db = 'master') {
 		if (!isset(self::$_ddl[$table_name])) {
 			$class_name = "\\Ddl\\{$table_name}";
 			$model = new $class_name($db);
@@ -474,6 +474,66 @@ function concat(&$str1, $str2, $op = ',') {
 	} else {
 		$str1 = $str2;
 	}
+}
+
+/**
+ * 将字符串转换成整型
+ *
+ * @param string $str
+ *            要转换的string
+ * @param int $default
+ *            如果$string不是数值时返回$default的值
+ * @param int $min
+ *            限制最小值
+ * @param int $max
+ *            限制最大值
+ * @return int
+ */
+function str2int($str, $default = 0, $min = null, $max = null) {
+	return str2float($str, $default, $min, $max, 0);
+}
+
+/**
+ * 将字符串转换成浮点型
+ *
+ * @param string $str
+ *            要转换的string
+ * @param int $default
+ *            如果$string不是数值时返回$default的值
+ * @param float $min
+ *            限制最小值
+ * @param float $max
+ *            限制最大值
+ * @param int $precision
+ *            保留多少位小数
+ * @return float
+ */
+function str2float($str, $default = 0, $min = null, $max = null, $precision = null) {
+	$str = (isset ($str) && is_numeric($str)) ? floatval($str) : $default;
+	if ($min !== null && $str < $min) {
+		$str = $min;
+	}
+	if ($max !== null && $str > $max) {
+		$str = $max;
+	}
+	if ($precision !== null) {
+		$str = round($str, $precision);
+	}
+	return $str;
+}
+
+/**
+ * 从限制str的值为枚举
+ * @param $str
+ * @param $default
+ * @param $enum
+ * @return mixed
+ */
+function str2enum($str, $default, $enum) {
+	if (!isset($str) || !in_array($str, $enum)) {
+		return $default;
+	}
+	return $str;
 }
 
 /**

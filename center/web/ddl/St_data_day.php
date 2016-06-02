@@ -1,9 +1,6 @@
 <?php
 namespace Ddl;
 
-use App\Form;
-use App\Grid;
-
 class St_data_day extends DdlModel {
 	/**
 	 * 表名
@@ -23,7 +20,7 @@ class St_data_day extends DdlModel {
 	 * @return \Ddl\St_data_day
 	 */
 	static function getInstance($db = 'master') {
-		return parent::getInstance('St_data_day', $db);
+		return parent::createInstance('St_data_day', $db);
 	}
 
 	function getByUri($host_id, $uri_id, $ctime) {
@@ -32,6 +29,28 @@ class St_data_day extends DdlModel {
 			self::F_uri_id => $uri_id,
 			self::F_ctime => $ctime
 		]);
+	}
+
+	function getPageByDate(&$pager, $page, $pagesize, $host_id, $date, $order, $desc, $uri_ids = []) {
+		$where = [
+			self::F_host_id => $host_id,
+			self::F_ctime . ' > ' => $date,
+			self::F_ctime . ' <= ' => $date + 86400,
+		];
+		if ($uri_ids) {
+			$where[] = where_in(self::F_uri_id, $uri_ids);
+		}
+		$orders = [
+			'time' => ['ctime' => $desc],
+			'count_all' => ['count_all' => $desc],
+			'count_fail' => ['count_failed' => $desc],
+			'time_max' => ['time_max' => $desc],
+			'time_min' => ['time_min' => $desc]
+		];
+		if (isset($orders[$order])) {
+			$this->orderBy($orders[$order]);
+		}
+		return $this->getPageWhere($where, $pager, $page, $pagesize);
 	}
 
 }

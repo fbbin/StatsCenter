@@ -22,7 +22,7 @@ class St_uri extends DdlModel {
 	 * @return \Ddl\St_uri
 	 */
 	static function getInstance($db = 'master') {
-		return parent::getInstance('St_uri', $db);
+		return parent::createInstance('St_uri', $db);
 	}
 
 	function getByHostId($host_id) {

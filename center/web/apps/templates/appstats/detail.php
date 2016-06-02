@@ -150,33 +150,26 @@
 									$bg_color = $td['succ_rate'] > 90 ? "#DFFFDF" : "#FFDFDF";
 									?>
 									<tr style="background-color: <?= $bg_color ?>;">
-										<td>
-											<a href="<?php echo getQueryString('uri'), 'uri=', $td['uri_id'] ?>"><?= $uri[$td['uri_id']] ?></a>
-										</td>
+										<td><a href="<?php echo getQueryString('uri'),'uri=',$td['uri_id'] ?>"><?= $uri[$td['uri_id']] ?></a></td>
 										<td><?= date('H:i', $td['ctime'] - 300), '~ ', date('H:i', $td['ctime']) ?></td>
 										<td><?= number_format($td['count_all']) ?></td>
-										<td><span
-												style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></span>
+										<td><span style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></span>
 										</td>
 										<?php if ($td['count_failed'] > 0): ?>
-											<td>
-												<a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
-												   style="color: red"><?= number_format($td['count_failed']) ?></a></td>
+											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
+											       style="color: red"><?= number_format($td['count_failed']) ?></a></td>
 										<?php else: ?>
-											<td><span
-													style="color: black"><?= number_format($td['count_failed']) ?></span>
+											<td><span style="color: black"><?= number_format($td['count_failed']) ?></span>
 											</td>
 										<?php endif ?>
-										<td style="color: <?php echo ($td['succ_rate'] == 100) ? "green" : "red" ?>"><?= $td['succ_rate'] ?>
+										<td style="color: <?php echo ($td['succ_rate'] ==100) ? "green" : "red" ?>"><?= $td['succ_rate'] ?>
 											%
 										</td>
 										<td><?= $td['time_max'] ?>s</td>
 										<td><?= $td['time_min'] ?>s</td>
 										<td><?= $td['time_avg'] ?>s</td>
-										<td><?= $td['count_failed'] ? $td['time_failed_avg'] . 'ms' : "-"; ?></td>
+										<td><?= $td['count_failed']?$td['time_failed_avg'].'ms':"-"; ?></td>
 										<td>
-											<a href="/appstats/detail/?h=<?php echo $_GET['h'] ?>&uri=<?php echo $td['uri_id'] ?>">明细查看</a>
-											|
 											<a href="/appstats/history/?h=<?php echo $_GET['h'] ?>&uri=<?php echo $td['uri_id'] ?>">历史数据对比</a>
 										</td>
 									</tr>
@@ -283,17 +276,17 @@ you can add as many as you like
 		$('.order').click(function (e) {
 			var o = $(e.currentTarget);
 			var $desc = (o.attr('data-value') == "<?php echo $_GET['order'] ?>") ? "<?php echo $_GET['desc']?0:1 ?>" : "1";
-			window.location.href = "<?php echo getQueryString(["order",'desc']) ?>order=" + o.attr('data-value') + "&desc=" + $desc;
+			window.location.href="<?php echo getQueryString(["order",'desc']) ?>order="+o.attr('data-value')+"&desc="+$desc;
 			/*var o = $(e.currentTarget);
-			 var orderby = o.attr('data-value');
-			 if (orderby != TableOrder.orderby) {
-			 StatsG.filter.orderby = orderby;
-			 StatsG.filter.desc = 1;
-			 } else {
-			 StatsG.filter.desc = 1 - TableOrder.desc;
-			 }
-			 delete StatsG.filter.page;
-			 StatsG.go();*/
+			var orderby = o.attr('data-value');
+			if (orderby != TableOrder.orderby) {
+				StatsG.filter.orderby = orderby;
+				StatsG.filter.desc = 1;
+			} else {
+				StatsG.filter.desc = 1 - TableOrder.desc;
+			}
+			delete StatsG.filter.page;
+			StatsG.go();*/
 		});
 
 		$('.order').each(function (_o, e) {

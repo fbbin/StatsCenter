@@ -1,11 +1,14 @@
 <?php
 namespace App\Controller;
-Swoole\Loader::addNameSpace('Ddl', __DIR__ . '/../../ddl');
 
+use Ddl\St_data_day;
+use Swoole\Loader;
 use Ddl\St_data;
 use Ddl\St_uri;
 use Swoole;
 use App;
+
+Loader::addNameSpace('Ddl', __DIR__ . '/../../ddl');
 
 class Appstats extends \App\LoginController {
 	//$_SESSION['userinfo']['yyuid']
@@ -31,17 +34,71 @@ class Appstats extends \App\LoginController {
 
 	function index() {
 		error_reporting(E_ALL & ~E_NOTICE);
+		if (empty($_GET['date_key'])) {
+			$_GET['date_key'] = date("Y-m-d");
+		}
 
 		$host_id = !empty($_GET['h']) ? intval($_GET['h']) : 1;
 		$uri_id = !empty($_GET['uri']) ? intval($_GET['uri']) : 0;
-		$date = strtotime(!empty($_GET['date_key']) ? $_GET['date_key'] : date("Y-m-d"));
+		$date = strtotime($_GET['date_key']);
 		$search = isset($_GET['search']) ? $_GET['search'] : '';
 		$order = isset($_GET['order']) ? $_GET['order'] : '';
 		$page = empty($_GET['page']) ? 1 : max(1, intval($_GET['page']));
 		$pagesize = 20;
-		$this->getInterfaceInfo();
+
+		$mDataDay = St_data_day::getInstance('app_stats');
+		$mUri = St_uri::getInstance('app_stats');
+
+		if (!isset($_GET['order'])) {
+			$_GET['order'] = 'time';
+			$_GET['desc'] = 1;
+		}
+		$_GET['desc'] = empty($_GET['desc']) ? "asc" : "desc";
+
+		$uri = array_rebuild($mUri->getByHostId($host_id)->fetchall(), St_uri::F_id, St_uri::F_uri);
+		if ($uri_id) {
+			$uri_id = [$uri_id];
+		} elseif ($search) {
+			$uri_id = [];
+			foreach ($uri as $k => $v) {
+				if (strpos($v, $search) !== false) {
+					$uri_id[] = $k;
+				}
+			}
+		}
+
+		$data = $mDataDay->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $uri_id)->fetchall();
+		$pager = new Swoole\Pager([
+			'total' => $pager['total'],
+			'perpage' => $pager['pagesize'],
+			'nowindex' => $pager['page']
+		]);
+
+		$this->assign('total', $pager->total);
+		$this->assign('pager', $pager->render());
+		$this->assign('data', $data);
+		$this->assign('uri', $uri);
+		$this->assign('uri_id', $uri_id);
+		$this->display();
+	}
+
+	function detail() {
+		error_reporting(E_ALL & ~E_NOTICE);
+		if (empty($_GET['date_key'])) {
+			$_GET['date_key'] = date("Y-m-d");
+		}
+
+		$host_id = !empty($_GET['h']) ? intval($_GET['h']) : 1;
+		$uri_id = !empty($_GET['uri']) ? intval($_GET['uri']) : 0;
+		$date = strtotime($_GET['date_key']);
+		$search = isset($_GET['search']) ? $_GET['search'] : '';
+		$order = isset($_GET['order']) ? $_GET['order'] : '';
+		$page = empty($_GET['page']) ? 1 : max(1, intval($_GET['page']));
+		$pagesize = 20;
+		#$this->getInterfaceInfo();
 
 		#$table = table('st_data', 'app_stats');
+
 		$mData = St_data::getInstance('app_stats');
 		$mUri = St_uri::getInstance('app_stats');
 
@@ -55,7 +112,7 @@ class Appstats extends \App\LoginController {
 		#$uri = array_rebuild($table->db->query("select * from `st_uri` where `host`='" . $table->db->quote($host_id) . "'")->fetchall(), 'id', 'uri');
 		$uri = array_rebuild($mUri->getByHostId($host_id)->fetchall(), St_uri::F_id, St_uri::F_uri);
 
-		$gets = [
+		/*$gets = [
 			#'module_id' => $_GET['module_id'],
 			'order' => 'ctime desc',
 			'pagesize' => 20,
@@ -68,22 +125,27 @@ class Appstats extends \App\LoginController {
 		$gets['where'][] = "`ctime`>'$date' and `ctime`<='" . ($date + 86400) . "'";
 		if ($uri_id) {
 			$gets['where'][] = "`uri_id`='$uri_id'";
-		}
-		$search_ids = null;
-		if ($search) {
-			$search_ids = [];
+		}*/
+		if ($uri_id) {
+			$uri_id = [$uri_id];
+		} elseif ($search) {
+			$uri_id = [];
 			foreach ($uri as $k => $v) {
 				if (strpos($v, $search) !== false) {
-					$search_ids[] = $k;
+					$uri_id[] = $k;
 				}
 			}
-			$gets['where'][] = $search_ids ? "uri_id in (" . implode(',', $search_ids) . ")" : "1>2";
+			#$gets['where'][] = $search_ids ? "uri_id in (" . implode(',', $search_ids) . ")" : "1>2";
 		}
 
-		$pager = null;
 		#$table->db->debug = 1;
 		#$data = $table->gets($gets, $pager);
-		$data = $mData->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $search_ids);
+		$data = $mData->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $uri_id)->fetchall();
+		$pager = new Swoole\Pager([
+			'total' => $pager['total'],
+			'perpage' => $pager['pagesize'],
+			'nowindex' => $pager['page']
+		]);
 
 		$uri_ids = array();
 		foreach ($data as $k => $v) {
@@ -98,7 +160,7 @@ class Appstats extends \App\LoginController {
 		$this->assign('total', $pager->total);
 		$this->assign('pager', $pager->render());
 		$this->assign('data', $data);
-		$this->assign('host', $host);
+		#$this->assign('host', $host);
 		$this->assign('uri', $uri);
 		$this->assign('uri_id', $uri_id);
 		$this->display();

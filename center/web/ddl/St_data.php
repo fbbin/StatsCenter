@@ -23,28 +23,28 @@ class St_data extends DdlModel {
 	 * @return \Ddl\St_data
 	 */
 	static function getInstance($db = 'master') {
-		return parent::getInstance('St_data', $db);
+		return parent::createInstance('St_data', $db);
 	}
 
-	function getPageByDate(&$pager, $page, $pagesize, $host_id, $date, $order, $desc, $seach_ids = null) {
+	function getPageByDate(&$pager, $page, $pagesize, $host_id, $date, $order, $desc, $uri_ids = null) {
 		$where = [
 			self::F_host_id => $host_id,
 			self::F_ctime . ' >=' . $date,
 			self::F_ctime . ' <' => $date + 86400
 		];
-		if ($seach_ids !== null) {
-			$where[] = where_in(self::F_id, $seach_ids);
+		if ($uri_ids !== null) {
+			$where[] = where_in(self::F_uri_id, $uri_ids);
 		}
 		$orders = [
-			'time' => ['ctime' => $_GET['desc']],
-			'count_all' => ['count_all' => $_GET['desc']],
-			'count_fail' => ['count_failed' => $_GET['desc']],
-			'time_max' => ['time_max' => $_GET['desc']],
-			'time_min' => ['time_min' => $_GET['desc']]
+			'time' => ['ctime' => $desc],
+			'count_all' => ['count_all' => $desc],
+			'count_fail' => ['count_failed' => $desc],
+			'time_max' => ['time_max' => $desc],
+			'time_min' => ['time_min' => $desc]
 		];
 		if (isset($orders[$order])) {
-			$this->orderBy($orders[$order], $desc);
+			$this->orderBy($orders[$order]);
 		}
-		return $this->orderBy($order)->getPageWhere($where, $pager, $page, $pagesize);
+		return $this->getPageWhere($where, $pager, $page, $pagesize);
 	}
 }
