@@ -56,18 +56,19 @@ class Appstats extends \App\LoginController {
 		$_GET['desc'] = empty($_GET['desc']) ? "" : 1;
 
 		$uri = array_rebuild($mUri->getByHostId($host_id)->fetchall(), St_uri::F_id, St_uri::F_uri);
-		if ($uri_id) {
-			$uri_id = [$uri_id];
-		} elseif ($search) {
-			$uri_id = [];
+		if ($search) {
+			$search_id = [];
 			foreach ($uri as $k => $v) {
 				if (strpos($v, $search) !== false) {
-					$uri_id[] = $k;
+					$search_id[] = $k;
 				}
 			}
 		}
+		if ($uri_id) {
+			$search_id = in_array($uri_id, $search_id) ? [$uri_id] : [0];
+		}
 
-		$data = $mDataDay->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $uri_id)->fetchall();
+		$data = $mDataDay->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $search_id)->fetchall();
 		foreach ($data as $k => $v) {
 			#$uri_ids[$v['uri_id']] = 1;
 			$data[$k]['succ_rate'] = $v['count_failed'] ? round(100 - $v['count_failed'] * 100 / $v['count_all'], 2) : 100;
@@ -86,7 +87,7 @@ class Appstats extends \App\LoginController {
 		$this->assign('pager', $pager->render());
 		$this->assign('data', $data);
 		$this->assign('uri', $uri);
-		$this->assign('uri_id', $uri_id);
+		$this->assign('uri_id', $search_id);
 		$this->display();
 	}
 
@@ -133,21 +134,21 @@ class Appstats extends \App\LoginController {
 		if ($uri_id) {
 			$gets['where'][] = "`uri_id`='$uri_id'";
 		}*/
-		if ($uri_id) {
-			$uri_id = [$uri_id];
-		} elseif ($search) {
-			$uri_id = [];
+		$search_id = [];
+		if ($search) {
 			foreach ($uri as $k => $v) {
 				if (strpos($v, $search) !== false) {
-					$uri_id[] = $k;
+					$search_id[] = $k;
 				}
 			}
-			#$gets['where'][] = $search_ids ? "uri_id in (" . implode(',', $search_ids) . ")" : "1>2";
+		}
+		if ($uri_id) {
+			$search_id = in_array($uri_id, $search_id) ? [$uri_id] : [0];
 		}
 
 		#$table->db->debug = 1;
 		#$data = $table->gets($gets, $pager);
-		$data = $mData->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $uri_id)->fetchall();
+		$data = $mData->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $search_id)->fetchall();
 		$pager = new Swoole\Pager([
 			'total' => $pager['total'],
 			'perpage' => $pager['pagesize'],
@@ -181,6 +182,27 @@ class Appstats extends \App\LoginController {
 		$gets['where'] = ["`data_id`='" . $data_id . "'"];
 
 		$data = table('st_failed', 'app_stats')->gets($gets);
+		$ret_code = [];
+		foreach ($data as $d) {
+			$ret_code[] = $d['http_code'] == '200'
+				? ($d['json_code'] == 1
+					? ["逻辑错误,data_code:" . $d['data_code'] => $d['t_count']]
+					: ["JSON解析失败,json_code:" . $d['json_code'] => $d['t_count']])
+				: ["服务器错误,http_code:" . $d['http_code'] => $d['t_count']];
+		}
+
+		$this->assign('ret_code', $ret_code);
+		$this->display();
+	}
+
+	function fail_day() {
+		error_reporting(E_ALL & ~E_NOTICE);
+		$data_id = empty($_GET['id']) ? 0 : intval($_GET['id']);
+
+		$gets['order'] = "id";
+		$gets['where'] = ["`data_id`='" . $data_id . "'"];
+
+		$data = table('st_failed_day', 'app_stats')->gets($gets);
 		$ret_code = [];
 		foreach ($data as $d) {
 			$ret_code[] = $d['http_code'] == '200'

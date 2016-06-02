@@ -158,13 +158,17 @@
 										<?php if ($td['count_failed'] > 0): ?>
 											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
 											       style="color: red"><?= number_format($td['count_failed']) ?></a></td>
+											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
+											       style="color: red"><?= $td['succ_rate'] ?>
+												%</a>
+											</td>
 										<?php else: ?>
 											<td><span style="color: black"><?= number_format($td['count_failed']) ?></span>
 											</td>
+											<td style="color: green"><?= $td['succ_rate'] ?>
+												%
+											</td>
 										<?php endif ?>
-										<td style="color: <?php echo ($td['succ_rate'] ==100) ? "green" : "red" ?>"><?= $td['succ_rate'] ?>
-											%
-										</td>
 										<td><?= $td['time_max'] ?>s</td>
 										<td><?= $td['time_min'] ?>s</td>
 										<td><?= $td['time_avg'] ?>s</td>
