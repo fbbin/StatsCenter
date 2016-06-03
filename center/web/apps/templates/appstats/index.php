@@ -177,7 +177,7 @@
 										<td><?= $td['time_avg'] ?>s</td>
 										<td><?= $td['count_failed'] ? $td['time_failed_avg'] . 's' : "-"; ?></td>
 										<td>
-											<a href="/appstats/detail/?h=<?php echo urlencode($_GET['h']) ?>&uri=<?php echo $td['uri_id'] ?>">明细查看</a>
+											<a href="/appstats/detail/?h=<?php echo urlencode($_GET['h']) ?>&uri=<?php echo $td['uri_id'] ?>&date_key=<?php echo urlencode($_GET['date_key']) ?>">明细查看</a>
 											|
 											<a href="/appstats/history/?h=<?php echo urlencode($_GET['h']) ?>&uri=<?php echo $td['uri_id'] ?>&date_key=<?php echo urlencode($_GET['date_key']) ?>">历史数据对比</a>
 										</td>
