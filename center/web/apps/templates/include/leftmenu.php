@@ -11,19 +11,19 @@
 		    <a href="#"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">APP访问统计</span></a>
 		    <ul>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==1){ ?>class="active"<?php } ?>>
-				    <a href="/appstats/index/?h=1&date_key=<?php echo $_GET['date_key'] ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chelun</span></a>
+				    <a href="/appstats/index/?h=1&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chelun</span></a>
 			    </li>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==2){ ?>class="active"<?php } ?>>
-				    <a href="/appstats/index/?h=2&date_key=<?php echo $_GET['date_key'] ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chelun-pre</span></a>
+				    <a href="/appstats/index/?h=2&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chelun-pre</span></a>
 			    </li>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==3){ ?>class="active"<?php } ?>>
-				    <a href="/appstats/index/?h=3&date_key=<?php echo $_GET['date_key'] ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chaweizhang</span></a>
+				    <a href="/appstats/index/?h=3&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chaweizhang</span></a>
 			    </li>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==4){ ?>class="active"<?php } ?>>
-				    <a href="/appstats/index/?h=4&date_key=<?php echo $_GET['date_key'] ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">appdev</span></a>
+				    <a href="/appstats/index/?h=4&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">appdev</span></a>
 			    </li>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==6){ ?>class="active"<?php } ?>>
-				    <a href="/appstats/index/?h=6&date_key=<?php echo $_GET['date_key'] ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">common.auto98.com</span></a>
+				    <a href="/appstats/index/?h=6&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">common.auto98.com</span></a>
 			    </li>
 		    </ul>
 	    </li>    <li>
