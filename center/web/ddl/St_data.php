@@ -26,13 +26,13 @@ class St_data extends DdlModel {
 		return parent::createInstance('St_data', $db);
 	}
 
-	function getPageByDate(&$pager, $page, $pagesize, $host_id, $date, $order, $desc, $uri_ids = null) {
+	function getPageByDate(&$pager, $page, $pagesize, $host_id, $date, $order, $desc, $uri_ids = []) {
 		$where = [
 			self::F_host_id => $host_id,
 			self::F_ctime . ' >=' . $date,
 			self::F_ctime . ' <' => $date + 86400
 		];
-		if ($uri_ids !== null) {
+		if ($uri_ids) {
 			$where[] = where_in(self::F_uri_id, $uri_ids);
 		}
 		$desc = $desc ? " desc" : "";

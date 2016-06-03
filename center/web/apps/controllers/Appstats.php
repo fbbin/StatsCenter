@@ -65,7 +65,7 @@ class Appstats extends \App\LoginController {
 			}
 		}
 		if ($uri_id) {
-			$search_id = in_array($uri_id, $search_id) ? [$uri_id] : [0];
+			$search_id = (!$search || in_array($uri_id, $search_id)) ? [$uri_id] : [0];
 		}
 
 		$data = $mDataDay->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $search_id)->fetchall();
@@ -143,7 +143,7 @@ class Appstats extends \App\LoginController {
 			}
 		}
 		if ($uri_id) {
-			$search_id = in_array($uri_id, $search_id) ? [$uri_id] : [0];
+			$search_id = (!$search || in_array($uri_id, $search_id)) ? [$uri_id] : [0];
 		}
 
 		#$table->db->debug = 1;
@@ -216,61 +216,25 @@ class Appstats extends \App\LoginController {
 		$this->display('appstats/fail.php');
 	}
 
-	/**
-	 * 获取接口相关信息
-	 * @throws \Exception
-	 */
-	protected function getInterfaceInfo() {
-		//\Swoole\Error::dbd();
-		$gets['select'] = 'id, name';
-		$gets['project_id'] = $this->projectId;
-
-		$modules = table('module')->gets($gets);
-		if (empty($_GET['date_key'])) {
-			$_GET['date_key'] = date('Y-m-d');
-		}
-
-		if (empty($_GET['module_id'])) {
-			$_GET['module_id'] = $modules[0]['id'];
-		}
-
-		$gets = array();
-		$gets['select'] = 'id,name,alias';
-
-		$interface_ids = $this->redis->sMembers($_GET['module_id']);
-		if (!empty($interface_ids)) {
-			$_ip = array();
-			$_ip['in'] = array(
-				'id',
-				implode(',', $interface_ids)
-			);
-			$interfaces = table('interface')->gets($_ip);
-		} else {
-			$gets['module_id'] = intval($_GET['module_id']);
-			$interfaces = table('interface')->gets($gets);
-		}
-
-		if (empty($_GET['interface_id'])) {
-			$_GET['interface_id'] = 0;
-		}
-		$this->assign('interfaces', $interfaces);
-		$this->assign('modules', $modules);
-	}
-
 	function history_data() {
-		if (empty($_GET['module_id']) or empty($_GET['interface_id'])) {
-			return $this->message(5001, "require module_id and interface_id");
+		if (empty($_GET['h'])) {
+			$_GET['h'] = 1;
 		}
-		$param = $_GET;
+		if (empty($_GET['uri'])) {
+			$_GET['uri'] = 1;
+		}
+		$host_id = intval($_GET['h']);
+		$uri_id = intval($_GET['uri']);
+		$start = strtotime($_GET['date_start']);
+		$end = strtotime($_GET['date_end']);
 
-		$param['date_start'] = !empty($_GET['date_start']) ? $_GET['date_start'] : date('Y-m-d');
-		$param['date_end'] = !empty($_GET['date_end']) ? $_GET['date_end'] : date('Y-m-d', time() - 86400);
-		$param['date_key'] = $_GET['date_start'];
+		$mData = St_data::getInstance('app_stats');
+		$d1 = $mData->getPageByDate($pager, 1, 9999999, $host_id, $start, 'time', 0, [$uri_id])->fetchall();
+		$d2 = $mData->getPageByDate($pager, 1, 9999999, $host_id, $end, 'time', 0, [$uri_id])->fetchall();
 
-		$d1 = $this->data($param, false, false);
-
-		$param['date_key'] = $_GET['date_end'];
-		$d2 = $this->data($param, false, false);
+		foreach ($d1 as $k => $v) {
+			$d1[$k]['index'] = floor(($v['ctime'] - $start) / 300);
+		}
 
 		return json_encode(array(
 			'data1' => $d1,
@@ -279,7 +243,14 @@ class Appstats extends \App\LoginController {
 	}
 
 	function history() {
+		$host_id = !empty($_GET['h']) ? intval($_GET['h']) : 1;
+		$uri_id = !empty($_GET['uri']) ? intval($_GET['uri']) : 0;
+
+		$mUri = St_uri::getInstance('app_stats');
+		$uri = array_rebuild($mUri->getByHostId($host_id)->fetchall(), St_uri::F_id, St_uri::F_uri);
 		$this->assign('width', self::$width);
+		$this->assign('uri', $uri);
+		$this->assign('uri_id', $uri_id);
 		$this->display();
 	}
 }

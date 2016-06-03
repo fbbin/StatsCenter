@@ -112,12 +112,48 @@
                                                         <option value="100">100</option>
                                                     </select><i></i></label></span></div>
                                         <div class="dataTables_filter" id="dt_basic_filter">
-                                            <?php include dirname(__DIR__).'/include/filter.php'; ?>
+	                                        <div class="form-group" style="width: 400px;">
+		                                        <select id="uri" class="select2">
+			                                        <option value="">所有接口</option>
+			                                        <?php foreach ($uri as $id=>$m): ?>
+				                                        <option value="<?= $id ?>"
+					                                        <?php if ($id == $uri_id) echo 'selected="selected"'; ?> >
+					                                        <?= $m ?></option>
+			                                        <?php endforeach; ?>
+		                                        </select>
+	                                        </div>
+	                                        <div class="form-group">
+		                                        时间：
+		                                        <label class="select">
+			                                        <select class="input-sm" id="filter_hour_s" onchange="StatsG.filterByHour(<?=(empty($force_reload)?'false':'true')?>)">
+				                                        <option value='00' selected="selected">00</option>
+				                                        <?php
+				                                        for ($i = 1; $i < 24; $i++)
+				                                        {
+					                                        $v = $i >= 10 ? $i : '0' . $i;
+					                                        $select = (!empty($_GET['hour_start']) and $v == $_GET['hour_start']) ? 'selected="selected"' : '';
+					                                        echo "<option value='$v' $select>$v</option>\n";
+				                                        }
+				                                        ?>
+			                                        </select>
+		                                        </label> ~
+		                                        <label class="select">
+			                                        <select class="input-sm" id="filter_hour_e" onchange="StatsG.filterByHour(<?=(empty($force_reload)?'false':'true')?>)">
+				                                        <?php
+				                                        for ($i = 0; $i < 23; $i++) {
+					                                        $v = $i >= 10 ? $i : '0' . $i;
+					                                        echo "<option value=$v>$v</option>\n";
+				                                        }
+				                                        ?>
+				                                        <option value='23' selected="selected">23</option>
+			                                        </select>
+		                                        </label>
+	                                        </div>
                                             <div class="form-group">
                                                 日期：
-                                                <input type="text" class="form-control datepicker" data-dateformat="yy-mm-dd" id="history_date_start" readonly="readonly" value="<?=date('Y-m-d')?>" onchange="StatsG.showHistoryData()" />
+                                                <input type="text" class="form-control datepicker" data-dateformat="yy-mm-dd" id="history_date_start" readonly="readonly" value="<?=$_GET['date_key']?>" onchange="StatsG.showHistoryData()" />
                                                 &nbsp;&nbsp;&nbsp;与&nbsp;&nbsp;&nbsp;
-                                                <input type="text" class="form-control datepicker" data-dateformat="yy-mm-dd" id="history_date_end" readonly="readonly" value="<?=date('Y-m-d', time() - 86400)?>" onchange="StatsG.showHistoryData()"/>
+                                                <input type="text" class="form-control datepicker" data-dateformat="yy-mm-dd" id="history_date_end" readonly="readonly" value="<?=date('Y-m-d', strtotime($_GET['date_key']) - 86400)?>" onchange="StatsG.showHistoryData()"/>
                                             </div>
                                         </div>
                                     </div>
@@ -212,15 +248,17 @@ you can add as many as you like
     </ul>
 </div>
 <?php include dirname(__DIR__).'/include/javascript.php'; ?>
-<script src="<?=WEBROOT?>/apps/static/js/stats.js" type="text/javascript"></script>
+<script src="<?=WEBROOT?>/apps/static/js/appstats.js" type="text/javascript"></script>
 <script src="<?=WEBROOT?>/apps/static/js/list.js" type="text/javascript"></script>
 <script>
     var width = (<?php echo json_encode($width);?>);
     $(function() {
         pageSetUp();
 
-        $("#datepicker").datepicker("option",
-            $.datepicker.regional[ 'zh-CN' ]);
+	    StatsG.filter.h="<?php echo $_GET['h']; ?>";
+	    StatsG.filter.uri="<?php echo $_GET['uri']; ?>";
+		$("#datepicker").datepicker("option",
+        $.datepicker.regional[ 'zh-CN' ]);
 
         $('#date_key').change(function () {
             StatsG.filter.date_key = $('#date_key').val();
@@ -228,46 +266,16 @@ you can add as many as you like
         });
 
         $('history_date_end').datepicker();
-        StatsG.showHistoryData();
+            StatsG.showHistoryData();
 
         $("#toggle").click(function () {
             $("#history_module_id").toggle();
         });
 
-        $("#history_module_id").autocomplete({
-            source: function (request, response) {
-                $.ajax({
-                    url: "/stats/modules/",
-                    dataType: "json",
-                    data: {
-                        q: request.term
-                    },
-                    success: function (data) {
-                        response($.map(data, function (item) {
-                            return {
-                                label: item.name,
-                                value: item.id + ':' + item.name
-                            }
-                        }));
-                    }
-                });
-            },
-            minLength: 1,
-            delay: 600,
-            open: function () {
-                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-            },
-            select: function(event, ui ) {
-                var module_id = ui.item.value.split(':', 2)[0];
-                if (StatsG.filter.module_id != module_id) {
-                    StatsG.filter.module_id = module_id;
-                    getStatsData();
-                }
-            },
-            close: function () {
-                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-            }
-        });
+	    $('#uri').change(function () {
+		    StatsG.filter.uri = $('#uri').val();
+		    StatsG.showHistoryData();
+	    });
     });
 </script>
 

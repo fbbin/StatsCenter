@@ -174,7 +174,7 @@
 										<td><?= $td['time_avg'] ?>s</td>
 										<td><?= $td['count_failed']?$td['time_failed_avg'].'ms':"-"; ?></td>
 										<td>
-											<a href="/appstats/history/?h=<?php echo $_GET['h'] ?>&uri=<?php echo $td['uri_id'] ?>">历史数据对比</a>
+											<a href="/appstats/history/?h=<?php echo urlencode($_GET['h']) ?>&uri=<?php echo $td['uri_id'] ?>&date_key=<?php echo urlencode($_GET['date_key']) ?>">历史数据对比</a>
 										</td>
 									</tr>
 								<?php endforeach; ?>
@@ -318,7 +318,7 @@ you can add as many as you like
 			window.location.href = '<?php echo getQueryString('date_key') ?>date_key=' + $("#date_key").val();
 		});
 		$("#uri_id").change(function (e) {
-			window.location.href = '<?php echo getQueryString('date_key') ?>uri=' + $("#uri_id").val();
+			window.location.href = '<?php echo getQueryString('uri') ?>uri=' + $("#uri_id").val();
 		});
 	});
 </script>

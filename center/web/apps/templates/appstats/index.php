@@ -132,7 +132,7 @@
 								<thead>
 								<tr>
 									<th>接口</th>
-									<th class="order" data-value="time">时间</th>
+									<th>时间</th>
 									<th class="order" data-value="count_all">调用次数</th>
 									<th>成功次数</th>
 									<th class="order" data-value="count_fail">失败次数</th>
@@ -323,7 +323,7 @@ you can add as many as you like
 			window.location.href = '<?php echo getQueryString('date_key') ?>date_key=' + $("#date_key").val();
 		});
 		$("#uri_id").change(function (e) {
-			window.location.href = '<?php echo getQueryString('date_key') ?>uri=' + $("#uri_id").val();
+			window.location.href = '<?php echo getQueryString('uri') ?>uri=' + $("#uri_id").val();
 		});
 	});
 </script>

@@ -7,23 +7,23 @@
     <li <?php if ($this->isActiveMenu('stats')){ ?>class="active"<?php } ?>>
         <a href="/stats/index/" id="stats_index_link"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">统计数据</span></a>
     </li>
-	    <!--<li>
+	    <li>
 		    <a href="#"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">APP访问统计</span></a>
 		    <ul>
-			    <li <?php /*if ($this->isActiveMenu('appstats') && $_GET['h']==1){ */?>class="active"<?php /*} */?>>
+			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==1){ ?>class="active"<?php } ?>>
 				    <a href="/appstats/index/?h=1"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chelun.eclicks.cn</span></a>
 			    </li>
-			    <li <?php /*if ($this->isActiveMenu('appstats') && $_GET['h']==2){ */?>class="active"<?php /*} */?>>
+			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==2){ ?>class="active"<?php } ?>>
 				    <a href="/appstats/index/?h=2"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chelun-pre.eclicks.cn</span></a>
 			    </li>
-			    <li <?php /*if ($this->isActiveMenu('appstats') && $_GET['h']==3){ */?>class="active"<?php /*} */?>>
+			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==3){ ?>class="active"<?php } ?>>
 				    <a href="/appstats/index/?h=2"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chaweizhang.eclicks.cn</span></a>
 			    </li>
-			    <li <?php /*if ($this->isActiveMenu('appstats') && $_GET['h']==4){ */?>class="active"<?php /*} */?>>
+			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==4){ ?>class="active"<?php } ?>>
 				    <a href="/appstats/index/?h=2"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">appdev.eclicks.cn</span></a>
 			    </li>
 		    </ul>
-	    </li>-->    <li>
+	    </li>    <li>
         <a href="#"><i class="fa fa-lg fa-fw fa-bell"></i> <span class="menu-item-parent">模调管理</span></a>
         <ul>
             <li <?php if ($this->isActiveMenu('setting', 'add_interface')){ ?>class="active"<?php } ?>>
