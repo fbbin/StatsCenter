@@ -22,7 +22,7 @@ class St_host extends DdlModel {
 	 * @return \Ddl\St_host
 	 */
 	static function getInstance($db = 'master') {
-		return parent::getInstance('St_host', $db);
+		return parent::createInstance('St_host', $db);
 	}
 
 }

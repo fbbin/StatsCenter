@@ -22,7 +22,7 @@ class St_failed_day extends DdlModel {
 	 * @return \Ddl\St_failed_day
 	 */
 	static function getInstance($db = 'master') {
-		return parent::getInstance('St_failed_day', $db);
+		return parent::createInstance('St_failed_day', $db);
 	}
 
 	function getbyDataId($data_id) {

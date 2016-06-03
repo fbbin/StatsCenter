@@ -22,7 +22,7 @@ class St_failed extends DdlModel {
 	 * @return \Ddl\St_failed
 	 */
 	static function getInstance($db = 'master') {
-		return parent::getInstance('St_failed', $db);
+		return parent::createInstance('St_failed', $db);
 	}
 
 }

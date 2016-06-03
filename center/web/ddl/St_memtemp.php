@@ -25,7 +25,7 @@ class St_memtemp extends DdlModel {
 	 * @return \Ddl\St_memtemp
 	 */
 	static function getInstance($db = 'master') {
-		return parent::getInstance('St_memtemp', $db);
+		return parent::createInstance('St_memtemp', $db);
 	}
 
 	function getByMaxId($max_id) {

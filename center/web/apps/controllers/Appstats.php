@@ -235,6 +235,9 @@ class Appstats extends \App\LoginController {
 		foreach ($d1 as $k => $v) {
 			$d1[$k]['index'] = floor(($v['ctime'] - $start) / 300);
 		}
+		foreach ($d2 as $k => $v) {
+			$d2[$k]['index'] = floor(($v['ctime'] - $start) / 300);
+		}
 
 		return json_encode(array(
 			'data1' => $d1,
