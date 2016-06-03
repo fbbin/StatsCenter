@@ -216,11 +216,11 @@ StatsG.appendToHistoryTable = function (_data1, _data2) {
             line += '<td width="100" style="color: '+td_color+'">' + fail_rate + '%</td>';
             //平均响应事件
             avg_time = round(d['time_sum']*1000 / d['count_all'], 2);
-            line += '<td width="100">' + avg_time + 'ms </td>';
+            line += '<td width="100">' + avg_time + 's </td>';
             //失败响应时间
             if (d['time_failed_sum'] > 0) {
                 avg_fail_time = round(d['time_failed_sum']*1000 / d['count_failed'], 2);
-                line += '<td width="100">' + avg_fail_time + 'ms </td>';
+                line += '<td width="100">' + avg_fail_time + 's </td>';
             } else {
                 line += '<td width="100"> -- </td>';
             }
