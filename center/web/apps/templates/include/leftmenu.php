@@ -17,10 +17,13 @@
 				    <a href="/appstats/index/?h=2"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chelun-pre</span></a>
 			    </li>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==3){ ?>class="active"<?php } ?>>
-				    <a href="/appstats/index/?h=2"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chaweizhang</span></a>
+				    <a href="/appstats/index/?h=3"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chaweizhang</span></a>
 			    </li>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==4){ ?>class="active"<?php } ?>>
-				    <a href="/appstats/index/?h=2"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">appdev</span></a>
+				    <a href="/appstats/index/?h=4"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">appdev</span></a>
+			    </li>
+			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==6){ ?>class="active"<?php } ?>>
+				    <a href="/appstats/index/?h=6"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">common.auto98.com</span></a>
 			    </li>
 		    </ul>
 	    </li>    <li>

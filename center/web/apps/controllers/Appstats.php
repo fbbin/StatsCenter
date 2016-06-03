@@ -25,7 +25,10 @@ class Appstats extends \App\LoginController {
 
 	static $hosts = array(
 		1 => 'chelun.eclicks.cn',
-		2 => 'chelun-pre.eclicks.cn'
+		2 => 'chelun-pre.eclicks.cn',
+		3 => 'chelun.eclicks.cn',
+		4 => 'chelun-pre.eclicks.cn',
+		6 => 'common.auto98.com'
 	);
 
 	function home() {
