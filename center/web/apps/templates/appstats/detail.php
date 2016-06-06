@@ -144,7 +144,6 @@
 									<th>操作</th>
 								</tr>
 								</thead>
-								<tbody>
 
 								<?php foreach ($data as $td):
 									$bg_color = $td['succ_rate'] > 90 ? "#DFFFDF" : "#FFDFDF";
@@ -153,9 +152,8 @@
 										<td><a href="<?php echo getQueryString('uri'),'uri=',$td['uri_id'] ?>"><?= $uri[$td['uri_id']] ?></a></td>
 										<td><?= date('H:i', $td['ctime']), '~ ', date('H:i', $td['ctime']+300) ?></td>
 										<td><?= number_format($td['count_all']) ?></td>
-										<td><span style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></span>
-										</td>
 										<?php if ($td['count_failed'] > 0): ?>
+											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>&d=1" style="color: red"><?= number_format($td['count_all'] - $td['count_failed']) ?></a></td>
 											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
 											       style="color: red"><?= number_format($td['count_failed']) ?></a></td>
 											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
@@ -163,6 +161,7 @@
 												%</a>
 											</td>
 										<?php else: ?>
+											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>&d=1" style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></a></td>
 											<td><span style="color: black"><?= number_format($td['count_failed']) ?></span>
 											</td>
 											<td style="color: green"><?= $td['succ_rate'] ?>

@@ -47,7 +47,7 @@ foreach ($rs as $k => $v) {
 	if (!isset($host[$v['http_host']])) {
 		$host[$v[\Ddl\St_memtemp::F_http_host]] = $mHost->insert([\Ddl\St_host::F_name => $v[\Ddl\St_memtemp::F_http_host]]);
 	}
-	$rs[$k]['type'] = $v['http_code'] . '_' . ($v['http_json_parse'] == 1 ? 1 : 0) . '_' . ($v['http_data_code'] == 1 ? 1 : 0);
+	#$rs[$k]['type'] = $v['http_code'] . '_' . ($v['http_json_parse'] == 1 ? 1 : 0) . '_' . ($v['http_data_code'] == 1 ? 1 : 0);
 	$key = $host[$v['http_host']] . '/' . $v['http_uri'];
 	if (!isset($uri[$key])) {
 		$uri[$key] = $mUri->insert([
@@ -62,8 +62,10 @@ foreach ($rs as $k => $v) {
 		$puts[$key]['time_max'] = max($puts[$key]['time_max'], $v['time_max']);
 		$puts[$key]['time_min'] = min($puts[$key]['time_min'], $v['time_min']);
 		if ($v['http_code'] != 200 || $v['http_json_parse'] != 1 || $v['http_data_code'] != 1) {
-			$puts[$key]['time_failed_sum'] += $v['time_sum'];
-			$puts[$key]['count_failed'] += $v['t_count'];
+			if ($v['http_code'] != 200 || $v['http_json_parse'] != 1) {
+				$puts[$key]['time_failed_sum'] += $v['time_sum'];
+				$puts[$key]['count_failed'] += $v['t_count'];
+			}
 			$failed[$key][] = array(
 				'http_code' => $v['http_code'],
 				'json_code' => $v['http_json_parse'],
@@ -84,8 +86,10 @@ foreach ($rs as $k => $v) {
 			'time_failed_sum' => 0
 		);
 		if ($v['http_code'] != 200 || $v['http_json_parse'] != 1 || $v['http_data_code'] != 1) {
-			$puts[$key]['time_failed_sum'] += $v['time_sum'];
-			$puts[$key]['count_failed'] += $v['t_count'];
+			if ($v['http_code'] != 200 || $v['http_json_parse'] != 1) {
+				$puts[$key]['time_failed_sum'] += $v['time_sum'];
+				$puts[$key]['count_failed'] += $v['t_count'];
+			}
 			$failed[$key][] = array(
 				'http_code' => $v['http_code'],
 				'json_code' => $v['http_json_parse'],
