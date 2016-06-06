@@ -65,6 +65,8 @@ foreach ($rs as $k => $v) {
 			if ($v['http_code'] != 200 || $v['http_json_parse'] != 1) {
 				$puts[$key]['time_failed_sum'] += $v['time_sum'];
 				$puts[$key]['count_failed'] += $v['t_count'];
+			} else {
+				$puts[$key]['data_code_failed'] = 1;
 			}
 			$failed[$key][] = array(
 				'http_code' => $v['http_code'],
@@ -89,6 +91,8 @@ foreach ($rs as $k => $v) {
 			if ($v['http_code'] != 200 || $v['http_json_parse'] != 1) {
 				$puts[$key]['time_failed_sum'] += $v['time_sum'];
 				$puts[$key]['count_failed'] += $v['t_count'];
+			} else {
+				$puts[$key]['data_code_failed'] = 1;
 			}
 			$failed[$key][] = array(
 				'http_code' => $v['http_code'],
