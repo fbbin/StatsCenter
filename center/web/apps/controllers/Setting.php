@@ -1,5 +1,6 @@
 <?php
 namespace App\Controller;
+use Ddl\User;
 use mobilemsg\service\Filter;
 use Swoole;
 use App;
@@ -1151,6 +1152,44 @@ class Setting extends App\LoginController
         $this->assign('data', $data);
         $this->display();
     }
+
+	function alert_project() {
+		//不是超级用户不能查看修改用户
+		if ($this->userinfo['usertype'] != 0) {
+			return "access deny";
+		}
+
+		$pid = empty($_GET['id']) ? 0 : intval($_GET['id']);
+		$m = table('project_alert', 'platform');
+		$users = array_rebuild($m->db->query("select * from user")->fetchall(), 'uid', 'username');
+
+		$selected = array_rebuild($m->db->query("select * from project_alert where `pid`='$pid'")->fetchall(), 'id', 'uid');
+		if ($_POST) {
+			if (empty($_POST['uids'])) {
+				$_POST['uids'] = [];
+			}
+			foreach (array_diff($_POST['uids'], array_values($selected)) as $uid) {
+				$m->put(array(
+					'uid' => $uid,
+					'pid' => $pid
+				));
+			}
+			if ($dels = array_diff(array_values($selected), $_POST['uids'])) {
+				$m->db->query("delete from `project_alert` where `pid`='$pid' and `uid` in (" . implode(',', $dels) . ")");
+			}
+			header("location:/setting/project_list");
+			exit;
+		}
+
+		$form = array();
+		$form['users'] = \Swoole\Form::muti_select('uids[]', $users, $selected, null, array(
+			'class' => 'select2 select2-offscreen',
+			'multiple' => "1",
+			'style' => "width:100%"
+		), false);
+		$this->assign('form', $form);
+		$this->display();
+	}
 
     function app_project_list()
     {
