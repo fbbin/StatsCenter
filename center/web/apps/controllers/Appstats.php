@@ -28,7 +28,8 @@ class Appstats extends \App\LoginController {
 		2 => 'chelun-pre.eclicks.cn',
 		3 => 'chelun.eclicks.cn',
 		4 => 'chelun-pre.eclicks.cn',
-		6 => 'common.auto98.com'
+		6 => 'common.auto98.com',
+		7 => 'rtanalysis.eclicks.cn'
 	);
 
 	function home() {

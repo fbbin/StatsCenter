@@ -22,6 +22,9 @@
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==4){ ?>class="active"<?php } ?>>
 				    <a href="/appstats/index/?h=4&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">appdev</span></a>
 			    </li>
+			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==7){ ?>class="active"<?php } ?>>
+				    <a href="/appstats/index/?h=6&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">rtanalysis</span></a>
+			    </li>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==6){ ?>class="active"<?php } ?>>
 				    <a href="/appstats/index/?h=6&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">common.auto98.com</span></a>
 			    </li>
