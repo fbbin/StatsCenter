@@ -152,7 +152,7 @@
 										<td><a href="<?php echo getQueryString('uri'),'uri=',$td['uri_id'] ?>"><?= $uri[$td['uri_id']] ?></a></td>
 										<td><?= date('H:i', $td['ctime']), '~ ', date('H:i', $td['ctime']+300) ?></td>
 										<td><?= number_format($td['count_all']) ?></td>
-										<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>&d=1" style="color: <?php echo $d['data_code_failed']?"red":"green" ?>"><?= number_format($td['count_all'] - $td['count_failed']) ?></a></td>
+										<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>&d=1" style="color: <?php echo $td['data_code_failed']?"red":"green" ?>"><?= number_format($td['count_all'] - $td['count_failed']) ?></a></td>
 										<?php if ($td['count_failed'] > 0): ?>
 											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
 											       style="color: red"><?= number_format($td['count_failed']) ?></a></td>

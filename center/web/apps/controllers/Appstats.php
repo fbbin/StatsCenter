@@ -160,7 +160,6 @@ class Appstats extends \App\LoginController {
 			'nowindex' => $pager['page']
 		]);
 
-		$uri_ids = array();
 		foreach ($data as $k => $v) {
 			#$uri_ids[$v['uri_id']] = 1;
 			$data[$k]['succ_rate'] = $v['count_failed'] ? round(100 - $v['count_failed'] * 100 / $v['count_all'], 2) : 100;
