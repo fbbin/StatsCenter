@@ -215,6 +215,9 @@ class Appstats extends \App\LoginController {
 		$data = table('st_failed_day', 'app_stats')->gets($gets);
 		$ret_code = [];
 		foreach ($data as $d) {
+			if (isset($_GET['d']) xor $d['data_code'] == 1) {
+				continue;
+			}
 			$ret_code[] = $d['http_code'] == '200'
 				? ($d['json_code'] == 1
 					? ["逻辑错误,data_code:" . $d['data_code'] => $d['t_count']]

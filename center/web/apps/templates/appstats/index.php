@@ -155,10 +155,8 @@
 										</td>
 										<td>00:00 ~ 23:59</td>
 										<td><?= number_format($td['count_all']) ?></td>
-										<td><span
-												style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></span>
-										</td>
 										<?php if ($td['count_failed'] > 0): ?>
+											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>&d=1" style="color: red"><?= number_format($td['count_all'] - $td['count_failed']) ?></a></td>
 											<td><a href="/appstats/fail_day?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
 											       style="color: red"><?= number_format($td['count_failed']) ?></a></td>
 											<td><a href="/appstats/fail_day?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
@@ -166,6 +164,7 @@
 													%</a>
 											</td>
 										<?php else: ?>
+											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>&d=1" style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></a></td>
 											<td><span style="color: black"><?= number_format($td['count_failed']) ?></span>
 											</td>
 											<td style="color: green"><?= $td['succ_rate'] ?>
