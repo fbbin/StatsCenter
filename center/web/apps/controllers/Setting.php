@@ -1161,7 +1161,11 @@ class Setting extends App\LoginController
 
 		$pid = empty($_GET['id']) ? 0 : intval($_GET['id']);
 		$m = table('project_alert', 'platform');
-		$users = array_rebuild($m->db->query("select * from user")->fetchall(), 'uid', 'username');
+		$rs = $m->db->query("select * from user")->fetchall();
+		$users = [];
+		foreach ($rs as $v) {
+			$users[$v['uid']] = $v['username'] . "(" . $v['realname'] . ")";
+		}
 
 		$selected = array_rebuild($m->db->query("select * from project_alert where `pid`='$pid'")->fetchall(), 'id', 'uid');
 		if ($_POST) {
