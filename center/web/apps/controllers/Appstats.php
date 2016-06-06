@@ -220,7 +220,7 @@ class Appstats extends \App\LoginController {
 			}
 			$ret_code[] = $d['http_code'] == '200'
 				? ($d['json_code'] == 1
-					? ["逻辑错误,data_code:" . $d['data_code'] => $d['t_count']]
+					? ["data_code:" . $d['data_code'] => $d['t_count']]
 					: ["JSON解析失败,json_code:" . $d['json_code'] => $d['t_count']])
 				: ["服务器错误,http_code:" . $d['http_code'] => $d['t_count']];
 		}
