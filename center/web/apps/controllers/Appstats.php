@@ -93,7 +93,7 @@ class Appstats extends \App\LoginController {
 		$this->assign('pager', $pager->render());
 		$this->assign('data', $data);
 		$this->assign('uri', $uri);
-		$this->assign('uri_id', $search_id);
+		$this->assign('uri_id', $uri_id);
 		$this->display();
 	}
 
