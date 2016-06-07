@@ -43,12 +43,17 @@ class Page extends Swoole\Controller
         //跳转到登录平台
         if (empty($_GET['token']))
         {
+            login:
             $login_url = $sdk->getLoginUrl(WEBROOT . '/page/login/' . $refer);
             $this->http->redirect($login_url);
         }
         else
         {
             $userinfo = $sdk->getUserInfo($_GET['token']);
+            if (empty($userinfo))
+            {
+                goto login;
+            }
             $_SESSION['userinfo'] = $userinfo;
             $_SESSION['user_id'] = $userinfo['id'];
             $_SESSION['isLogin'] = true;
