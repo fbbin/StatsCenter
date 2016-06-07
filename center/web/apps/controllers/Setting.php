@@ -1164,7 +1164,7 @@ class Setting extends App\LoginController
 		$rs = $m->db->query("select * from user")->fetchall();
 		$users = [];
 		foreach ($rs as $v) {
-			$users[$v['uid']] = $v['username'] . "(" . $v['realname'] . ")";
+			$users[$v['id']] = $v['username'] . "(" . $v['realname'] . ")";
 		}
 
 		$selected = array_rebuild($m->db->query("select * from project_alert where `pid`='$pid'")->fetchall(), 'id', 'uid');
