@@ -1161,7 +1161,7 @@ class Setting extends App\LoginController
 
 		$pid = empty($_GET['id']) ? 0 : intval($_GET['id']);
 		$m = table('project_alert', 'platform');
-		$rs = $m->db->query("select * from user")->fetchall();
+		$rs = $m->db->query("select * from `user` where `blocking`=0")->fetchall();
 		$users = [];
 		foreach ($rs as $v) {
 			$users[$v['id']] = $v['username'] . "(" . $v['realname'] . ")";
