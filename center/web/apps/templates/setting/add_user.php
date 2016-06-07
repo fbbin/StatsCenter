@@ -129,6 +129,15 @@
                                         </div>
                                     </section>
                                     <section>
+                                        <label class="label">钉钉ID</label>
+                                        <label class="input"> <i class="icon-prepend fa fa-user"></i>
+                                            <?=$form['dingdingid']?>
+                                        </label>
+                                        <div class="note">
+                                            钉钉UserId
+                                        </div>
+                                    </section>
+                                    <section>
                                         <label class="label">微信号</label>
                                         <label class="input"> <i class="icon-prepend fa fa-user"></i>
                                             <?=$form['weixinid']?>
