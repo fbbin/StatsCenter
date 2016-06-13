@@ -214,8 +214,8 @@ StatsG.appendToHistoryTable = function (_data1, _data2) {
                 'style="color: red; ">' + d['count_failed'] + '</td>';
             //成功率
             line += '<td width="100" style="color: '+td_color+'">' + fail_rate + '%</td>';
-            //平均响应事件
-            avg_time = round(d['time_sum']*1000 / d['count_all'], 2);
+            //成功平均响应事件
+            avg_time = round((d['time_sum']-d['time_failed_sum'])*1000 / (d['count_all'] - d['count_failed']), 2);
             line += '<td width="100">' + avg_time + 's </td>';
             //失败响应时间
             if (d['time_failed_sum'] > 0) {
@@ -324,8 +324,8 @@ StatsG.parseStatsData = function(_data) {
     line += '<td data-order="' + _data['time_max'] + '">' + _data['time_max'] + 'ms</td>';
     //响应时间最小值
     line += '<td data-order="' + _data['time_min'] + '">' + _data['time_min'] + 'ms</td>';
-    //平均响应事件
-    avg_time = round(_data['time_sum'] / _data['count_all'], 2);
+    //成功平均响应事件
+    avg_time = round((_data['time_sum']-_data['time_failed_sum']) / (_data['count_all'] - _data['count_failed']), 2);
     line += '<td data-order="' + avg_time + '">' + avg_time + 'ms </td>';
 
     //失败响应时间
