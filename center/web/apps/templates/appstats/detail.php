@@ -153,7 +153,7 @@
 										<td><?= date('H:i', $td['ctime']), '~ ', date('H:i', $td['ctime']+300) ?></td>
 										<td><?= number_format($td['count_all']) ?></td>
 										<?php if($td['data_code_failed']): ?>
-										<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>&d=1" style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></a></td>
+										<td><b><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>&d=1" style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></a></b></td>
 											<?php else: ?>
 										<td style="color: green;"><?= number_format($td['count_all'] - $td['count_failed']) ?></td>
 										<?php endif ?>
