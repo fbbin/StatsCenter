@@ -75,8 +75,8 @@ class Appstats extends \App\LoginController {
 		$data = $mDataDay->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $search_id)->fetchall();
 		foreach ($data as $k => $v) {
 			#$uri_ids[$v['uri_id']] = 1;
-			$data[$k]['succ_rate'] = $v['count_failed'] ? 100 - floor($v['count_failed'] * 10000 / $v['count_all']) / 100 : 100;
-			$data[$k]['time_avg'] = $v['count_all'] ? floor($v['time_sum'] - $v['time_failed_sum']) * 100 / ($v['count_all'] - $v['count_failed']) / 100 : 0;
+			$data[$k]['succ_rate'] = $v['count_failed'] ? 100 - ceil($v['count_failed'] * 10000 / $v['count_all']) / 100 : 100;
+			$data[$k]['time_avg'] = $v['count_all'] ? round(($v['time_sum'] - $v['time_failed_sum']) / ($v['count_all'] - $v['count_failed']), 2) : 0;
 			$data[$k]['time_failed_avg'] = $v['count_failed'] ? floor($v['time_failed_sum'] * 100 / $v['count_failed']) / 100 : 0;
 			$data[$k]['time_max'] = round($data[$k]['time_max'], 2);
 			$data[$k]['time_min'] = round($data[$k]['time_min'], 2);
@@ -163,8 +163,8 @@ class Appstats extends \App\LoginController {
 
 		foreach ($data as $k => $v) {
 			#$uri_ids[$v['uri_id']] = 1;
-			$data[$k]['succ_rate'] = $v['count_failed'] ? 100 - floor($v['count_failed'] * 10000 / $v['count_all']) / 100 : 100;
-			$data[$k]['time_avg'] = $v['count_all'] ? floor($v['time_sum'] - $v['time_failed_sum']) * 100 / ($v['count_all'] - $v['count_failed']) / 100 : 0;
+			$data[$k]['succ_rate'] = $v['count_failed'] ? 100 - ceil($v['count_failed'] * 10000 / $v['count_all']) / 100 : 100;
+			$data[$k]['time_avg'] = $v['count_all'] ? round(($v['time_sum'] - $v['time_failed_sum']) / ($v['count_all'] - $v['count_failed']), 2) : 0;
 			$data[$k]['time_failed_avg'] = $v['count_failed'] ? floor($v['time_failed_sum'] * 100 / $v['count_failed']) / 100 : 0;
 			$data[$k]['time_max'] = round($data[$k]['time_max'], 2);
 			$data[$k]['time_min'] = round($data[$k]['time_min'], 2);
