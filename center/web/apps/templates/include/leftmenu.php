@@ -8,7 +8,7 @@
         <a href="/stats/index/" id="stats_index_link"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">统计数据</span></a>
     </li>
 	    <li>
-		    <a href="#"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">APP访问统计</span></a>
+		    <a href="#"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">客户端统计数据</span></a>
 		    <ul>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==1){ ?>class="active"<?php } ?>>
 				    <a href="/appstats/index/?h=1&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chelun</span></a>
