@@ -122,7 +122,7 @@ foreach ($puts as $key => $put) {
 			\Ddl\St_data_day::F_count_failed . ' = ' . \Ddl\St_data_day::F_count_failed . ' + ' => $put[\Ddl\St_data::F_count_failed],
 			\Ddl\St_data_day::F_time_failed_sum . ' = ' . \Ddl\St_data_day::F_time_failed_sum . ' + ' => $put[\Ddl\St_data::F_time_failed_sum],
 			\Ddl\St_data_day::F_time_max => max($put[\Ddl\St_data::F_time_max], $rs[\Ddl\St_data_day::F_time_max]),
-			\Ddl\St_data_day::F_time_min => max($put[\Ddl\St_data::F_time_min], $rs[\Ddl\St_data_day::F_time_min]),
+			\Ddl\St_data_day::F_time_min => min($put[\Ddl\St_data::F_time_min], $rs[\Ddl\St_data_day::F_time_min]),
 			\Ddl\St_data_day::F_time_sum . ' = ' . \Ddl\St_data_day::F_time_sum . ' + ' => $put[\Ddl\St_data::F_time_sum],
 			\Ddl\St_data_day::F_data_code_failed => max($put[\Ddl\St_data::F_data_code_failed], $rs[\Ddl\St_data_day::F_data_code_failed]),
 			\Ddl\St_data_day::F_succ_rate => $count_all ? 100 - ceil($count_failed * 10000 / $count_all) / 100 : 100,
