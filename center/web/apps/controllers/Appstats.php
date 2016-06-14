@@ -76,9 +76,10 @@ class Appstats extends \App\LoginController {
 			#$uri_ids[$v['uri_id']] = 1;
 			#$data[$k]['succ_rate'] = $v['count_failed'] ? 100 - ceil($v['count_failed'] * 10000 / $v['count_all']) / 100 : 100;
 			#$data[$k]['time_avg'] = $v['count_all'] ? round(($v['time_sum'] - $v['time_failed_sum']) / ($v['count_all'] - $v['count_failed']), 2) : 0;
-			$data[$k]['time_failed_avg'] = $v['count_failed'] ? floor($v['time_failed_sum'] * 100 / $v['count_failed']) / 100 : 0;
-			$data[$k]['time_max'] = round($data[$k]['time_max'], 2);
-			$data[$k]['time_min'] = round($data[$k]['time_min'], 2);
+			$data[$k]['time_failed_avg'] = $v['count_failed'] ? floor($v['time_failed_sum'] * 100000 / $v['count_failed']) / 100 : 0;
+			$data[$k]['time_max'] = ceil($v['time_max'] * 100) / 100;
+			$data[$k]['time_min'] = ceil($v['time_min'] * 100) / 100;
+			$data[$k]['time_avg'] = round($v['time_avg'] * 100, 2);
 			#$ids[$v['type']] = 1;
 			#$ids[$v['app_id']] = 1;
 		}
@@ -165,8 +166,9 @@ class Appstats extends \App\LoginController {
 			#$data[$k]['succ_rate'] = $v['count_failed'] ? 100 - ceil($v['count_failed'] * 10000 / $v['count_all']) / 100 : 100;
 			#$data[$k]['time_avg'] = $v['count_all'] ? round(($v['time_sum'] - $v['time_failed_sum']) / ($v['count_all'] - $v['count_failed']), 2) : 0;
 			$data[$k]['time_failed_avg'] = $v['count_failed'] ? floor($v['time_failed_sum'] * 100 / $v['count_failed']) / 100 : 0;
-			$data[$k]['time_max'] = round($data[$k]['time_max'], 2);
-			$data[$k]['time_min'] = round($data[$k]['time_min'], 2);
+			$data[$k]['time_max'] = ceil($data[$k]['time_max'] * 100) / 100;
+			$data[$k]['time_min'] = ceil($data[$k]['time_min'] * 100) / 100;
+			$data[$k]['time_avg'] = round($v['time_avg'], 2);
 			#$ids[$v['type']] = 1;
 			#$ids[$v['app_id']] = 1;
 		}

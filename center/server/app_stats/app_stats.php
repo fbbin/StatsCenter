@@ -108,7 +108,7 @@ $map = array();
 $today = strtotime(date("Y-m-d", $time));
 foreach ($puts as $key => $put) {
 	$put['succ_rate'] = $put['count_all'] ? 100 - ceil($put['count_failed'] * 10000 / $put['count_all']) / 100 : 100;
-	$put['time_avg'] = $put['count_all'] ? round(($put['time_sum'] - $put['time_failed_sum']) / ($put['count_all'] - $put['count_failed']), 2) : 0;
+	$put['time_avg'] = $put['count_all'] ? ($put['time_sum'] - $put['time_failed_sum']) / ($put['count_all'] - $put['count_failed']) : 0;
 	//写全天
 	$rs = $mDataDay->getByUri($put['host_id'], $put['uri_id'], $today)->fetch();
 	if ($rs) {
@@ -126,7 +126,7 @@ foreach ($puts as $key => $put) {
 			\Ddl\St_data_day::F_time_sum . ' = ' . \Ddl\St_data_day::F_time_sum . ' + ' => $put[\Ddl\St_data::F_time_sum],
 			\Ddl\St_data_day::F_data_code_failed => max($put[\Ddl\St_data::F_data_code_failed], $rs[\Ddl\St_data_day::F_data_code_failed]),
 			\Ddl\St_data_day::F_succ_rate => $count_all ? 100 - ceil($count_failed * 10000 / $count_all) / 100 : 100,
-			\Ddl\St_data_day::F_time_avg => $count_all ? round(($time_sum - $time_failed_sum) / ($count_all - $count_failed), 2) : 0,
+			\Ddl\St_data_day::F_time_avg => $count_all ? ($time_sum - $time_failed_sum) / ($count_all - $count_failed) : 0,
 		];
 		$mDataDay->update($rs[\Ddl\St_data_day::F_id], $data);
 		$data_day_id = $rs[\Ddl\St_data_day::F_id];
