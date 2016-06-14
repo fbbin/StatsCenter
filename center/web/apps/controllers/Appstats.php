@@ -76,7 +76,7 @@ class Appstats extends \App\LoginController {
 			#$uri_ids[$v['uri_id']] = 1;
 			#$data[$k]['succ_rate'] = $v['count_failed'] ? 100 - ceil($v['count_failed'] * 10000 / $v['count_all']) / 100 : 100;
 			#$data[$k]['time_avg'] = $v['count_all'] ? round(($v['time_sum'] - $v['time_failed_sum']) / ($v['count_all'] - $v['count_failed']), 2) : 0;
-			$data[$k]['time_failed_avg'] = $v['count_failed'] ? floor($v['time_failed_sum'] * 100000 / $v['count_failed']) / 100 : 0;
+			$data[$k]['time_failed_avg'] = $v['count_failed'] ? floor($v['time_failed_sum'] * 100 / $v['count_failed']) / 100 : 0;
 			$data[$k]['time_max'] = ceil($v['time_max'] * 100) / 100;
 			$data[$k]['time_min'] = ceil($v['time_min'] * 100) / 100;
 			$data[$k]['time_avg'] = round($v['time_avg'], 2);
