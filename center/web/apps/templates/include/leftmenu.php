@@ -5,7 +5,7 @@
     </li>
     <?php if ($this->isAllow('stats')) : ?>
     <li <?php if ($this->isActiveMenu('stats')){ ?>class="active"<?php } ?>>
-        <a href="/stats/index/" id="stats_index_link"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">统计数据</span></a>
+        <a href="/stats/index/" id="stats_index_link"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">服务端统计数据</span></a>
     </li>
 	    <li>
 		    <a href="#"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">客户端统计数据</span></a>
