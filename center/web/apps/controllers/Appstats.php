@@ -46,7 +46,6 @@ class Appstats extends \App\LoginController {
 		$uri_id = !empty($_GET['uri']) ? intval($_GET['uri']) : 0;
 		$date = strtotime($_GET['date_key']);
 		$search = isset($_GET['search']) ? $_GET['search'] : '';
-		$order = isset($_GET['order']) ? $_GET['order'] : '';
 		$page = empty($_GET['page']) ? 1 : max(1, intval($_GET['page']));
 		$pagesize = 20;
 
@@ -72,7 +71,7 @@ class Appstats extends \App\LoginController {
 			$search_id = (!$search || in_array($uri_id, $search_id)) ? [$uri_id] : [0];
 		}
 
-		$data = $mDataDay->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $search_id)->fetchall();
+		$data = $mDataDay->getPageByDate($pager, $page, $pagesize, $host_id, $date, $_GET['order'], $_GET['desc'], $search_id)->fetchall();
 		foreach ($data as $k => $v) {
 			#$uri_ids[$v['uri_id']] = 1;
 			#$data[$k]['succ_rate'] = $v['count_failed'] ? 100 - ceil($v['count_failed'] * 10000 / $v['count_all']) / 100 : 100;
@@ -107,7 +106,6 @@ class Appstats extends \App\LoginController {
 		$uri_id = !empty($_GET['uri']) ? intval($_GET['uri']) : 0;
 		$date = strtotime($_GET['date_key']);
 		$search = isset($_GET['search']) ? $_GET['search'] : '';
-		$order = isset($_GET['order']) ? $_GET['order'] : '';
 		$page = empty($_GET['page']) ? 1 : max(1, intval($_GET['page']));
 		$pagesize = 20;
 		#$this->getInterfaceInfo();
@@ -119,6 +117,7 @@ class Appstats extends \App\LoginController {
 
 		if (!isset($_GET['order'])) {
 			$_GET['order'] = 'time';
+			$_GET['desc'] = 1;
 		}
 		$_GET['desc'] = empty($_GET['desc']) ? "" : 1;
 
@@ -154,7 +153,7 @@ class Appstats extends \App\LoginController {
 
 		#$table->db->debug = 1;
 		#$data = $table->gets($gets, $pager);
-		$data = $mData->getPageByDate($pager, $page, $pagesize, $host_id, $date, $order, $_GET['desc'], $search_id)->fetchall();
+		$data = $mData->getPageByDate($pager, $page, $pagesize, $host_id, $date, $_GET['order'], $_GET['desc'], $search_id)->fetchall();
 		$pager = new Swoole\Pager([
 			'total' => $pager['total'],
 			'perpage' => $pager['pagesize'],
