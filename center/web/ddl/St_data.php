@@ -16,8 +16,9 @@ class St_data extends DdlModel {
 	/*
 	* 数据库字段
 	*/
-	const  F_id = 'id', F_time_sum = 'time_sum', F_time_max = 'time_max', F_time_min = 'time_min', F_time_failed_sum = 'time_failed_sum', F_count_all = 'count_all';
-	const  F_count_failed = 'count_failed', F_host_id = 'host_id', F_uri_id = 'uri_id', F_app_id = 'app_id', F_ctime = 'ctime', F_data_code_failed = 'data_code_failed';
+	const F_id = 'id', F_time_sum = 'time_sum', F_time_max = 'time_max', F_time_min = 'time_min', F_time_failed_sum = 'time_failed_sum', F_count_all = 'count_all';
+	const F_count_failed = 'count_failed', F_host_id = 'host_id', F_uri_id = 'uri_id', F_app_id = 'app_id', F_ctime = 'ctime', F_data_code_failed = 'data_code_failed';
+	const F_succ_rate = 'succ_rate', F_time_avg = 'time_avg';
 
 	/**
 	 * @return \Ddl\St_data
@@ -41,7 +42,9 @@ class St_data extends DdlModel {
 			'count_all' => ['count_all' => $desc],
 			'count_fail' => ['count_failed' => $desc],
 			'time_max' => ['time_max' => $desc],
-			'time_min' => ['time_min' => $desc]
+			'time_min' => ['time_min' => $desc],
+			'succ_rate' => ['succ_rate' => $desc],
+			'time_avg' => ['time_avg' => $desc]
 		];
 		if (isset($orders[$order])) {
 			$this->orderBy($orders[$order]);

@@ -209,13 +209,12 @@ StatsG.appendToHistoryTable = function (_data1, _data2) {
                 td_color = 'red';
             }
             //失败次数
-            line += '<td width="100"><a href="javascript: StatsG.openFailPage('+ StatsG.filter.module_id +','+StatsG.filter.interface_id+',' +
-                '\''+time_key+'\', \''+ date_key+'\')" ' +
+            line += '<td width="100"><a href="/appstats/fail?id=' + d['id']+'" ' +
                 'style="color: red; ">' + d['count_failed'] + '</td>';
             //成功率
             line += '<td width="100" style="color: '+td_color+'">' + fail_rate + '%</td>';
-            //平均响应事件
-            avg_time = round(d['time_sum']*1000 / d['count_all'], 2);
+            //成功平均响应事件
+            avg_time = round((d['time_sum']-d['time_failed_sum'])*1000 / (d['count_all'] - d['count_failed']), 2);
             line += '<td width="100">' + avg_time + 's </td>';
             //失败响应时间
             if (d['time_failed_sum'] > 0) {
@@ -307,12 +306,12 @@ StatsG.parseStatsData = function(_data) {
     if (_data['count_failed'] > 0) {
         if (_data.time_key != undefined)
         {
-            line += '<td data-order="' + _data['count_failed'] + '"><a href="javascript: StatsG.openFailPage('+_data.module_id+','+_data.interface_id+',\''+_data.time_key+'\')" ' +
+            line += '<td data-order="' + _data['count_failed'] + '"><a href="/appstats/fail?id='+_data['id']+'" ' +
             'style="color: red; ">' + number_format(_data['count_failed']) + '</td>';
         }
         else
         {
-            line += '<td data-order="' + _data['count_failed'] + '"><a href="javascript: StatsG.openFailPage('+_data.module_id+','+_data.interface_id+')" ' +
+            line += '<td data-order="' + _data['count_failed'] + '"><a href="/appstats/fail?id='+_data['id']+'" ' +
             'style="color: red; ">' + number_format(_data['count_failed']) + '</td>';
         }
     } else {
@@ -324,8 +323,8 @@ StatsG.parseStatsData = function(_data) {
     line += '<td data-order="' + _data['time_max'] + '">' + _data['time_max'] + 'ms</td>';
     //响应时间最小值
     line += '<td data-order="' + _data['time_min'] + '">' + _data['time_min'] + 'ms</td>';
-    //平均响应事件
-    avg_time = round(_data['time_sum'] / _data['count_all'], 2);
+    //成功平均响应事件
+    avg_time = round((_data['time_sum']-_data['time_failed_sum']) / (_data['count_all'] - _data['count_failed']), 2);
     line += '<td data-order="' + avg_time + '">' + avg_time + 'ms </td>';
 
     //失败响应时间

@@ -170,13 +170,13 @@
                                         <th width="100">调用次数</th>
                                         <th width="100">失败次数</th>
                                         <th width="100">成功率</th>
-                                        <th width="100">平均响应时间</th>
+                                        <th width="100">成功平均时间</th>
                                         <th width="100">失败平均时间</th>
                                         <th width="100">时间2</th>
                                         <th width="100">调用次数</th>
                                         <th width="100">失败次数</th>
                                         <th width="100">成功率</th>
-                                        <th width="100">平均响应时间</th>
+                                        <th width="100">成功平均时间</th>
                                         <th width="100">失败平均时间</th>
                                     </tr>
                                     </thead>

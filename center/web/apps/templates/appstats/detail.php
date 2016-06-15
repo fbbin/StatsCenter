@@ -136,10 +136,10 @@
 									<th class="order" data-value="count_all">调用次数</th>
 									<th>成功次数</th>
 									<th class="order" data-value="count_fail">失败次数</th>
-									<th>成功率</th>
+									<th class="order" data-value="succ_rate">成功率</th>
 									<th class="order" data-value="time_max">耗时最大值</th>
 									<th class="order" data-value="time_min">耗时最小值</th>
-									<th>成功平均耗时</th>
+									<th class="order" data-value="time_avg">成功平均耗时</th>
 									<th>失败平均耗时</th>
 									<th>操作</th>
 								</tr>
@@ -152,21 +152,21 @@
 										<td><a href="<?php echo getQueryString('uri'),'uri=',$td['uri_id'] ?>"><?= $uri[$td['uri_id']] ?></a></td>
 										<td><?= date('H:i', $td['ctime']), '~ ', date('H:i', $td['ctime']+300) ?></td>
 										<td><?= number_format($td['count_all']) ?></td>
-										<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>&d=1" style="color: <?php echo $td['data_code_failed']?"red":"green" ?>"><?= number_format($td['count_all'] - $td['count_failed']) ?></a></td>
+										<?php if($td['data_code_failed']): ?>
+										<td><b><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>&d=1" style="color: green"><?= number_format($td['count_all'] - $td['count_failed']) ?></a></b></td>
+											<?php else: ?>
+										<td style="color: green;"><?= number_format($td['count_all'] - $td['count_failed']) ?></td>
+										<?php endif ?>
 										<?php if ($td['count_failed'] > 0): ?>
 											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
 											       style="color: red"><?= number_format($td['count_failed']) ?></a></td>
-											<td><a href="/appstats/fail?h=<?php echo $_GET['h'] ?>&id=<?php echo $td['id'] ?>"
-											       style="color: red"><?= $td['succ_rate'] ?>
-												%</a>
-											</td>
 										<?php else: ?>
 											<td><span style="color: black"><?= number_format($td['count_failed']) ?></span>
 											</td>
-											<td style="color: green"><?= $td['succ_rate'] ?>
-												%
-											</td>
 										<?php endif ?>
+										<td style="color: green"><?= $td['succ_rate'] ?>
+											%
+										</td>
 										<td><?= $td['time_max'] ?>s</td>
 										<td><?= $td['time_min'] ?>s</td>
 										<td><?= $td['time_avg'] ?>s</td>
