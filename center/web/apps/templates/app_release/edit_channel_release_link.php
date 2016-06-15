@@ -9,8 +9,22 @@
         <ol class="breadcrumb">
             <li><a href="/">首页</a></li>
             <li><a href="/app_release/app_list">APP列表</a></li>
-            <li><a href="/app_release/release_list?app_id=<?=$app['id']?>">「<?=$app['name']?>」APP版本管理</a></li>
-            <li><?=isset($_GET['id']) ? '编辑' : '新增'?>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」下载包</li>
+            <li>
+                <a href="/app_release/release_link_list?app_id=<?=$app['id']?>&package_type=<?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?><?=PACKAGE_TYPE_INSTALL?><?php else : ?><?=PACKAGE_TYPE_PATCH?><?php endif; ?>">
+                「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」
+                <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
+                    下载包列表
+                <?php else : ?>
+                    补丁包列表
+                <?php endif; ?>
+            </a></li>
+            <li><?=isset($_GET['id']) ? '编辑' : '新增'?>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」
+                <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
+                    下载包
+                <?php else : ?>
+                    补丁包
+                <?php endif; ?>
+            </li>
         </ol>
         </ol>
     </div>
@@ -42,7 +56,13 @@
                      data-widget-editbutton="false" role="widget" style="width: 600px;float: left">
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-pencil"></i> </span>
-                        <h2><?=isset($_GET['id']) ? '编辑' : '新增'?>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」下载包</h2>
+                        <h2><?=isset($_GET['id']) ? '编辑' : '新增'?>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」
+                            <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
+                                下载包
+                            <?php else : ?>
+                                补丁包
+                            <?php endif; ?>
+                        </h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div class="widget-body">
                         <form id="form1" class="smart-form" role="form" action="" method="post" enctype="multipart/form-data">
@@ -61,6 +81,12 @@
                                     <label class="label">下载地址 <b class="text-danger">*</b></label>
                                     <label class="input">
                                         <?=\Swoole\Form::input('release_link', filter_value(array_get($form_data, 'release_link')))?>
+                                    </label>
+                                </section>
+                                <section>
+                                    <label class="label">备注</label>
+                                    <label class="textarea">
+                                        <?=\Swoole\Form::text('remarks', filter_value(array_get($form_data, 'remarks')))?>
                                     </label>
                                 </section>
                                 <?php if (!$has_fallback_link || !empty($is_fallback_link)) : ?>
@@ -83,6 +109,7 @@
                                 <?php endif; ?>
                             </fieldset>
                             <footer>
+                                <input name="package_type" type="hidden" value="<?=$package_type?>">
                                 <button type="submit" id="sub" class="btn btn-primary">
                                     提交
                                 </button>

@@ -29,101 +29,39 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <a href="/app_release/new_release?app_id=<?=$app['id']?>" class="btn btn-primary pull-right">
-                                    <i class="fa fa-plus"></i> 新增APP版本
+                                    <i class="fa fa-list"></i> 新增APP版本
                                 </a>
                             </div>
                         </div>
                     </div>
-                    <div class="widget-body">
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="widget-body no-padding">
+                        <table id="data_table_stats" class="table table-bordered table-">
+                            <thead>
+                                <tr>
+                                    <th>版本</th>
+                                    <?php if (intval($app['os']) === APP_OS_ANDROID) : ?>
+                                        <th>Android版本code</th>
+                                    <?php endif; ?>
+                                    <th>发布状态</th>
+                                    <th>更新策略</th>
+                                    <th width="25%">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data_table_body">
                                 <?php foreach ($data as $row) : ?>
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title">
-                                                <div class="row">
-                                                    <div class="col-md-4">
-                                                        版本<?=$row['version_number']?>
-                                                        <?php if ($row['status']) : ?>
-                                                            <span class="label label-success">已发布</span>
-                                                        <?php else : ?>
-                                                            <span class="label label-default">未发布</span>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <div class="col-md-8 text-align-right">
-                                                        <div class="btn-group">
-                                                            <a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>" class="btn btn-info btn-xs">
-                                                                <i class="fa fa-plus"></i> 新增下载包
-                                                            </a>
-                                                        </div>
-                                                        <div class="btn-group">
-                                                            <a href="/app_release/edit_release?id=<?=$row['id']?>" class="btn btn-info btn-xs">
-                                                                <i class="fa fa-pencil"></i> 编辑
-                                                            </a>
-                                                        </div>
-                                                        <div class="btn-group">
-                                                            <a href="/app_release/delete_release?id=<?=$row['id']?>" class="btn btn-danger btn-xs btn-delete">
-                                                                <i class="fa fa-pencil"></i> 删除
-                                                            </a>
-                                                        </div>
-                                                        <?php if (!$row['status']) : ?>
-                                                        <div class="btn-group">
-                                                            <a href="/app_release/enable_release?id=<?=$row['id']?>" class="btn btn-primary btn-xs">
-                                                                <i class="fa fa-arrow-circle-up"></i> 发布
-                                                            </a>
-                                                        </div>
-                                                        <?php else : ?>
-                                                        <div class="btn-group">
-                                                            <a href="/app_release/disable_release?id=<?=$row['id']?>" class="btn btn-danger btn-xs">
-                                                                <i class="fa fa-arrow-circle-down"></i> 下架
-                                                            </a>
-                                                        </div>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </div>
-                                            </h3>
-                                        </div>
-                                        <?php if (!empty($row['release_link_list'])) : ?>
-                                            <div class="panel-body no-padding">
-                                                <table class="table table-bordered table-hover table-condensed">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>渠道名称</th>
-                                                            <th>渠道标识符</th>
-                                                            <th>缺省下载地址 <i class="fa fa-question-circle text-primary" data-toggle="tooltip" data-placement="top" title="没有指定下载地址的渠道，都使用该渠道的下载地址"></i>
-                                                            </th>
-                                                            <th>下载地址</th>
-                                                            <th>操作</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php foreach ($row['release_link_list'] as $link) : ?>
-                                                            <tr<?php if ($link['fallback_link']) : ?> class="success"<?php endif; ?>>
-                                                                <td><?=$link['channel_name']?></td>
-                                                                <td><?=$link['channel_key']?></td>
-                                                                <td>
-                                                                    <?php if ($link['fallback_link']) : ?>
-                                                                        <i class="fa fa-check-circle text-success"></i>
-                                                                    <?php else : ?>
-                                                                        <i class="fa fa-times-circle text-danger"></i>
-                                                                    <?php endif; ?>
-                                                                </td>
-                                                                <td><a href="<?=$link['release_link']?>"><?=$link['release_link']?></a></td>
-                                                                <td>
-                                                                    <a href="/app_release/edit_channel_release_link?id=<?=$link['id']?>" class="btn btn-info btn-xs">编辑</a>
-                                                                    <a href="/app_release/delete_channel_release_link?id=<?=$link['id']?>" class="btn btn-danger btn-xs btn-delete">删除</a>
-                                                                </td>
-                                                            </tr>
-                                                        <?php endforeach; ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        <?php else : ?>
-                                            <div class="panel-body">
-                                                没有渠道下载包，<a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>">点击新增渠道下载包</a>
-                                            </div>
+                                    <tr>
+                                        <td>版本<?=$row['version_number']?></td>
+                                        <?php if (intval($app['os']) === APP_OS_ANDROID) : ?>
+                                            <td><?=$row['version_code']?></td>
                                         <?php endif; ?>
-                                        <div class="panel-footer">
+                                        <td>
+                                            <?php if ($row['status']) : ?>
+                                                <span class="label label-success">已发布</span>
+                                            <?php else : ?>
+                                                <span class="label label-default">未发布</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
                                             <?php if ($row['force_upgrade']) : ?>
                                                 所有版本强制更新
                                             <?php elseif (!empty($row['force_upgrade_version'])) : ?>
@@ -134,11 +72,37 @@
                                             <?php if ($row['prompt_interval']) : ?>
                                                 ，升级弹窗提示周期 <?=$row['prompt_interval']?> 秒</span>
                                             <?php endif; ?>
-                                        </div>
-                                    </div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="/app_release/edit_release?id=<?=$row['id']?>" class="btn btn-info btn-xs">
+                                                    <i class="fa fa-pencil"></i> 编辑
+                                                </a>
+                                            </div>
+                                            <div class="btn-group">
+                                                <a href="/app_release/delete_release?id=<?=$row['id']?>" class="btn btn-danger btn-xs btn-delete">
+                                                    <i class="fa fa-pencil"></i> 删除
+                                                </a>
+                                            </div>
+                                            <?php if (!$row['status']) : ?>
+                                                <div class="btn-group">
+                                                    <a href="/app_release/enable_release?id=<?=$row['id']?>" class="btn btn-primary btn-xs">
+                                                        <i class="fa fa-arrow-circle-up"></i> 发布
+                                                    </a>
+                                                </div>
+                                            <?php else : ?>
+                                                <div class="btn-group">
+                                                    <a href="/app_release/disable_release?id=<?=$row['id']?>" class="btn btn-danger btn-xs">
+                                                        <i class="fa fa-arrow-circle-down"></i> 下架
+                                                    </a>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
                                 <?php endforeach; ?>
-                            </div>
-                        </div>
+                            </tbody>
+                        </table>
+
                         <div class="dt-row dt-bottom-row">
                             <div class="pager">
                                 <span>总计：<strong><?=$pager->total?></strong>条</span>

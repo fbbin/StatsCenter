@@ -67,7 +67,11 @@
                                             <td><a href="/app_release/release_list?app_id=<?=$row['id']?>" class="badge">0</a></td>
                                         <?php endif; ?>
                                         <td>
-                                            <a href="/app_release/release_list?app_id=<?=$row['id']?>" class="btn btn-info btn-xs">版本管理</a>
+                                            <a href="/app_release/release_list?app_id=<?=$row['id']?>" class="btn btn-info btn-xs">APP版本管理</a>
+                                            <a href="/app_release/release_link_list?app_id=<?=$row['id']?>&package_type=0" class="btn btn-info btn-xs">下载包列表</a>
+                                            <?php if ($row['os'] === APP_OS_ANDROID) : ?>
+                                                <a href="/app_release/release_link_list?app_id=<?=$row['id']?>&package_type=1" class="btn btn-info btn-xs">补丁包列表</a>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

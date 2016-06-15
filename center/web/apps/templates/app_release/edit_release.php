@@ -54,6 +54,16 @@
     <div class="note">格式：x.y.z，x、y、z均为数字，取之范围均为<b class="text-warning">0~255</b>，如1.2.4</div>
                                 </section>
                             </fieldset>
+                            <?php if (intval($app['os']) === APP_OS_ANDROID) : ?>
+                            <fieldset>
+                                <section>
+                                    <label class="label">Android版本code</label>
+                                    <label class="input">
+                                        <?=\Swoole\Form::input('version_code', filter_value(array_get($form_data, 'version_code')))?>
+                                    </label>
+                                </section>
+                            </fieldset>
+                            <?php endif; ?>
                             <fieldset>
                                 <section>
                                     <label class="label">弹框标题 <b class="text-danger">*</b></label>
