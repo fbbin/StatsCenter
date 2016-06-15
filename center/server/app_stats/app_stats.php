@@ -44,6 +44,9 @@ $puts = array();
 $failed = array();
 
 foreach ($rs as $k => $v) {
+	if ($v['http_time'] > 60) {
+		continue;
+	}
 	if (!isset($host[$v['http_host']])) {
 		$host[$v[\Ddl\St_memtemp::F_http_host]] = $mHost->insert([\Ddl\St_host::F_name => $v[\Ddl\St_memtemp::F_http_host]]);
 	}
