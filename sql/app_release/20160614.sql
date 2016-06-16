@@ -6,4 +6,6 @@ ALTER TABLE `app_release_link` ADD `remarks` TEXT NOT NULL DEFAULT '' COMMENT 'å
 
 `ALTER TABLE app_release_link DROP INDEX app_channel_release;`
 
-ALTER TABLE `app_release_link` ADD UNIQUE( `app_id`, `channel_id`, `package_type`, `release_id`); 
+ALTER TABLE `app_release_link` ADD UNIQUE( `app_id`, `channel_id`, `package_type`, `release_id`);
+
+ALTER TABLE `app_release_link` ADD `md5` CHAR(32) NOT NULL DEFAULT '' AFTER `fallback_link`; 

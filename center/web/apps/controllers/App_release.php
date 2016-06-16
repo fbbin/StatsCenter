@@ -944,6 +944,16 @@ class App_release extends \App\LoginController
             $errors[] = '请填写正确的下载地址！';
         }
 
+        $output['md5'] = trim(array_get($input, 'md5'));
+        if ($output['md5'] === '')
+        {
+            $errors[] = 'MD5不能为空！';
+        }
+        if (strlen($output['md5']) !== 32)
+        {
+            $errors[] = 'MD5长度不正确！';
+        }
+
         $output['remarks'] = trim(array_get($input, 'remarks'));
 
         $output['fallback_link'] = !empty($input['fallback_link']) ? 1 : 0;

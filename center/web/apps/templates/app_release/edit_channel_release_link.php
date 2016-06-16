@@ -84,6 +84,12 @@
                                     </label>
                                 </section>
                                 <section>
+                                    <label class="label">MD5 <b class="text-danger">*</b></label>
+                                    <label class="input">
+                                        <?=\Swoole\Form::input('md5', filter_value(array_get($form_data, 'md5')))?>
+                                    </label>
+                                </section>
+                                <section>
                                     <label class="label">备注</label>
                                     <label class="textarea">
                                         <?=\Swoole\Form::text('remarks', filter_value(array_get($form_data, 'remarks')))?>
