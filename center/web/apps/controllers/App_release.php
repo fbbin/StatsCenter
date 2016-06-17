@@ -573,7 +573,7 @@ class App_release extends \App\LoginController
             return $this->error('DB错误，请联系管理员！');
         }
 
-        return $this->success('操作成功', '/app_release/release_link_list?app_id=' . intval($release_link['app_id']));
+        return $this->success('操作成功', '/app_release/release_link_list?app_id=' . intval($release_link['app_id']) . '&package_type=' . intval($release_link['package_type']));
     }
 
     public function channel_list()
