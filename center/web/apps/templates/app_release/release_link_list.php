@@ -1,4 +1,4 @@
-<?php include __DIR__.'/../include/header.php'; ?>
+c<?php include __DIR__.'/../include/header.php'; ?>
 
 <!-- MAIN PANEL -->
 <div id="main" role="main">
@@ -111,7 +111,7 @@
                                                 <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
                                                     没有渠道下载包，<a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>&package_type=0">点击新增渠道下载包</a>
                                                 <?php else : ?>
-                                                    没有渠道补丁包，<a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>&package_type=0">点击新增渠道补丁包</a>
+                                                    没有渠道补丁包，<a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>&package_type=1">点击新增渠道补丁包</a>
                                                 <?php endif; ?>
                                             </div>
                                         <?php endif; ?>
