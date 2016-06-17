@@ -219,7 +219,7 @@ class App_release extends \App\LoginController
         $num_link = table('app_release_link', 'platform')->count($query_params);
         if ($num_link)
         {
-            return $this->error('该版本的下载包不为空，请先清空该版本的下载包！');
+            return $this->error('该版本的下载包/补丁包不为空，请先清空该版本的下载包/补丁包！');
         }
 
         $result = table('app_release', 'platform')->del($release_id);
@@ -244,7 +244,7 @@ class App_release extends \App\LoginController
         }
 
         $query_params = [
-            'where' => sprintf('release_id = %d', $release_id),
+            'where' => sprintf('release_id = %d AND package_type = %d', $release_id, PACKAGE_TYPE_INSTALL),
         ];
         $num_release_link = table('app_release_link', 'platform')->count($query_params);
         if (!$num_release_link)
@@ -691,7 +691,7 @@ class App_release extends \App\LoginController
             $num_link = table('app_release_link', 'platform')->count($query_params);
             if ($num_link)
             {
-                return $this->error('该渠道的下载包不为空，请先清空改渠道的下载包。');
+                return $this->error('该渠道的下载包不为空，请先清空改渠道的下载包/渠道包。');
             }
 
             $result = table('app_channel', 'platform')->del($channel_id);
@@ -706,6 +706,7 @@ class App_release extends \App\LoginController
 
     public function editReleaseCheck($data, &$errors)
     {
+        $db = \Swoole::$php->db('platform');
         $version_number = trim(array_get($data, 'version_number'));
         if ($this->isValidVersionFormat($version_number, $matches))
         {
@@ -750,6 +751,38 @@ class App_release extends \App\LoginController
             $errors[] = 'APP版本号格式不正确！';
         }
         $db_data['version_code'] = trim(array_get($data, 'version_code'));
+        if ($db_data['version_code'] !== '')
+        {
+            if (isset($data['release_id']))
+            {
+                $query_params = [
+                    'where' => sprintf(
+                        "app_id = %d AND version_code = '%s' AND id != %d",
+                        $data['app_id'],
+                        $db->quote($db_data['version_code']),
+                        $data['release_id']
+                    ),
+                ];
+            }
+            else
+            {
+                $query_params = [
+                    'where' => sprintf(
+                        "app_id = %d AND version_code = '%s'",
+                        $data['app_id'],
+                        $db->quote($db_data['version_code'])
+                    ),
+                ];
+            }
+
+            $num_releases = table('app_release', 'platform')->count($query_params);
+
+            if ($num_releases)
+            {
+                $errors[] = "Android版本Code({$db_data['version_code']})已存在！";
+            }
+        }
+
         $db_data['prompt_title'] = trim(array_get($data, 'prompt_title'));
         if ($db_data['prompt_title'] === '')
         {

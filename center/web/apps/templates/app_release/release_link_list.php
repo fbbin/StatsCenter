@@ -47,10 +47,12 @@
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         版本<?=$row['version_number']?>
-                                                        <?php if ($row['status']) : ?>
-                                                            <span class="label label-success">已发布</span>
-                                                        <?php else : ?>
-                                                            <span class="label label-default">未发布</span>
+                                                        <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
+                                                            <?php if ($row['status']) : ?>
+                                                                <span class="label label-success">已发布</span>
+                                                            <?php else : ?>
+                                                                <span class="label label-default">未发布</span>
+                                                            <?php endif; ?>
                                                         <?php endif; ?>
                                                     </div>
                                                     <div class="col-md-8 text-align-right">
@@ -59,6 +61,19 @@
                                                                 <a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>&package_type=0" class="btn btn-info btn-xs">
                                                                     <i class="fa fa-plus"></i> 新增下载包
                                                                 </a>
+                                                            </div>
+                                                            <div class="btn-group">
+                                                                <?php if (!$row['status']) : ?>
+                                                                    <a href="/app_release/enable_release?id=<?=$row['id']?>" class="btn btn-info btn-xs">
+                                                                        <i class="fa fa-arrow-circle-up"></i> 发布
+                                                                    </a>
+                                                                <?php else : ?>
+                                                                    <div class="btn-group">
+                                                                        <a href="/app_release/disable_release?id=<?=$row['id']?>" class="btn btn-danger btn-xs">
+                                                                            <i class="fa fa-arrow-circle-down"></i> 下架
+                                                                        </a>
+                                                                    </div>
+                                                                <?php endif; ?>
                                                             </div>
                                                         <?php else : ?>
                                                             <div class="btn-group">

@@ -4,7 +4,7 @@ ALTER TABLE `app_release` ADD `version_code` VARCHAR(255) NOT NULL DEFAULT '' CO
 
 ALTER TABLE `app_release_link` ADD `remarks` TEXT NOT NULL DEFAULT '' COMMENT '备注' AFTER `fallback_link`;
 
-`ALTER TABLE app_release_link DROP INDEX app_channel_release;`
+ALTER TABLE app_release_link DROP INDEX app_channel_release;
 
 ALTER TABLE `app_release_link` ADD UNIQUE( `app_id`, `channel_id`, `package_type`, `release_id`);
 

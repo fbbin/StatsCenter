@@ -42,7 +42,6 @@
                                     <?php if (intval($app['os']) === APP_OS_ANDROID) : ?>
                                         <th>Android版本code</th>
                                     <?php endif; ?>
-                                    <th>发布状态</th>
                                     <th>更新策略</th>
                                     <th width="25%">操作</th>
                                 </tr>
@@ -54,13 +53,6 @@
                                         <?php if (intval($app['os']) === APP_OS_ANDROID) : ?>
                                             <td><?=$row['version_code']?></td>
                                         <?php endif; ?>
-                                        <td>
-                                            <?php if ($row['status']) : ?>
-                                                <span class="label label-success">已发布</span>
-                                            <?php else : ?>
-                                                <span class="label label-default">未发布</span>
-                                            <?php endif; ?>
-                                        </td>
                                         <td>
                                             <?php if ($row['force_upgrade']) : ?>
                                                 所有版本强制更新
@@ -84,19 +76,6 @@
                                                     <i class="fa fa-pencil"></i> 删除
                                                 </a>
                                             </div>
-                                            <?php if (!$row['status']) : ?>
-                                                <div class="btn-group">
-                                                    <a href="/app_release/enable_release?id=<?=$row['id']?>" class="btn btn-primary btn-xs">
-                                                        <i class="fa fa-arrow-circle-up"></i> 发布
-                                                    </a>
-                                                </div>
-                                            <?php else : ?>
-                                                <div class="btn-group">
-                                                    <a href="/app_release/disable_release?id=<?=$row['id']?>" class="btn btn-danger btn-xs">
-                                                        <i class="fa fa-arrow-circle-down"></i> 下架
-                                                    </a>
-                                                </div>
-                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
