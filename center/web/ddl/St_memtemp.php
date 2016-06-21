@@ -47,7 +47,10 @@ class St_memtemp extends DdlModel {
 			'http_code',
 			'http_json_parse',
 			'http_data_code'
-		], 0)->getWhere([self::F_id . ' <=' => $max_id]);
+		], 0)->getWhere([
+			self::F_id . ' <=' => $max_id,
+			self::F_http_time . ' <=' => 60
+		]);
 	}
 
 	function delByMaxId($max_id) {
