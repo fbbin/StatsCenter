@@ -903,9 +903,9 @@ class App_release extends \App\LoginController
             $errors[] = '渠道标识符不能为空！';
         }
         $db_data['channel_key_lowercase'] = strtolower($db_data['channel_key']);
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $db_data['channel_key']))
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $db_data['channel_key']))
         {
-            $errors[] = '渠道标识符只能是英文数字字母组合！';
+            $errors[] = '渠道标识符只能是英文数字字母下划线组合！';
         }
         if (empty($errors))
         {
