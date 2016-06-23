@@ -102,6 +102,7 @@
                 ?>
                 <a onclick="return confirm('确定要删除此项目');" href="/setting/delete_project/?id=<?=$d['id']?>" class="btn btn-danger btn-xs">删除</a>
                 <?php endif ?>
+	            <a href="/setting/alert_project/?id=<?=$d['id']?>" class="btn btn-warning btn-xs">告警</a>
             </td>
         </tr>
                                             <?php

@@ -5,7 +5,7 @@ class App_release extends \App\LoginController
 {
     public $if_filter = false;
 
-    function app_list()
+    public function app_list()
     {
         $query_params = [
             'page' => intval(array_get($_GET, 'page', 1)),
@@ -16,6 +16,7 @@ class App_release extends \App\LoginController
         $data = table('app', 'platform')->gets($query_params, $pager);
 
         $os_list = model('App')->getOSList();
+
         $app_id_list = [];
         foreach ($data as &$row)
         {
@@ -29,6 +30,7 @@ class App_release extends \App\LoginController
                 $row['os'] = APP_OS_UNKNOWN;
             }
 
+            $row['os'] = intval($row['os']);
             $app_id_list[] = intval($row['id']);
         }
         unset($row);
@@ -48,7 +50,7 @@ class App_release extends \App\LoginController
         $this->display();
     }
 
-    function release_list()
+    public function release_list()
     {
         $app_id = !empty($_GET['app_id']) ? intval($_GET['app_id']) : null;
         if (!is_null($app_id))
@@ -71,49 +73,6 @@ class App_release extends \App\LoginController
             'order' => 'version_int DESC, id DESC',
         ];
         $data = table('app_release', 'platform')->gets($query_params, $pager);
-        $release_id_list = [];
-
-        if (!empty($data))
-        {
-            foreach ($data as &$row)
-            {
-                $release_id_list[] = intval($row['id']);
-            }
-            unset($row);
-
-            $query_params = [
-                'select' => 'app_release_link.*, app_channel.name AS channel_name, app_channel.channel_key AS channel_key',
-                'order' => 'fallback_link DESC, app_release_link.channel_id DESC',
-                'where' => "app_release_link.app_id = {$app_id} AND app_release_link.release_id IN (" . implode(',', $release_id_list) . ')',
-                'leftjoin' => ['app_channel', 'app_release_link.channel_id = app_channel.id'],
-            ];
-            $link_list = table('app_release_link', 'platform')->gets($query_params);
-
-            if (!empty($link_list))
-            {
-                $temp_link_list = [];
-                foreach ($link_list as &$row)
-                {
-                    $row['release_id'] = intval($row['release_id']);
-                    if (!isset($temp_link_list[$row['release_id']]))
-                    {
-                        $temp_link_list[$row['release_id']] = [];
-                    }
-                    $temp_link_list[$row['release_id']][] = $row;
-                }
-                unset($row);
-                $link_list = $temp_link_list;
-
-                foreach ($data as &$row)
-                {
-                    if (isset($link_list[$row['id']]))
-                    {
-                        $row['release_link_list'] = $link_list[$row['id']];
-                    }
-                }
-                unset($row);
-            }
-        }
 
         $this->assign('pager', $pager);
         $this->assign('app', $app);
@@ -121,7 +80,7 @@ class App_release extends \App\LoginController
         $this->display();
     }
 
-    function new_release()
+    public function new_release()
     {
         $app_id = !empty($_GET['app_id']) ? intval($_GET['app_id']) : null;
         if (!is_null($app_id))
@@ -165,7 +124,7 @@ class App_release extends \App\LoginController
         $this->display('app_release/edit_release.php');
     }
 
-    function edit_release()
+    public function edit_release()
     {
         $release = null;
         if (!empty($_GET['id']))
@@ -242,7 +201,7 @@ class App_release extends \App\LoginController
         $this->display('app_release/edit_release.php');
     }
 
-    function delete_release()
+    public function delete_release()
     {
         $release_id = intval(array_get($_GET, 'id'));
         if (!empty($release_id))
@@ -260,7 +219,7 @@ class App_release extends \App\LoginController
         $num_link = table('app_release_link', 'platform')->count($query_params);
         if ($num_link)
         {
-            return $this->error('该版本的下载包不为空，请先清空该版本的下载包！');
+            return $this->error('该版本的下载包/补丁包不为空，请先清空该版本的下载包/补丁包！');
         }
 
         $result = table('app_release', 'platform')->del($release_id);
@@ -272,7 +231,7 @@ class App_release extends \App\LoginController
         return $this->success('操作成功！', '/app_release/release_list?app_id=' . intval($release['app_id']));
     }
 
-    function enable_release()
+    public function enable_release()
     {
         $release_id = intval(array_get($_GET, 'id'));
         if (!empty($release_id))
@@ -285,7 +244,7 @@ class App_release extends \App\LoginController
         }
 
         $query_params = [
-            'where' => sprintf('release_id = %d', $release_id),
+            'where' => sprintf('release_id = %d AND package_type = %d', $release_id, PACKAGE_TYPE_INSTALL),
         ];
         $num_release_link = table('app_release_link', 'platform')->count($query_params);
         if (!$num_release_link)
@@ -302,7 +261,7 @@ class App_release extends \App\LoginController
         \Swoole\JS::js_back('APP发布成功！');
     }
 
-    function disable_release()
+    public function disable_release()
     {
         $release_id = intval(array_get($_GET, 'id'));
         if (!empty($release_id))
@@ -323,7 +282,85 @@ class App_release extends \App\LoginController
         \Swoole\JS::js_back('APP下架成功！');
     }
 
-    function add_channel_release_link()
+    public function release_link_list()
+    {
+        $app_id = !empty($_GET['app_id']) ? intval($_GET['app_id']) : null;
+        if (!is_null($app_id))
+        {
+            $app = table('app', 'platform')->get($app_id)->get();
+        }
+        if (!empty($app))
+        {
+            $app['os_name'] = \Swoole::$php->config['setting']['app_os'][$app['os']];
+        }
+        else
+        {
+            return $this->error('APP不存在！');
+        }
+
+        $package_type = $this->value($_GET, 'package_type', PACKAGE_TYPE_INSTALL, true);
+        $this->assign('package_type', $package_type);
+
+        $query_params = [
+            'where' => sprintf("app_id = %d AND status != %d", $app_id, DB_STATUS_DELETED),
+            'page' => intval(array_get($_GET, 'page', 1)),
+            'pagesize' => 15,
+            'order' => 'version_int DESC, id DESC',
+        ];
+        $data = table('app_release', 'platform')->gets($query_params, $pager);
+        $release_id_list = [];
+
+        if (!empty($data))
+        {
+            foreach ($data as &$row)
+            {
+                $release_id_list[] = intval($row['id']);
+            }
+            unset($row);
+
+            $query_params = [
+                'select' => 'app_release_link.*, app_channel.name AS channel_name, app_channel.channel_key AS channel_key',
+                'order' => 'fallback_link DESC, app_release_link.channel_id DESC',
+                'where' => "app_release_link.app_id = {$app_id}
+                    AND app_release_link.release_id IN (" . implode(',', $release_id_list) . ')'
+                . ' AND app_release_link.package_type = ' . $package_type,
+                'leftjoin' => ['app_channel', 'app_release_link.channel_id = app_channel.id'],
+            ];
+            $link_list = table('app_release_link', 'platform')->gets($query_params);
+
+            if (!empty($link_list))
+            {
+                $temp_link_list = [];
+                foreach ($link_list as &$row)
+                {
+                    $row['release_id'] = intval($row['release_id']);
+                    if (!isset($temp_link_list[$row['release_id']]))
+                    {
+                        $temp_link_list[$row['release_id']] = [];
+                    }
+                    $temp_link_list[$row['release_id']][] = $row;
+                }
+                unset($row);
+                $link_list = $temp_link_list;
+
+                foreach ($data as &$row)
+                {
+                    if (isset($link_list[$row['id']]))
+                    {
+                        $row['release_link_list'] = $link_list[$row['id']];
+                    }
+                }
+                unset($row);
+            }
+        }
+
+        $this->assign('pager', $pager);
+        $this->assign('app', $app);
+        $this->assign('data', $data);
+        $this->display();
+    }
+
+    public function add_channel_release_link()
     {
         $release_id = !empty($_GET['release_id']) ? intval($_GET['release_id']) : null;
         if (!is_null($release_id))
@@ -341,6 +378,9 @@ class App_release extends \App\LoginController
             return $this->error('APP不存在，请联系管理员！');
         }
 
+        $package_type = $this->value($_GET, 'package_type', PACKAGE_TYPE_INSTALL, true);
+        $this->assign('package_type', $package_type);
+
         $query_params = [
             'page' => intval(array_get($_GET, 'page', 1)),
             'pagesize' => 15,
@@ -352,9 +392,14 @@ class App_release extends \App\LoginController
             return $this->error('APP渠道为空，<a href="/app_release/add_channel">点这里新增APP渠道</a>！');
         }
 
-        // 找出已有下载包的渠道
+        // 找出已有下载包/补丁包的渠道
         $query_params = [
-            'where' => sprintf('release_id = %d AND app_id = %d', $release_id, $app_id),
+            'where' => sprintf(
+                'release_id = %d AND app_id = %d AND package_type = %d',
+                $release_id,
+                $app_id,
+                $package_type
+            ),
         ];
         $has_fallback_link = false;
         $released_channel_id_list = [];
@@ -372,7 +417,7 @@ class App_release extends \App\LoginController
         $form_data['channel_list'] = [];
         foreach ($channel_list as $channel)
         {
-            // 只记录没有下载包的渠道
+            // 只记录没有下载包/补丁包的渠道
             if (!in_array($channel['id'], $released_channel_id_list))
             {
                 $form_data['channel_list'][$channel['id']] = $channel['name'];
@@ -389,6 +434,7 @@ class App_release extends \App\LoginController
             $form_data = array_merge($form_data, $_POST);
             $form_data['app_id'] = $app_id;
             $form_data['release_id'] = $release_id;
+
             $data = $this->validate($form_data, [$this, 'editChannelReleaseLinkCheck'], $errors);
             if (empty($errors))
             {
@@ -416,7 +462,7 @@ class App_release extends \App\LoginController
         $this->display('app_release/edit_channel_release_link.php');
     }
 
-    function edit_channel_release_link()
+    public function edit_channel_release_link()
     {
         $release_link_id = !empty($_GET['id']) ? intval($_GET['id']) : null;
         if (!is_null($release_link_id))
@@ -441,6 +487,9 @@ class App_release extends \App\LoginController
             return $this->error('APP不存在，请联系管理员！');
         }
 
+        $package_type = $this->value($release_link, 'package_type', PACKAGE_TYPE_INSTALL, true);
+        $this->assign('package_type', $package_type);
+
         // 是否已有缺省下载地址
         $query_params = [
             'where' => sprintf('release_id = %d AND app_id = %d AND fallback_link = 1', $release_id, $app_id),
@@ -456,6 +505,7 @@ class App_release extends \App\LoginController
             $form_data['app_id'] = $app_id;
             $form_data['release_id'] = $release_id;
             $form_data['release_link_id'] = $release_link_id;
+
             $data = $this->validate($form_data, [$this, 'editChannelReleaseLinkCheck'], $errors);
             if (empty($errors))
             {
@@ -487,7 +537,7 @@ class App_release extends \App\LoginController
         $this->display('app_release/edit_channel_release_link.php');
     }
 
-    function delete_channel_release_link()
+    public function delete_channel_release_link()
     {
         $release_link_id = intval(array_get($_GET, 'id'));
         if (!empty($release_link_id))
@@ -523,10 +573,10 @@ class App_release extends \App\LoginController
             return $this->error('DB错误，请联系管理员！');
         }
 
-        return $this->success('操作成功', '/app_release/release_list?app_id=' . intval($release_link['app_id']));
+        return $this->success('操作成功', '/app_release/release_link_list?app_id=' . intval($release_link['app_id']) . '&package_type=' . intval($release_link['package_type']));
     }
 
-    function channel_list()
+    public function channel_list()
     {
         $query_params = [
             'page' => intval(array_get($_GET, 'page', 1)),
@@ -558,7 +608,7 @@ class App_release extends \App\LoginController
         $this->display();
     }
 
-    function add_channel()
+    public function add_channel()
     {
         if (!empty($_POST))
         {
@@ -586,7 +636,7 @@ class App_release extends \App\LoginController
         $this->display('app_release/edit_channel.php');
     }
 
-    function edit_channel()
+    public function edit_channel()
     {
         $id = !empty($_GET['id']) ? intval($_GET['id']) : null;
         if (!is_null($id))
@@ -630,7 +680,7 @@ class App_release extends \App\LoginController
         $this->display('app_release/edit_channel.php');
     }
 
-    function delete_channel()
+    public function delete_channel()
     {
         $channel_id = intval(array_get($_GET, 'id'));
         if (!empty($channel_id))
@@ -641,7 +691,7 @@ class App_release extends \App\LoginController
             $num_link = table('app_release_link', 'platform')->count($query_params);
             if ($num_link)
             {
-                return $this->error('该渠道的下载包不为空，请先清空改渠道的下载包。');
+                return $this->error('该渠道的下载包不为空，请先清空改渠道的下载包/渠道包。');
             }
 
             $result = table('app_channel', 'platform')->del($channel_id);
@@ -654,8 +704,9 @@ class App_release extends \App\LoginController
         return $this->success('操作成功！', '/app_release/channel_list');
     }
 
-    function editReleaseCheck($data, &$errors)
+    public function editReleaseCheck($data, &$errors)
     {
+        $db = \Swoole::$php->db('platform');
         $version_number = trim(array_get($data, 'version_number'));
         if ($this->isValidVersionFormat($version_number, $matches))
         {
@@ -699,6 +750,39 @@ class App_release extends \App\LoginController
         {
             $errors[] = 'APP版本号格式不正确！';
         }
+        $db_data['version_code'] = trim(array_get($data, 'version_code'));
+        if ($db_data['version_code'] !== '')
+        {
+            if (isset($data['release_id']))
+            {
+                $query_params = [
+                    'where' => sprintf(
+                        "app_id = %d AND version_code = '%s' AND id != %d",
+                        $data['app_id'],
+                        $db->quote($db_data['version_code']),
+                        $data['release_id']
+                    ),
+                ];
+            }
+            else
+            {
+                $query_params = [
+                    'where' => sprintf(
+                        "app_id = %d AND version_code = '%s'",
+                        $data['app_id'],
+                        $db->quote($db_data['version_code'])
+                    ),
+                ];
+            }
+
+            $num_releases = table('app_release', 'platform')->count($query_params);
+
+            if ($num_releases)
+            {
+                $errors[] = "Android版本Code({$db_data['version_code']})已存在！";
+            }
+        }
+
         $db_data['prompt_title'] = trim(array_get($data, 'prompt_title'));
         if ($db_data['prompt_title'] === '')
         {
@@ -806,7 +890,7 @@ class App_release extends \App\LoginController
         return $db_data;
     }
 
-    function editChannelCheck($data, &$errors)
+    public function editChannelCheck($data, &$errors)
     {
         $db_data['name'] = trim(array_get($data, 'name'));
         if ($db_data['name'] === '')
@@ -819,9 +903,9 @@ class App_release extends \App\LoginController
             $errors[] = '渠道标识符不能为空！';
         }
         $db_data['channel_key_lowercase'] = strtolower($db_data['channel_key']);
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $db_data['channel_key']))
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $db_data['channel_key']))
         {
-            $errors[] = '渠道标识符只能是英文数字字母组合！';
+            $errors[] = '渠道标识符只能是英文数字字母下划线组合！';
         }
         if (empty($errors))
         {
@@ -865,7 +949,7 @@ class App_release extends \App\LoginController
         return $db_data;
     }
 
-    function editChannelReleaseLinkCheck($input, &$errors)
+    public function editChannelReleaseLinkCheck($input, &$errors)
     {
         $output['channel_id'] = trim(array_get($input, 'app_channel'));
         if ($output['channel_id'] !== '')
@@ -893,7 +977,24 @@ class App_release extends \App\LoginController
             $errors[] = '请填写正确的下载地址！';
         }
 
+        $output['md5'] = trim(array_get($input, 'md5'));
+        if ($output['md5'] === '')
+        {
+            $errors[] = 'MD5不能为空！';
+        }
+        if (strlen($output['md5']) !== 32)
+        {
+            $errors[] = 'MD5长度不正确！';
+        }
+
+        $output['remarks'] = trim(array_get($input, 'remarks'));
+
         $output['fallback_link'] = !empty($input['fallback_link']) ? 1 : 0;
+
+        $package_type = intval($input['package_type']) === PACKAGE_TYPE_INSTALL
+            ? PACKAGE_TYPE_INSTALL
+            : PACKAGE_TYPE_PATCH;
+        $output['package_type'] = $package_type;
 
         if (empty($errors) && $output['fallback_link'])
         {
@@ -901,13 +1002,24 @@ class App_release extends \App\LoginController
             if (empty($release_link_id))
             {
                 $query_params = [
-                    'where' => sprintf('app_id = %d AND release_id = %d AND fallback_link = 1', $input['app_id'], $input['release_id']),
+                    'where' => sprintf(
+                        'app_id = %d AND release_id = %d AND fallback_link = 1 AND package_type = %d',
+                        $input['app_id'],
+                        $input['release_id'],
+                        $package_type
+                    ),
                 ];
             }
             else
             {
                 $query_params = [
-                    'where' => sprintf('app_id = %d AND release_id = %d AND fallback_link = 1 AND id != %d', $input['app_id'], $input['release_id'], $release_link_id),
+                    'where' => sprintf(
+                        'app_id = %d AND release_id = %d AND fallback_link = 1 AND package_type = %d AND id != %d',
+                        $input['app_id'],
+                        $input['release_id'],
+                        $package_type,
+                        $release_link_id
+                    ),
                 ];
             }
             $num_link = table('app_release_link', 'platform')->count($query_params);
@@ -920,7 +1032,7 @@ class App_release extends \App\LoginController
         return $output;
     }
 
-    function isValidVersionFormat($version_number, &$matches)
+    public function isValidVersionFormat($version_number, &$matches)
     {
         return preg_match('/^(\d+)\.(\d+).(\d+)$/', $version_number, $matches);
     }
