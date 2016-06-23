@@ -64,6 +64,22 @@
                                 </div>
                             </div>
                             </div>
+                            <div class="well well-sm well-light">
+                                <?php
+                                if (empty($data)) {
+                                    echo "验证码为空";
+                                } else {
+                                    ?>
+                                    <code>
+                                    <?php
+                                    var_export($data);
+                                    ?>
+                                    </code>
+                                    <?php
+                                }
+                                ?>
+
+                            </div>
                         </div>
                         <!-- end widget content -->
 
