@@ -10,6 +10,9 @@
 	    <li>
 		    <a href="#"><i class="fa fa-lg fa-fw fa-th"></i> <span class="menu-item-parent">客户端统计数据</span></a>
 		    <ul>
+			    <li>
+				    <a href="#" onclick="return false"> <span class="menu-item-parent"> eclicks.cn </span></a>
+			    </li>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==1){ ?>class="active"<?php } ?>>
 				    <a href="/appstats/index/?h=1&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">chelun</span></a>
 			    </li>
@@ -25,8 +28,17 @@
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==7){ ?>class="active"<?php } ?>>
 				    <a href="/appstats/index/?h=7&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">rtanalysis</span></a>
 			    </li>
+			    <li>
+				    <a href="#" onclick="return false"> <span class="menu-item-parent"> auto98.com </span></a>
+			    </li>
 			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==6){ ?>class="active"<?php } ?>>
-				    <a href="/appstats/index/?h=6&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">common.auto98.com</span></a>
+				    <a href="/appstats/index/?h=6&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">common</span></a>
+			    </li>
+			    <li>
+				    <a href="#" onclick="return false"> <span class="menu-item-parent"> chelun.com </span></a>
+			    </li>
+			    <li <?php if ($this->isActiveMenu('appstats') && $_GET['h']==8){ ?>class="active"<?php } ?>>
+				    <a href="/appstats/index/?h=8&date_key=<?php echo urlencode($_GET['date_key']) ?>"><i class="fa fa-lg fa-fw fa-reorder"></i> <span class="menu-item-parent">community.dev</span></a>
 			    </li>
 		    </ul>
 	    </li>    <li>
