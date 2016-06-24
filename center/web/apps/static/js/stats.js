@@ -135,7 +135,7 @@ StatsG.showHistoryData = function () {
                     if (data1[i]) {
                         if (filter.type=='time') {
                             avg_time = round(data1[i].total_time / data1[i].total_count, 2);
-                            history_chart_option.series[0].data.push(data1[i].total_count);
+                            history_chart_option.series[0].data.push(avg_time);
                         } else {
                             history_chart_option.series[0].data.push(data1[i].total_count);
                         }
@@ -147,7 +147,7 @@ StatsG.showHistoryData = function () {
                     if (data2[i]) {
                         if (filter.type=='time') {
                             avg_time = round(data2[i].total_time / data2[i].total_count, 2);
-                            history_chart_option.series[0].data.push(data2[i].total_count);
+                            history_chart_option.series[0].data.push(avg_time);
                         } else {
                             history_chart_option.series[0].data.push(data2[i].total_count);
                         }
