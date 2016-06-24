@@ -147,9 +147,9 @@ StatsG.showHistoryData = function () {
                     if (data2[i]) {
                         if (filter.type=='time') {
                             avg_time = round(data2[i].total_time / data2[i].total_count, 2);
-                            history_chart_option.series[0].data.push(avg_time);
+                            history_chart_option.series[1].data.push(avg_time);
                         } else {
-                            history_chart_option.series[0].data.push(data2[i].total_count);
+                            history_chart_option.series[1].data.push(data2[i].total_count);
                         }
                     } else {
                         history_chart_option.series[1].data.push(0);
