@@ -133,13 +133,24 @@ StatsG.showHistoryData = function () {
                 for(var i = time_start; i< time_end; i++) {
                     history_chart_option.xAxis[0].data.push(getTimerStr(i));
                     if (data1[i]) {
-                        history_chart_option.series[0].data.push(data1[i].total_count);
+                        if (filter.type=='time') {
+                            avg_time = round(data1[i].total_time / data1[i].total_count, 2);
+                            history_chart_option.series[0].data.push(data1[i].total_count);
+                        } else {
+                            history_chart_option.series[0].data.push(data1[i].total_count);
+                        }
+
                     } else {
                         history_chart_option.series[0].data.push(0);
                     }
 
                     if (data2[i]) {
-                        history_chart_option.series[1].data.push(data2[i].total_count);
+                        if (filter.type=='time') {
+                            avg_time = round(data1[i].total_time / data1[i].total_count, 2);
+                            history_chart_option.series[0].data.push(data1[i].total_count);
+                        } else {
+                            history_chart_option.series[0].data.push(data1[i].total_count);
+                        }
                     } else {
                         history_chart_option.series[1].data.push(0);
                     }

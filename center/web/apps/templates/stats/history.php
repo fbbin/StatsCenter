@@ -78,11 +78,25 @@
 
                         -->
                         <header role="heading">
-                            <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                            <ul class="nav nav-tabs pull-left in">
 
-                            <h2>历史记录对比</h2>
+                                <li class="<?php if (empty($_GET['type']) or $_GET['type'] == 'count') echo "active" ?>">
+                                    <a class='type' href="<?=\Swoole\Tool::url_merge('type','count')?>">
+                                        <i class="fa fa-lg fa-arrow-circle-o-down"></i>
+                                        <span class="hidden-mobile hidden-tablet">请求量历史记录对比</span>
+                                    </a>
 
-                            <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                                </li>
+
+                                <li class="<?php if ($_GET['type'] == 'time') echo "active" ?>">
+                                    <a class='type' href="<?=\Swoole\Tool::url_merge('type','time')?>">
+                                        <i class="fa fa-lg fa-arrow-circle-o-down"></i>
+                                        <span class="hidden-mobile hidden-tablet"> 请求时间历史记录对比</span>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </header>
 
                         <!-- widget div-->
                         <div role="content">
@@ -220,6 +234,7 @@ you can add as many as you like
         pageSetUp();
         StatsG.filter.interface_id = '<?=$_GET['interface_id']?>';
         StatsG.filter.module_id = '<?=$_GET['module_id']?>';
+        StatsG.filter.type = '<?=$_GET['type']?>';
 
         $("#datepicker").datepicker("option",
             $.datepicker.regional[ 'zh-CN' ]);
