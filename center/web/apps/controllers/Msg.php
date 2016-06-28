@@ -391,11 +391,9 @@ class Msg extends \App\LoginController
             $data = \Swoole::$php->redis('platform')->get($key);
             if ($data) {
                 $data = unserialize($data);
-                debug($data);
             }
-            exit("{$app}-{$mobile}:验证码为空");
-        } else {
-            $this->display();
+            $this->assign('data', $data);
         }
+        $this->display();
     }
 }
