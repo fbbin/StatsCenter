@@ -300,6 +300,7 @@ you can add as many as you like
             var module_id = e.currentTarget.value.split(':')[0];
             window.localStorage.module_id = module_id;
             delete StatsG.filter.page;
+            delete StatsG.filter.interface_id;
             StatsG.filter.module_id = window.localStorage.module_id;
             StatsG.go();
         });
