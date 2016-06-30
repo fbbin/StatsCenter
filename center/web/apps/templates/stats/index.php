@@ -304,15 +304,15 @@ you can add as many as you like
             StatsG.filter.module_id = window.localStorage.module_id;
             StatsG.go();
         });
+        $("#interface_id").change(function (e) {
+            StatsG.filter.interface_id = e.currentTarget.value.split(':')[0];
+            delete StatsG.filter.page;
+            StatsG.go();
+        });
         $("#data_key").change(function(){
             window.localStorage.date_key = $(this).val();
             delete StatsG.filter.page;
             StatsG.filter.date_key = window.localStorage.date_key;
-            StatsG.go();
-        });
-        $("#interface_id").change(function (e) {
-            StatsG.filter.interface_id = e.currentTarget.value.split(':')[0];
-            delete StatsG.filter.page;
             StatsG.go();
         });
         $('#btn_last_hour').click(function (e){

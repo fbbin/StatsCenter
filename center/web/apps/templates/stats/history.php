@@ -33,8 +33,8 @@
 
         <!-- breadcrumb -->
         <ol class="breadcrumb">
-            <li>Home</li>
-            <li>Dashboard</li>
+            <li>服务器端统计</li>
+            <li>历史数据对比</li>
         </ol>
 
     </div>
@@ -235,6 +235,21 @@ you can add as many as you like
         StatsG.filter.interface_id = '<?=$_GET['interface_id']?>';
         StatsG.filter.module_id = '<?=$_GET['module_id']?>';
         StatsG.filter.type = '<?=$_GET['type']?>';
+        StatsG.url = "/stats/history";
+
+        $("#module_id").change(function (e) {
+            var module_id = e.currentTarget.value.split(':')[0];
+            window.localStorage.module_id = module_id;
+            delete StatsG.filter.page;
+            delete StatsG.filter.interface_id;
+            StatsG.filter.module_id = window.localStorage.module_id;
+            StatsG.go();
+        });
+        $("#interface_id").change(function (e) {
+            StatsG.filter.interface_id = e.currentTarget.value.split(':')[0];
+            delete StatsG.filter.page;
+            StatsG.go();
+        });
 
         $("#datepicker").datepicker("option",
             $.datepicker.regional[ 'zh-CN' ]);
