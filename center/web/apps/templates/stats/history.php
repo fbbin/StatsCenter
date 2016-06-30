@@ -235,7 +235,7 @@ you can add as many as you like
         StatsG.filter.interface_id = '<?=$_GET['interface_id']?>';
         StatsG.filter.module_id = '<?=$_GET['module_id']?>';
         StatsG.filter.type = '<?=$_GET['type']?>';
-        StatsG.url = "/stats/history";
+        StatsG.page_url = "/stats/history";
 
         $("#module_id").change(function (e) {
             var module_id = e.currentTarget.value.split(':')[0];
