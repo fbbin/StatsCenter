@@ -237,14 +237,6 @@ you can add as many as you like
         StatsG.filter.type = '<?=$_GET['type']?>';
         StatsG.page_url = "/stats/history";
 
-        $("#module_id").change(function (e) {
-            var module_id = e.currentTarget.value.split(':')[0];
-            window.localStorage.module_id = module_id;
-            delete StatsG.filter.page;
-            delete StatsG.filter.interface_id;
-            StatsG.filter.module_id = window.localStorage.module_id;
-            StatsG.go();
-        });
         $("#interface_id").change(function (e) {
             StatsG.filter.interface_id = e.currentTarget.value.split(':')[0];
             delete StatsG.filter.page;
