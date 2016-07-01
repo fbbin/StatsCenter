@@ -1644,4 +1644,30 @@ class Setting extends App\LoginController
             $this->display();
         }
     }
+
+    /**
+     *
+     */
+    function passport()
+    {
+        if (!empty($_POST['name']))
+        {
+            $data['add_uid'] = $this->uid;
+            $data['name'] = trim($_POST['name']);
+            $data['intro'] = $_POST['intro'];
+            $data['appkey'] = Swoole\RandomKey::string(16);
+            $insert_id = table('employee_app', 'platform')->put($data);
+            if ($insert_id)
+            {
+                $this->assign('success', array('appid' => $insert_id, 'appkey' => $data['appkey']));
+            }
+            else
+            {
+                $this->assign('error', "添加失败");
+            }
+        }
+        $this->assign('page_title', '新增APP项目');
+        $this->assign('form_data', !empty($form_data) ? $form_data : []);
+        $this->display();
+    }
 }
