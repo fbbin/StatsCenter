@@ -134,7 +134,7 @@
                         </div>
                         <div class="dt-row dt-bottom-row">
                             <div class="pager">
-                                <span>汇总：发送<?=$all['count']?>条 成功<?=$all['success']?>条 失败<?=(int)$all['failed']?>条
+                                <span>汇总：发送<?=$all['count']?>条，计费<?=(int)$all['bill']?>条，成功<?=$all['success']?>条，失败<?=(int)$all['failed']?>条，
                                     成功率<?=$all['success_rate']?>% 失败率<?=$all['failed_rate']?>%
                                 </span>
                             </div>
