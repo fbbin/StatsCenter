@@ -315,6 +315,7 @@ class Msg extends \App\LoginController
 
             $this->assign("cost", number_format($cost, 3));
             $this->assign("count", $count);
+            $this->assign("bill", $bill);
         }
 
         $month = $this->getSelect(date("Y-m"), 2);
