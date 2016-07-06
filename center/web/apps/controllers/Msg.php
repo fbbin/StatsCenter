@@ -293,7 +293,7 @@ class Msg extends \App\LoginController
             $gets['where'][] = 'addtime < "' . $end . '"';
             //\Swoole::$php->db("platform")->debug = 1;
 
-            $gets['order'] = 'id desc';
+            $gets['order'] = 'id asc';
             $gets['group'] = 'days';
             $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c,sum(bill) as bill";
             $data = table($table, "platform")->gets($gets);
