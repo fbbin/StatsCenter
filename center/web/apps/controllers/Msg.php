@@ -278,6 +278,13 @@ class Msg extends \App\LoginController
             if (strval($month)<'2016-03') {
                 self::$charge[5] = 0.043;
             }
+
+            if ($_GET['month'] < '2016-07') {
+                $table = "sms_log_history";
+            } else {
+                $table = "sms_log1";
+            }
+
             $this->assign("price", number_format(self::$charge[$gets['channel']], 3));
 
             $start = date("Y-m-d H:i:s", strtotime($month));
@@ -288,16 +295,18 @@ class Msg extends \App\LoginController
 
             $gets['order'] = 'id desc';
             $gets['group'] = 'days';
-            $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c";
-            $data = table("sms_log", "platform")->gets($gets);
+            $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c,sum(bill) as bill";
+            $data = table($table, "platform")->gets($gets);
             $cost = 0;
             $count = 0;
+            $bill = 0;
             foreach ($data as $k => $d) {
-                if (!empty($d['c'])) {
-                    $_cost = $d['c'] * (self::$charge[$gets['channel']]);
+                if (!empty($d['bill'])) {
+                    $_cost = $d['bill'] * (self::$charge[$gets['channel']]);
                     $data[$k]['cost'] = number_format($_cost, 3);
                     $cost += $_cost;
                     $count += $data[$k]['c'];
+                    $bill += $data[$k]['bill'];
                 }
             }
 
