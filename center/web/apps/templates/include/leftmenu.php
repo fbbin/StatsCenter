@@ -59,6 +59,10 @@
             <li <?php if ($this->isActiveMenu('setting', 'machine')){ ?>class="active"<?php } ?>>
                 <a href="/setting/machine/"><i class="fa fa-lg fa-fw fa-star"></i> <span class="menu-item-parent">分层视图</span></a>
             </li>
+            <li <?php if ($this->isActiveMenu('setting', 'passport')){ ?>class="active"<?php } ?>>
+                <a href="/setting/passport/"><i class="fa fa-lg fa-fw             fa-suitcase"></i> <span
+                        class="menu-item-parent">申请员工登录APP</span></a>
+            </li>
         </ul>
     </li>
     <?php endif; ?>
