@@ -5,7 +5,12 @@ require_once dirname(__DIR__).'/config.php';
 require dirname(__DIR__).'/apps/include/mail.php';
 $start_time = microtime(true);
 $now = date("Y-m-d");
-//$now = date("Y-m",strtotime("-4 month"));
+if ($now < '2016-07-01') {
+    $table = "sms_log_history";
+} else {
+    $table = "sms_log1";
+}
+
 $day_start = date("Y-m-d",strtotime("$now -1 day"));
 $day_end = date("Y-m-d",strtotime("$now"));
 echo ("[".date("Y-m-d H:i:s")."] sms_report_day start to report {$day_start} \n");
@@ -25,31 +30,46 @@ foreach ($channel_info['all'] as $id => $c)
 }
 $gets['order'] = 'id desc';
 $gets['group'] = 'channel';
-$gets['select'] = "channel,COUNT(id) as c";
-$data = table("sms_log","platform")->gets($gets);
+$gets['select'] = "channel,COUNT(id) as c,sum(bill) as bill";
+$data = table($table,"platform")->gets($gets);
+
 //$price = number_format(0.040,3);
 $all = array();
 foreach ($data as $d)
 {
-    if (!isset($all['all'])) {
+    if (!isset($all['all']['count'])) {
         $all['all']['count'] = $d['c'];
     } else {
         $all['all']['count'] += $d['c'];
     }
-    if (!isset($all[$d['channel']])) {
+
+    if (!isset($all['all']['bill'])) {
+        $all['all']['bill'] = $d['bill'];
+    } else {
+        $all['all']['bill'] += $d['bill'];
+    }
+
+    if (!isset($all[$d['channel']]['count'])) {
         $all[$d['channel']]['count'] = $d['c'];
     } else {
         $all[$d['channel']]['count'] += $d['c'];
     }
+
+    if (!isset($all[$d['channel']]['bill'])) {
+        $all[$d['channel']]['bill'] = $d['bill'];
+    } else {
+        $all[$d['channel']]['bill'] += $d['bill'];
+    }
 }
 
+$all['all']['total'] = 0;
 foreach ($all as $k => $a)
 {
-    $price = $channel_price[$k];
     if ($k != 'all') {
+        $price = $channel_price[$k];
         $all[$k]['price'] = $price;
-        $all[$k]['total'] = number_format($a['count']*$price,3);
-        $all['all']['total'] += $a['count']*$price;
+        $all[$k]['total'] = number_format($a['bill']*$price,3);
+        $all['all']['total'] += $a['bill']*$price;
     }
 }
 $all['all']['total'] = number_format($all['all']['total'],3);
@@ -161,7 +181,7 @@ function get_html($all)
                             background-image: -o-linear-gradient(top,#f2f2f2 0,#fafafa 100%);
                             background-image: -linear-gradient(top,#f2f2f2 0,#fafafa 100%);
                             font-size: 16px;">
-                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;text-align: left;font-weight: bold;">'.$all['time'].' 使用'.$all['all']['count'].'条  总计费用： '.$all['all']['total'].'元</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;text-align: left;font-weight: bold;">'.$all['time'].' 发送'.$all['all']['count'].'条，计费'.$all['all']['bill'].'条，总计费用： '.$all['all']['total'].'元</th>
                         </tr>
                     </thead>
                 </table>
@@ -181,8 +201,9 @@ function get_html($all)
                             background-image: -linear-gradient(top,#f2f2f2 0,#fafafa 100%);
                             font-size: 16px;">
                             <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">渠道</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">发送次数</th>
                             <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">单价</th>
-                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">数量</th>
+                            <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">计费次数</th>
                             <th style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;border-bottom: 2px solid #ddd;">费用汇总</th>
                         </tr>
                     </thead>
@@ -198,8 +219,9 @@ function get_html($all)
         }
         $body .= '<tr height="32" style="background-color:#DFFFDF" width="100%">
                     <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$channel[$k].'</td>
-                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['price'].'元</td>
                     <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['count'].'条</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['price'].'元</td>
+                    <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['bill'].'元</td>
                     <td style="border: 1px solid #ddd;display: table-cell;vertical-align: inherit;">'.$v['total'].'元</td>
                 </tr>';
     }
