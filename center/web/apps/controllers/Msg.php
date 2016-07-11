@@ -43,8 +43,10 @@ class Msg extends \App\LoginController
                 $end = $now;
             }
 
-            if ($_GET['start_time'] <= '2016-07-01') {
+            if ($_GET['start_time'] < '2016-06-01') {
                 $table = "sms_log_history";
+            } elseif ($_GET['start_time'] < '2016-07-01' and $_GET['start_time'] >= '2016-06-01') {
+                $table = "sms_log_history1";
             } else {
                 $table = "sms_log1";
             }
@@ -279,8 +281,10 @@ class Msg extends \App\LoginController
                 self::$charge[5] = 0.043;
             }
 
-            if ($_GET['month'] < '2016-07') {
+            if ($_GET['month'] < '2016-06') {
                 $table = "sms_log_history";
+            } elseif ($_GET['month'] < '2016-07-01' and $_GET['start_time'] >= '2016-06') {
+                $table = "sms_log_history1";
             } else {
                 $table = "sms_log1";
             }
