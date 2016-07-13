@@ -10,11 +10,7 @@
         <li><a href="/">首页</a></li>
         <li><a href="/app_release/app_list">APP列表</a></li>
         <li>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?>」
-            <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
-                下载包管理
-            <?php else : ?>
-                补丁包管理
-            <?php endif; ?>
+            <?php echo \App\PackageType::getPackageTypeName($package_type); ?>管理
         </li>
     </ol>
 
@@ -28,11 +24,7 @@
                 <header role="heading">
                     <span class="widget-icon"> <i class="fa fa-table"></i> </span>
                     <h2>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?>」
-                        <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
-                            下载包管理
-                        <?php else : ?>
-                            补丁包管理
-                        <?php endif; ?>
+                        <?php echo \App\PackageType::getPackageTypeName($package_type); ?>管理
                     </h2>
                     <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
                 </header>
@@ -47,7 +39,7 @@
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         版本<?=$row['version_number']?>
-                                                        <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
+                                                        <?php if ($package_type === \App\PackageType::INSTALL) : ?>
                                                             <?php if ($row['status']) : ?>
                                                                 <span class="label label-success">已发布</span>
                                                             <?php else : ?>
@@ -56,10 +48,10 @@
                                                         <?php endif; ?>
                                                     </div>
                                                     <div class="col-md-8 text-align-right">
-                                                        <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
+                                                        <?php if ($package_type === \App\PackageType::INSTALL) : ?>
                                                             <div class="btn-group">
                                                                 <a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>&package_type=0" class="btn btn-info btn-xs">
-                                                                    <i class="fa fa-plus"></i> 新增下载包
+                                                                    <i class="fa fa-plus"></i> 新增<?php echo \App\PackageType::getPackageTypeName($package_type); ?>
                                                                 </a>
                                                             </div>
                                                             <div class="btn-group">
@@ -77,8 +69,8 @@
                                                             </div>
                                                         <?php else : ?>
                                                             <div class="btn-group">
-                                                                <a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>&package_type=1" class="btn btn-info btn-xs">
-                                                                    <i class="fa fa-plus"></i> 新增补丁包
+                                                                <a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>&package_type=<?php echo $package_type; ?>" class="btn btn-info btn-xs">
+                                                                    <i class="fa fa-plus"></i> 新增<?php echo \App\PackageType::getPackageTypeName($package_type); ?>
                                                                 </a>
                                                             </div>
                                                         <?php endif; ?>
@@ -93,10 +85,16 @@
                                                         <tr>
                                                             <th>渠道名称</th>
                                                             <th>渠道标识符</th>
-                                                            <th>缺省下载地址 <i class="fa fa-question-circle text-primary" data-toggle="tooltip" data-placement="top" title="没有指定下载地址的渠道，都使用该渠道的下载地址"></i>
+                                                            <th>缺省渠道 <i class="fa fa-question-circle text-primary" data-toggle="tooltip" data-placement="top" title="没有配置的渠道，都使用该渠道下发的内容"></i>
                                                             </th>
-                                                            <th>下载地址</th>
-                                                            <th>操作</th>
+                                                            <th width="40%">
+                                                                <?php if ($package_type === \App\PackageType::SHARED_OBJECT) : ?>
+                                                                    下发内容
+                                                                <?php else : ?>
+                                                                    下载地址
+                                                                <?php endif; ?>
+                                                            </th>
+                                                            <th width="10%">操作</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -111,7 +109,17 @@
                                                                         <i class="fa fa-times-circle text-danger"></i>
                                                                     <?php endif; ?>
                                                                 </td>
-                                                                <td><a href="<?=$link['release_link']?>"><?=$link['release_link']?></a></td>
+                                                                <td>
+                                                                    <?php if ($package_type === \App\PackageType::SHARED_OBJECT) : ?>
+                                                                        <?php if ($data = json_decode($link['custom_data'], true)) : ?>
+                                                                            <pre><?php echo json_encode($data, JSON_PRETTY_PRINT) ?></pre>
+                                                                        <?php else : ?>
+                                                                            <?php echo filter_value(array_get($link, 'custom_data'), true); ?>
+                                                                        <?php endif; ?>
+                                                                    <?php else : ?>
+                                                                        <a href="<?=$link['release_link']?>"><?=$link['release_link']?></a>
+                                                                    <?php endif; ?>
+                                                                </td>
                                                                 <td>
                                                                     <a href="/app_release/edit_channel_release_link?id=<?=$link['id']?>" class="btn btn-info btn-xs">编辑</a>
                                                                     <a href="/app_release/delete_channel_release_link?id=<?=$link['id']?>" class="btn btn-danger btn-xs btn-delete">删除</a>
@@ -123,14 +131,10 @@
                                             </div>
                                         <?php else : ?>
                                             <div class="panel-body">
-                                                <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
-                                                    没有渠道下载包，<a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>&package_type=0">点击新增渠道下载包</a>
-                                                <?php else : ?>
-                                                    没有渠道补丁包，<a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>&package_type=1">点击新增渠道补丁包</a>
-                                                <?php endif; ?>
+                                                没有渠道<?php echo \App\PackageType::getPackageTypeName($package_type); ?>，<a href="/app_release/add_channel_release_link?release_id=<?=$row['id']?>&package_type=<?php echo $package_type; ?>">点击新增渠道<?php echo \App\PackageType::getPackageTypeName($package_type); ?></a>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
+                                        <?php if ($package_type === \App\PackageType::INSTALL) : ?>
                                         <div class="panel-footer">
                                             <?php if ($row['force_upgrade']) : ?>
                                                 所有版本强制更新

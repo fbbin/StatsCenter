@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
 
+use App\PackageType;
+
 class App_release extends \App\LoginController
 {
     public $if_filter = false;
@@ -244,7 +246,7 @@ class App_release extends \App\LoginController
         }
 
         $query_params = [
-            'where' => sprintf('release_id = %d AND package_type = %d', $release_id, PACKAGE_TYPE_INSTALL),
+            'where' => sprintf('release_id = %d AND package_type = %d', $release_id, PackageType::INSTALL),
         ];
         $num_release_link = table('app_release_link', 'platform')->count($query_params);
         if (!$num_release_link)
@@ -298,7 +300,7 @@ class App_release extends \App\LoginController
             return $this->error('APP不存在！');
         }
 
-        $package_type = $this->value($_GET, 'package_type', PACKAGE_TYPE_INSTALL, true);
+        $package_type = $this->value($_GET, 'package_type', PackageType::INSTALL, true);
         $this->assign('package_type', $package_type);
 
         $query_params = [
@@ -378,8 +380,10 @@ class App_release extends \App\LoginController
             return $this->error('APP不存在，请联系管理员！');
         }
 
-        $package_type = $this->value($_GET, 'package_type', PACKAGE_TYPE_INSTALL, true);
+        $package_type = $this->value($_GET, 'package_type', PackageType::INSTALL, true);
+        $package_type_name = PackageType::getPackageTypeName($package_type);
         $this->assign('package_type', $package_type);
+        $this->assign('package_type_name', $package_type);
 
         $query_params = [
             'page' => intval(array_get($_GET, 'page', 1)),
@@ -392,7 +396,7 @@ class App_release extends \App\LoginController
             return $this->error('APP渠道为空，<a href="/app_release/add_channel">点这里新增APP渠道</a>！');
         }
 
-        // 找出已有下载包/补丁包的渠道
+        // 找出已有包的渠道
         $query_params = [
             'where' => sprintf(
                 'release_id = %d AND app_id = %d AND package_type = %d',
@@ -417,7 +421,7 @@ class App_release extends \App\LoginController
         $form_data['channel_list'] = [];
         foreach ($channel_list as $channel)
         {
-            // 只记录没有下载包/补丁包的渠道
+            // 只记录没有包的渠道
             if (!in_array($channel['id'], $released_channel_id_list))
             {
                 $form_data['channel_list'][$channel['id']] = $channel['name'];
@@ -426,7 +430,7 @@ class App_release extends \App\LoginController
 
         if (empty($form_data['channel_list']))
         {
-            return $this->error('所有渠道都有下载包了！');
+            return $this->error(sprintf('所有渠道都有%s了！', $package_type_name));
         }
 
         if (!empty($_POST))
@@ -444,7 +448,8 @@ class App_release extends \App\LoginController
                 $insert_id = table('app_release_link', 'platform')->put($data);
                 if ($insert_id)
                 {
-                    \App\Session::flash('msg', '添加渠道下载包成功！');
+                    $msg = sprintf('添加渠道%s成功！', $package_type_name);
+                    \App\Session::flash('msg', $msg);
                     return $this->redirect("/app_release/edit_channel_release_link?id={$insert_id}");
                 }
                 else
@@ -471,7 +476,7 @@ class App_release extends \App\LoginController
         }
         if (empty($release_link))
         {
-            return $this->error('APP渠道下载包不存在！');
+            return $this->error('APP渠道包不存在！');
         }
         $release_id = intval($release_link['release_id']);
         $release = table('app_release', 'platform')->get($release_id)->get();
@@ -487,12 +492,14 @@ class App_release extends \App\LoginController
             return $this->error('APP不存在，请联系管理员！');
         }
 
-        $package_type = $this->value($release_link, 'package_type', PACKAGE_TYPE_INSTALL, true);
+        $package_type = $this->value($release_link, 'package_type', PackageType::INSTALL, true);
+        $package_type_name = PackageType::getPackageTypeName($package_type);
         $this->assign('package_type', $package_type);
+        $this->assign('package_type_name', $package_type_name);
 
         // 是否已有缺省下载地址
         $query_params = [
-            'where' => sprintf('release_id = %d AND app_id = %d AND fallback_link = 1', $release_id, $app_id),
+            'where' => sprintf('release_id = %d AND app_id = %d AND package_type = %d AND fallback_link = 1', $release_id, $app_id, $package_type),
         ];
         $has_fallback_link = table('app_release_link', 'platform')->count($query_params) ? true : false;
         // 当前下载地址是否缺省下载地址
@@ -513,7 +520,8 @@ class App_release extends \App\LoginController
                 $result = table('app_release_link', 'platform')->set($release_link_id, $data);
                 if ($result)
                 {
-                    \App\Session::flash('msg', '编辑APP渠道下载包成功！');
+                    $msg = sprintf('编辑APP渠道%s成功！', $package_type_name);
+                    \App\Session::flash('msg', $msg);
                     return $this->redirect("/app_release/edit_channel_release_link?id={$release_link_id}");
                 }
                 else
@@ -546,24 +554,30 @@ class App_release extends \App\LoginController
         }
         if (empty($release_link))
         {
-            return $this->error('APP渠道下载包不存在！');
+            return $this->error('APP渠道包不存在！');
         }
 
-        $query_params = [
-            'where' => sprintf('app_id = %d AND release_id = %d', $release_link['app_id'], $release_link['release_id']),
-        ];
-        $num_release_link = table('app_release_link', 'platform')->count($query_params);
-        // 下载包数量小于等于1的时候，需要APP版本下架才能删除下载包
-        if ($num_release_link <= 1)
+        $package_type = $this->value($release_link, 'package_type', PackageType::INSTALL, true);
+        // 只有下载包才做数量判断
+        if ($package_type === PackageType::INSTALL)
         {
-            $release = table('app_release', 'platform')->get($release_link['release_id']);
-            if (empty($release))
+            $query_params = [
+                'where' => sprintf('app_id = %d AND release_id = %d AND package_type = %d', $release_link['app_id'], $release_link['release_id'], $package_type),
+            ];
+            $num_release_link = table('app_release_link', 'platform')->count($query_params);
+
+            // 下载包数量小于等于1的时候，需要APP版本下架才能删除下载包
+            if ($num_release_link <= 1)
             {
-                return $this->error('下载包对应的APP版本不存在，请联系管理员！');
-            }
-            if (intval($release['status']) === DB_STATUS_ENABLED)
-            {
-                return $this->error('只剩最后一个下载包，请先让APP下架再删除！');
+                $release = table('app_release', 'platform')->get($release_link['release_id']);
+                if (empty($release))
+                {
+                    return $this->error('下载包对应的APP版本不存在，请联系管理员！');
+                }
+                if (intval($release['status']) === DB_STATUS_ENABLED)
+                {
+                    return $this->error('只剩最后一个下载包，请先让APP下架再删除！');
+                }
             }
         }
 
@@ -691,7 +705,7 @@ class App_release extends \App\LoginController
             $num_link = table('app_release_link', 'platform')->count($query_params);
             if ($num_link)
             {
-                return $this->error('该渠道的下载包不为空，请先清空改渠道的下载包/渠道包。');
+                return $this->error('该渠道的包不为空，请先清空改渠道的包。');
             }
 
             $result = table('app_channel', 'platform')->del($channel_id);
@@ -951,6 +965,11 @@ class App_release extends \App\LoginController
 
     public function editChannelReleaseLinkCheck($input, &$errors)
     {
+        $package_type = PackageType::exists($input['package_type'])
+            ? intval($input['package_type'])
+            : PackageType::INSTALL;
+        $output['package_type'] = $package_type;
+
         $output['channel_id'] = trim(array_get($input, 'app_channel'));
         if ($output['channel_id'] !== '')
         {
@@ -967,34 +986,41 @@ class App_release extends \App\LoginController
         {
             $errors[] = 'APP渠道不能为空！';
         }
-        $output['release_link'] = trim(array_get($input, 'release_link'));
-        if ($output['release_link'] === '')
-        {
-            $errors[] = '下载地址不能为空！';
-        }
-        if (!is_valid_url($output['release_link']))
-        {
-            $errors[] = '请填写正确的下载地址！';
-        }
 
-        $output['md5'] = trim(array_get($input, 'md5'));
-        if ($output['md5'] === '')
+        if ($package_type === PackageType::SHARED_OBJECT)
         {
-            $errors[] = 'MD5不能为空！';
+            $output['custom_data'] = trim(array_get($input, 'custom_data'));
+            if ($output['custom_data'] === '')
+            {
+                $errors[] = '自定义数据不能为空';
+            }
         }
-        if (strlen($output['md5']) !== 32)
+        else
         {
-            $errors[] = 'MD5长度不正确！';
+            $output['release_link'] = trim(array_get($input, 'release_link'));
+            if ($output['release_link'] === '')
+            {
+                $errors[] = '下载地址不能为空！';
+            }
+            if (!is_valid_url($output['release_link']))
+            {
+                $errors[] = '请填写正确的下载地址！';
+            }
+
+            $output['md5'] = trim(array_get($input, 'md5'));
+            if ($output['md5'] === '')
+            {
+                $errors[] = 'MD5不能为空！';
+            }
+            if (strlen($output['md5']) !== 32)
+            {
+                $errors[] = 'MD5长度不正确！';
+            }
         }
 
         $output['remarks'] = trim(array_get($input, 'remarks'));
 
         $output['fallback_link'] = !empty($input['fallback_link']) ? 1 : 0;
-
-        $package_type = intval($input['package_type']) === PACKAGE_TYPE_INSTALL
-            ? PACKAGE_TYPE_INSTALL
-            : PACKAGE_TYPE_PATCH;
-        $output['package_type'] = $package_type;
 
         if (empty($errors) && $output['fallback_link'])
         {

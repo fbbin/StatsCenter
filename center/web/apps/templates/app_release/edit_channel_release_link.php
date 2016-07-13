@@ -10,20 +10,12 @@
             <li><a href="/">首页</a></li>
             <li><a href="/app_release/app_list">APP列表</a></li>
             <li>
-                <a href="/app_release/release_link_list?app_id=<?=$app['id']?>&package_type=<?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?><?=PACKAGE_TYPE_INSTALL?><?php else : ?><?=PACKAGE_TYPE_PATCH?><?php endif; ?>">
-                「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」
-                <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
-                    下载包列表
-                <?php else : ?>
-                    补丁包列表
-                <?php endif; ?>
-            </a></li>
+                <a href="/app_release/release_link_list?app_id=<?=$app['id']?>&package_type=<?php echo $package_type; ?>">
+                    「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」
+                    <?php echo \App\PackageType::getPackageTypeName($package_type); ?>列表
+                </a></li>
             <li><?=isset($_GET['id']) ? '编辑' : '新增'?>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」
-                <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
-                    下载包
-                <?php else : ?>
-                    补丁包
-                <?php endif; ?>
+                <?php echo \App\PackageType::getPackageTypeName($package_type); ?>
             </li>
         </ol>
         </ol>
@@ -57,11 +49,7 @@
                     <header role="heading">
                         <span class="widget-icon"> <i class="fa fa-pencil"></i> </span>
                         <h2><?=isset($_GET['id']) ? '编辑' : '新增'?>「<?=model('App')->getOSName($app['os'])?> - <?=$app['name']?> <?=$release['version_number']?>」
-                            <?php if ($package_type === PACKAGE_TYPE_INSTALL) : ?>
-                                下载包
-                            <?php else : ?>
-                                补丁包
-                            <?php endif; ?>
+                            <?php echo \App\PackageType::getPackageTypeName($package_type); ?>
                         </h2>
                         <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                     <div class="widget-body">
@@ -77,18 +65,27 @@
                             </fieldset>
                             <?php endif; ?>
                             <fieldset>
-                                <section>
-                                    <label class="label">下载地址 <b class="text-danger">*</b></label>
-                                    <label class="input">
-                                        <?=\Swoole\Form::input('release_link', filter_value(array_get($form_data, 'release_link')))?>
-                                    </label>
-                                </section>
-                                <section>
-                                    <label class="label">MD5 <b class="text-danger">*</b></label>
-                                    <label class="input">
-                                        <?=\Swoole\Form::input('md5', filter_value(array_get($form_data, 'md5')))?>
-                                    </label>
-                                </section>
+                                <?php if ($package_type === \App\PackageType::SHARED_OBJECT) : ?>
+                                    <section>
+                                        <label class="label">自定义下发数据 <b class="text-danger">*</b></label>
+                                        <label class="textarea">
+                                            <?=\Swoole\Form::text('custom_data', filter_value(array_get($form_data, 'custom_data')), ['rows' => 10])?>
+                                        </label>
+                                    </section>
+                                <?php else : ?>
+                                    <section>
+                                        <label class="label">下载地址 <b class="text-danger">*</b></label>
+                                        <label class="input">
+                                            <?=\Swoole\Form::input('release_link', filter_value(array_get($form_data, 'release_link')))?>
+                                        </label>
+                                    </section>
+                                    <section>
+                                        <label class="label">MD5 <b class="text-danger">*</b></label>
+                                        <label class="input">
+                                            <?=\Swoole\Form::input('md5', filter_value(array_get($form_data, 'md5')))?>
+                                        </label>
+                                    </section>
+                                <?php endif; ?>
                                 <section>
                                     <label class="label">备注</label>
                                     <label class="textarea">
@@ -97,20 +94,20 @@
                                 </section>
                                 <?php if (!$has_fallback_link || !empty($is_fallback_link)) : ?>
                                     <section>
-                                        <label class="label">缺省下载地址</label>
+                                        <label class="label">缺省渠道</label>
                                         <label class="checkbox">
                                             <input name="fallback_link" type="checkbox"<?php if (!empty($is_fallback_link) || !empty(array_get($form_data, 'fallback_link'))) : ?> checked="checked"<?php endif; ?>><i></i>
-                                            没有指定下载地址的渠道，都使用该渠道的下载地址
+                                            没有配置的渠道，都使用该渠道下发的内容
                                         </label>
                                     </section>
                                 <?php else : ?>
                                     <section>
-                                        <label class="label">缺省下载地址</label>
+                                        <label class="label">缺省渠道</label>
                                         <label class="checkbox state-disabled">
                                             <input name="fallback_link" type="checkbox" disabled="disabled"><i></i>
-                                            没有指定下载地址的渠道，都使用该渠道的下载地址
+                                            没有配置的渠道，都使用该渠道下发的内容
                                         </label>
-                                        <div class="note">只能有一个缺省下载地址，所以这里无法勾选</div>
+                                        <div class="note">只能有一个缺省渠道，所以这里无法勾选</div>
                                     </section>
                                 <?php endif; ?>
                             </fieldset>

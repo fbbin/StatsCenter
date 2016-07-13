@@ -10,11 +10,6 @@ define('APP_OS_UNKNOWN', 0);
 define('APP_OS_IOS', 1);
 define('APP_OS_ANDROID', 2);
 
-// 下载包
-define('PACKAGE_TYPE_INSTALL', 0);
-// 补丁包
-define('PACKAGE_TYPE_PATCH', 1);
-
 // 强制更新
 define('APP_FORCE_UPGRADE_ENABLED', 1);
 define('APP_FORCE_UPGRADE_DISABLED', 0);

@@ -71,6 +71,7 @@
                                             <a href="/app_release/release_link_list?app_id=<?=$row['id']?>&package_type=0" class="btn btn-info btn-xs">下载包列表</a>
                                             <?php if ($row['os'] === APP_OS_ANDROID) : ?>
                                                 <a href="/app_release/release_link_list?app_id=<?=$row['id']?>&package_type=1" class="btn btn-info btn-xs">补丁包列表</a>
+                                                <a href="/app_release/release_link_list?app_id=<?=$row['id']?>&package_type=2" class="btn btn-info btn-xs">动态链接库列表</a>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
