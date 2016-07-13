@@ -307,8 +307,19 @@ class App_release extends \App\LoginController
             'where' => sprintf("app_id = %d AND status != %d", $app_id, DB_STATUS_DELETED),
             'page' => intval(array_get($_GET, 'page', 1)),
             'pagesize' => 15,
-            'order' => 'version_int DESC, id DESC',
         ];
+
+        // Android
+        if ($package_type === PackageType::SHARED_OBJECT)
+        {
+            $query_params['order'] = 'version_code DESC, version_int DESC, id DESC';
+        }
+        // iOS
+        else
+        {
+            $query_params['order'] = 'version_int DESC, id DESC';
+        }
+
         $data = table('app_release', 'platform')->gets($query_params, $pager);
         $release_id_list = [];
 
@@ -322,7 +333,7 @@ class App_release extends \App\LoginController
 
             $query_params = [
                 'select' => 'app_release_link.*, app_channel.name AS channel_name, app_channel.channel_key AS channel_key',
-                'order' => 'fallback_link DESC, app_release_link.channel_id DESC',
+                'order' => 'app_release_link.fallback_link DESC, app_release_link.channel_id DESC',
                 'where' => "app_release_link.app_id = {$app_id}
                     AND app_release_link.release_id IN (" . implode(',', $release_id_list) . ')'
                 . ' AND app_release_link.package_type = ' . $package_type,
@@ -767,33 +778,42 @@ class App_release extends \App\LoginController
         $db_data['version_code'] = trim(array_get($data, 'version_code'));
         if ($db_data['version_code'] !== '')
         {
-            if (isset($data['release_id']))
+            if (is_numeric($db_data['version_code']))
             {
-                $query_params = [
-                    'where' => sprintf(
-                        "app_id = %d AND version_code = '%s' AND id != %d",
-                        $data['app_id'],
-                        $db->quote($db_data['version_code']),
-                        $data['release_id']
-                    ),
-                ];
+                $db_data['version_code'] = intval($db_data['version_code']);
+
+                if (isset($data['release_id']))
+                {
+                    $query_params = [
+                        'where' => sprintf(
+                            "app_id = %d AND version_code = '%s' AND id != %d",
+                            $data['app_id'],
+                            $db->quote($db_data['version_code']),
+                            $data['release_id']
+                        ),
+                    ];
+                }
+                else
+                {
+                    $query_params = [
+                        'where' => sprintf(
+                            "app_id = %d AND version_code = '%s'",
+                            $data['app_id'],
+                            $db->quote($db_data['version_code'])
+                        ),
+                    ];
+                }
+
+                $num_releases = table('app_release', 'platform')->count($query_params);
+
+                if ($num_releases)
+                {
+                    $errors[] = "Android版本Code({$db_data['version_code']})已存在！";
+                }
             }
             else
             {
-                $query_params = [
-                    'where' => sprintf(
-                        "app_id = %d AND version_code = '%s'",
-                        $data['app_id'],
-                        $db->quote($db_data['version_code'])
-                    ),
-                ];
-            }
-
-            $num_releases = table('app_release', 'platform')->count($query_params);
-
-            if ($num_releases)
-            {
-                $errors[] = "Android版本Code({$db_data['version_code']})已存在！";
+                $errors[] = 'Android版本Code只能是数字！';
             }
         }
 

@@ -32,20 +32,25 @@
                     <div class="widget-body">
                         <div class="row">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="well" style="margin-bottom: 20px;">
+                                    当一个版本没有配置动态链接库，将会继承相同渠道（可继承默认渠道）更低版本（按Android版本Code排序）的动态链接库配置
+                                </div>
+
                                 <?php foreach ($data as $row) : ?>
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h3 class="panel-title">
                                                 <div class="row">
                                                     <div class="col-md-4">
-                                                        版本<?=$row['version_number']?>
                                                         <?php if ($package_type === \App\PackageType::INSTALL) : ?>
                                                             <?php if ($row['status']) : ?>
                                                                 <span class="label label-success">已发布</span>
                                                             <?php else : ?>
                                                                 <span class="label label-default">未发布</span>
                                                             <?php endif; ?>
+                                                            &nbsp;
                                                         <?php endif; ?>
+                                                        版本<?=$row['version_number']?>「Android版本Code：<?=$row['version_code']?>」
                                                     </div>
                                                     <div class="col-md-8 text-align-right">
                                                         <?php if ($package_type === \App\PackageType::INSTALL) : ?>
