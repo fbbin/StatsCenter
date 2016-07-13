@@ -105,6 +105,7 @@
                                 <tr>
                                     <th>通道名称</th>
                                     <th>发送次数</th>
+                                    <th>计费点</th>
                                     <th>成功</th>
                                     <th>失败</th>
                                     <th>成功率</th>
@@ -119,6 +120,7 @@
                                         <tr>
                                             <td><?= $d['name'] ?></td>
                                             <td><?=(int)$d['count'] ?>条</td>
+                                            <td><?=(int)$d['bill'] ?>条</td>
                                             <td><?=(int)$d['success'] ?>条</td>
                                             <td><?=(int)$d['failed']?>条</td>
                                             <td><?=$d['success_rate']?>%</td>
@@ -132,7 +134,7 @@
                         </div>
                         <div class="dt-row dt-bottom-row">
                             <div class="pager">
-                                <span>汇总：发送<?=$all['count']?>条 成功<?=$all['success']?>条 失败<?=(int)$all['failed']?>条
+                                <span>汇总：发送<?=$all['count']?>条，计费<?=(int)$all['bill']?>条，成功<?=$all['success']?>条，失败<?=(int)$all['failed']?>条，
                                     成功率<?=$all['success_rate']?>% 失败率<?=$all['failed_rate']?>%
                                 </span>
                             </div>

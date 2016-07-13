@@ -89,7 +89,8 @@
                                 <thead>
                                 <tr>
                                     <th>日期</th>
-                                    <th>条数</th>
+                                    <th>发送次数</th>
+                                    <th>计费条数</th>
                                     <th>费用合计</th>
                                 </tr>
                                 </thead>
@@ -101,6 +102,7 @@
                                         <tr>
                                             <td><?= $d['days'] ?></td>
                                             <td><?= $d['c'] ?>条</td>
+                                            <td><?= $d['bill'] ?>条</td>
                                             <td><?=$d['cost']?>元</td>
                                         </tr>
                                         <?php
@@ -111,7 +113,7 @@
                         </div>
                         <div class="dt-row dt-bottom-row">
                             <div class="pager">
-                                <span>渠道单价：<?=$price?>元 条数总计：<?=$count?>条总计费用总计：<?=$cost?>元</span>
+                                <span>渠道单价：<?=$price?>元，发送：<?=$count?>条，计费：<?=$bill?>条，总计费用总计：<?=$cost?>元</span>
                             </div>
                         </div>
                     </div>

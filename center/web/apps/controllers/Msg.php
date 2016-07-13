@@ -43,38 +43,40 @@ class Msg extends \App\LoginController
                 $end = $now;
             }
 
+            if ($_GET['start_time'] < '2016-06-01') {
+                $table = "sms_log_history";
+            } elseif ($_GET['start_time'] < '2016-07-01' and $_GET['start_time'] >= '2016-06-01') {
+                $table = "sms_log_history1";
+            } else {
+                $table = "sms_log1";
+            }
+
             $gets['where'][] = 'addtime >= "' . $start . '"';
             $gets['where'][] = 'addtime <= "' . $end . '"';
             //\Swoole::$php->db("platform")->debug = 1;
 
-            $gets['select'] = 'channel,count(id) as count';
+            $gets['select'] = 'channel,count(id) as count,sum(bill) as bill,sum(success) as failed';
             $gets['group'] = 'channel';
-            $data = table("sms_log", "platform")->gets($gets);
+            $data = table($table, "platform")->gets($gets);
+
             $calc = array();
             $all = array(
                 'count' => 0,
                 'success' => 0,
+                'bill' => 0,
                 'failed' => 0,
             );
             foreach ($data as $k => $d) {
                 $calc[$d['channel']]['count'] = $d['count'];
-                $all['count'] += $d['count'];
-            }
-
-            $gets = array();
-            $gets['where'][] = 'addtime >= "' . $start . '"';
-            $gets['where'][] = 'addtime <= "' . $end . '"';
-            //\Swoole::$php->db("platform")->debug = 1;
-
-            $gets['select'] = 'channel,sum(success) as failed';
-            $gets['group'] = 'channel';
-            $data = table("sms_log", "platform")->gets($gets);
-
-            foreach ($data as $k => $d) {
+                $calc[$d['channel']]['bill'] = $d['bill'];
                 $calc[$d['channel']]['failed'] = $d['failed'];
-                $all['failed'] += $d['failed'];
                 $calc[$d['channel']]['success'] =  $calc[$d['channel']]['count'] - $d['failed'];
+
+                $all['count'] += $d['count'];
+                $all['bill'] += $d['bill'];
+                $all['failed'] += $d['failed'];
             }
+
             $all['success'] = $all['count'] - $all['failed'];
             foreach ($calc as $k => $v) {
                 $calc[$k]['name'] = self::$channel[$k];
@@ -152,7 +154,7 @@ class Msg extends \App\LoginController
     function smslog()
     {
 //        $this->db('platform')->debug = true;
-        $gets["order"] = 'id desc';
+        $gets["order"] = 'addtime desc';
         $gets['page'] = !empty($_GET['page']) ? $_GET['page'] : 1;
         $gets['pagesize'] = 20;
 
@@ -167,7 +169,7 @@ class Msg extends \App\LoginController
             $gets['mobile'] = intval($_GET['mobile']);
         }
 
-        $data = table('sms_log', 'platform')->gets($gets, $pager);
+        $data = table('sms_log1', 'platform')->gets($gets, $pager);
         $this->assign('pager', array('total' => $pager->total, 'render' => $pager->render()));
         $this->assign('data', $data);
         $this->assign('channel', self::$channel);
@@ -278,6 +280,15 @@ class Msg extends \App\LoginController
             if (strval($month)<'2016-03') {
                 self::$charge[5] = 0.043;
             }
+
+            if ($_GET['month'] < '2016-06') {
+                $table = "sms_log_history";
+            } elseif ($_GET['month'] < '2016-07-01' and $_GET['start_time'] >= '2016-06') {
+                $table = "sms_log_history1";
+            } else {
+                $table = "sms_log1";
+            }
+
             $this->assign("price", number_format(self::$charge[$gets['channel']], 3));
 
             $start = date("Y-m-d H:i:s", strtotime($month));
@@ -286,18 +297,20 @@ class Msg extends \App\LoginController
             $gets['where'][] = 'addtime < "' . $end . '"';
             //\Swoole::$php->db("platform")->debug = 1;
 
-            $gets['order'] = 'id desc';
+            $gets['order'] = 'id asc';
             $gets['group'] = 'days';
-            $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c";
-            $data = table("sms_log", "platform")->gets($gets);
+            $gets['select'] = "DATE_FORMAT(addtime,'%Y-%m-%d') days,COUNT(id) as c,sum(bill) as bill";
+            $data = table($table, "platform")->gets($gets);
             $cost = 0;
             $count = 0;
+            $bill = 0;
             foreach ($data as $k => $d) {
-                if (!empty($d['c'])) {
-                    $_cost = $d['c'] * (self::$charge[$gets['channel']]);
+                if (!empty($d['bill'])) {
+                    $_cost = $d['bill'] * (self::$charge[$gets['channel']]);
                     $data[$k]['cost'] = number_format($_cost, 3);
                     $cost += $_cost;
                     $count += $data[$k]['c'];
+                    $bill += $data[$k]['bill'];
                 }
             }
 
@@ -306,6 +319,7 @@ class Msg extends \App\LoginController
 
             $this->assign("cost", number_format($cost, 3));
             $this->assign("count", $count);
+            $this->assign("bill", $bill);
         }
 
         $month = $this->getSelect(date("Y-m"), 2);
