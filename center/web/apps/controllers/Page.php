@@ -6,7 +6,7 @@ use Sdk;
 class Page extends Swoole\Controller
 {
     const APP_ID = 1;
-    const APP_KEY = 'hell';
+    const APP_KEY = 'GyMXWCWG9m8CJx6r';
 
     function index()
     {
