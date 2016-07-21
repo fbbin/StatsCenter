@@ -266,7 +266,7 @@ class StatsServer extends Server
                         $this->task_count[$key]['all']['date_key'] = date('Ymd', time() - 300);
                         $this->task_count[$key]['all']['total_count'] = 0;
                         $this->task_count[$key]['all']['fail_count'] = 0;
-                        $this->task_count[$key]['all']['total_time'] = 0;
+                        $this->task_count[$key]['all']['total_time'] = 0.0;
                         $this->task_count[$key]['all']['total_fail_time'] = 0;
                         $this->task_count[$key]['all']['key'] = $key;
 
@@ -652,7 +652,7 @@ class StatsServer extends Server
         if (!isset($this->count[$key]))
         {
             $this->count[$key]['all']['total_count'] = 1;
-            $this->count[$key]['all']['total_time'] = 1;
+            $this->count[$key]['all']['total_time'] = (float)$params['use_ms'];
             $this->count[$key]['all']['max_time'] = $params['use_ms'];//最大响应时间
             $this->count[$key]['all']['min_time'] = $params['use_ms'];//最小响应时间
             if ($params['success'] == 0)
@@ -670,11 +670,11 @@ class StatsServer extends Server
         else
         {
             $this->count[$key]['all']['total_count'] += 1;
-            $this->count[$key]['all']['total_time'] += $params['use_ms'];
+            $this->count[$key]['all']['total_time'] += (float)$params['use_ms'];
             if ($params['success'] == 0)
             {
                 $this->count[$key]['all']['fail_count'] += 1;
-                $this->count[$key]['all']['total_fail_time'] += $params['use_ms'];
+                $this->count[$key]['all']['total_fail_time'] += (float)$params['use_ms'];
             }
 
             if ($params['use_ms'] > $this->count[$key]['all']['max_time'])
