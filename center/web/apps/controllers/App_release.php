@@ -456,6 +456,7 @@ class App_release extends \App\LoginController
                 $data['create_time'] = $data['update_time'] = date('Y-m-d H:i:s');
                 $data['app_id'] = $app_id;
                 $data['release_id'] = $release_id;
+                $data['custom_data'] = '';
                 $insert_id = table('app_release_link', 'platform')->put($data);
                 if ($insert_id)
                 {
