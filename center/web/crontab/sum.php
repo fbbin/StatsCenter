@@ -163,7 +163,7 @@ class StatsSum
             if ($caculate['total_count'] != 0)
             {
                 $caculate['avg_time'] = number_format($caculate['total_time'] / $caculate['total_count'], 2);
-                $caculate['succ_rate'] = number_format((($caculate['total_count'] - $caculate['fail_count']) / $caculate['total_count']) * 100, 2);
+                $caculate['succ_rate'] = floor((($caculate['total_count'] - $caculate['fail_count']) / $caculate['total_count']) * 10000) / 100;
             }
             else
             {
