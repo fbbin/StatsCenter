@@ -141,6 +141,9 @@
     <li <?php if ($this->isActiveMenu('user', 'passwd')){ ?>class="active"<?php } ?>>
         <a href="/user/passwd/"><i class="fa fa-lg fa-fw fa-key"></i> <span class="menu-item-parent">修改密码</span></a>
     </li>
+    <li <?php if ($this->isActiveMenu('user', 'edit')){ ?>class="active"<?php } ?>>
+        <a href="/user/edit/"><i class="fa fa-lg fa-fw fa-key"></i> <span class="menu-item-parent">修改资料</span></a>
+    </li>
     <?php if ($this->isAllow('app')) : ?>
     <li>
         <a href="#">
